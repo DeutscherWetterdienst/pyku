@@ -77,7 +77,7 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
            In [0]: %%time
               ...: import pyku
               ...:
-              ...: ds = pyku.resources.get_test_data('low_res_hourly_data')
+              ...: ds = pyku.resources.get_test_data('low-res-hourly-tas-data')
               ...:
               ...: print('First 10 timesteps before:')
               ...: print(ds.time.values[0:10])

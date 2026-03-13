@@ -1087,7 +1087,7 @@ def persistent_processing(
               ...: # Define list of files
               ...: # --------------------
               ...:
-              ...: files = pyku.resources.get_test_data("radolan_nc_files")
+              ...: files = pyku.resources.get_test_data("monthly_hyras_files")
               ...:
               ...: # Create a temporary directory
               ...: # ----------------------------

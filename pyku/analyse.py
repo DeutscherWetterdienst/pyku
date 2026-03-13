@@ -2558,7 +2558,7 @@ def monthly_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
            @savefig monthly_diurnal_cycle.png width=4in
            In [0]: %%time
               ...: import pyku
-              ...: ds = pyku.resources.get_test_data('low_res_hourly_data')
+              ...: ds = pyku.resources.get_test_data('low-res-hourly-tas-data')
               ...: ds = ds.compute()
               ...: ds.ana.monthly_diurnal_cycle(var='RR')
     """
@@ -2656,7 +2656,7 @@ def seasonal_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
            @savefig seasonal_diurnal_cycle.png width=4in
            In [0]: %%time
               ...: import pyku
-              ...: ds = pyku.resources.get_test_data('low-res-hourly-data')
+              ...: ds = pyku.resources.get_test_data('low-res-hourly-tas-data')
               ...: ds.ana.seasonal_diurnal_cycle(var='RR')
     """
 

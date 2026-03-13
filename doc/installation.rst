@@ -1,15 +1,23 @@
 Installation
 ============
 
-.. rubric:: Too Long; Didn't Read
+.. warning::
 
-To install pyku, ensure your system is properly configured:
+   pyku is not yet available on PyPI. Installation via pip install pyku will
+   fail until the official release. Please install directly from the source
+   repository.
 
-* System Binaries: ``geos``, ``udunits``, ``hdf5``, ``netcdf``, and ``proj``,
-  as well as
-* ``pandoc`` to build the documentation.
-* Environment: Create and activate a clean virtual environment.
-* Connectivity: Ensure an active internet connection is available.
+To install pyku, ensure your system is properly configured. The following
+non-python dependencies are necessary:
+
+* `geos <https://libgeos.org/>`_
+* `proj <https://proj.org/>`_
+* `hdf5 <https://www.hdfgroup.org/solutions/hdf5/>`_
+* `netcdf <https://www.unidata.ucar.edu/software/netcdf/>`_
+* `udunits <https://www.unidata.ucar.edu/software/udunits/>`_
+
+To build the documentation, you will additionally need `pandoc
+<https://pandoc.org/>`_.
 
 Once these prerequisites are met, you can install the latest release of pyku
 using the command ``pip install``.
@@ -19,14 +27,12 @@ using the command ``pip install``.
    # Install the latest stable pyku release
    # --------------------------------------
 
-   pip3 install pyku \
-     --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku
 
    # Install extra dependencies to build documentation
    # -------------------------------------------------
 
-   pip3 install pyku[documentation] \
-     --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku[documentation]
 
 Upgrade
 -------
@@ -35,8 +41,7 @@ This command installs or updates to the latest version.
 
 .. code:: bash
 
-   pip3 install pyku --upgrade \
-   --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku --upgrade
 
 Downgrade
 ---------
@@ -45,29 +50,7 @@ By specifying an exact version, it can also be used to downgrade pyku:
 
 .. code:: bash
 
-   pip3 install pyku==0.11 \
-   --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
-
-System Dependencies
--------------------
-
-The following non-python dependencies are required:
-
-* `geos <https://libgeos.org/>`_
-* `proj <https://proj.org/>`_
-* `hdf5 <https://www.hdfgroup.org/solutions/hdf5/>`_
-* `netcdf <https://www.unidata.ucar.edu/software/netcdf/>`_
-* `udunits <https://www.unidata.ucar.edu/software/udunits/>`_
-
-from pip
---------
-
-To install the latest release from the registry:
-
-.. code:: bash
-
-   pip3 install pyku \
-        --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku==v1.0.0
 
 from master
 -----------
@@ -76,7 +59,7 @@ To install the current master from the repository:
 
 .. code:: bash
 
-   pip3 install git+https://gitlab.dwd.de/ku/libraries/pyku
+   pip install git+https://https://github.com/DeutscherWetterdienst/pyku
 
 from source
 -----------
@@ -105,8 +88,7 @@ installed automatically, making it an excellent starting point.
 
 .. code:: bash
 
-   pip install pyku[documentation]\
-       --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku[documentation]
 
 Bindings to CDO should generally be avoided within the scope of pyku. However,
 there is one exception: a function required for derotating wind components in
@@ -115,8 +97,7 @@ and can be installed using:
 
 .. code:: bash
 
-   pip install pyku[cdo_bindings]\
-       --index-url https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi/simple
+   pip install pyku[cdo_bindings]
 
 Compiled dependencies
 ---------------------
@@ -141,7 +122,7 @@ Install the SBCK library from source:
 .. code:: bash
 
    git clone https://github.com/yrobink/SBCK-python.git
-   CPPFLAGS='-I/path/to/eigen-3.4.0/install/include' pip3 install SBCK
+   CPPFLAGS='-I/path/to/eigen-3.4.0/install/include' pip install SBCK
 
 .. rubric:: Conservative resampling
 
@@ -150,11 +131,6 @@ within pyku. To resolve this, disable multiprocessing in the ESMF library and
 allow pyku to manage multiprocessing as described below:
 
 .. code:: bash
-
-   # Load the apple-cake base configuration
-   # --------------------------------------
-
-   module load base/apple-cake
 
    # Clone repository
    # ----------------
@@ -184,14 +160,14 @@ allow pyku to manage multiprocessing as described below:
 
 .. code:: bash
 
-   pip3 uninstall esmpy  # If applicable
+   pip uninstall esmpy  # If applicable
    cd esmf/src/addon/esmpy
    make install
 
 .. code:: bash
 
-   pip3 uninstall xESMF  # If applicable
-   pip3 install xESMF
+   pip uninstall xESMF  # If applicable
+   pip install xESMF
 
 
 

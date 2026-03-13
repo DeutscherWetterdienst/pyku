@@ -92,9 +92,9 @@ polygons:
     description: >
 
       Mask for the usage of E-OBS data in anlyses like pyku.ana.mean_vs_time.
-      It was generated using E-OBS v27.0 ensemble mean data at 0.1 deg resolution.
-      It is the minimum overlap of valid data of all available variables, averaged over
-      the year 1979.
+      It was generated using E-OBS v27.0 ensemble mean data at 0.1 deg
+      resolution. It is the minimum overlap of valid data of all available
+      variables, averaged over the year 1979.
 
       REFERENCES
 
@@ -104,7 +104,7 @@ polygons:
          JGR: Atmospheres, 123, 9391-9409. https://doi.org/10.1029/2017JD028200
     base_url: null
     archive_file: null
-    target_file: "eobs_mask.geojson"
+    target_file: "eobs_mask.geojson.zip"
     query: null
 
   prudence:
@@ -135,14 +135,14 @@ polygons:
 
     base_url: null
     archive_file: null
-    target_file: "prudence.geojson"
+    target_file: "prudence.geojson.zip"
     query: null
 
   natural_areas_of_germany:
     description: Not documented
     base_url: null
     archive_file: null
-    target_file: "Regionen_NationalerKlimareport_2015_Namen.geojson"
+    target_file: "Regionen_NationalerKlimareport_2015_Namen.geojson.zip"
     query: null
 
   natural_areas_of_germany_merged4:

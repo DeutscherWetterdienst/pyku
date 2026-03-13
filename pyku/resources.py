@@ -10,6 +10,7 @@ __all__ = [
 
 from . import config as pyku_config
 from . import pyku_resources
+from . import logger
 
 # Supress warnings
 # ----------------
@@ -508,6 +509,99 @@ def _get_german_directions():
     return german_directions
 
 
+def _get_registry():
+    return {
+        'air_temperature': {
+            'aliases': ['air_temperature_data'],
+            'loader': _get_air_temperature_data
+        },
+        'fake_cmip6': {
+            'aliases': ['fake_cmip6_data'],
+            'loader': generate_fake_cmip6_data
+        },
+        'cftime_data': {
+            'aliases': [],
+            'loader': _get_cftime_data
+        },
+        'hyras': {
+            'aliases': ['hyras_tas'],
+            'loader': _get_hyras_tas_data
+        },
+        'hyras_pr': {
+            'aliases': [],
+            'loader': _get_hyras_pr_data
+        },
+        'hyras-tas-monthly': {
+            'aliases': ['hyras-monthly'],
+            'loader': _get_monthly_hyras_data
+        },
+        'monthly-hyras-files': {
+            'aliases': ['monthly_hyras_files'],
+            'loader': _get_monthly_hyras_files
+        },
+        'small_tas_dataset': {
+            'aliases': [],
+            'loader': _get_small_tas_dataset
+        },
+        'cosmo-rea6': {
+            'aliases': ['cosmo-rea6-daily'],
+            'loader': _get_daily_cosmo_rea6_data
+        },
+        'low-res-hourly-tas-data': {
+            'aliases': ['low_res_hourly_tas_data'],
+            'loader': _get_low_res_hourly_tas_data
+        },
+        'hourly-tas': {
+            'aliases': ['hourly_tas', 'hostrada'],
+            'loader': _get_hostrada_data
+        },
+        'GCM_CanESM5': {
+            'aliases': [],
+            'loader': _get_GCM_CanESM5_data
+        },
+        'MPI_ESM1_2_HR_tas': {
+            'aliases': [],
+            'loader': _get_MPI_ESM1_2_HR_tas_data
+        },
+        'MPI_ESM1_2_HR_pr': {
+            'aliases': [],
+            'loader': _get_MPI_ESM1_2_HR_pr_data
+        },
+        'tas_hurs': {
+            'aliases': [],
+            'loader': _get_tas_hurs_data
+        },
+        'tas_ps_huss': {
+            'aliases': [],
+            'loader': _get_tas_ps_huss_data
+        },
+        'ps_tdew': {
+            'aliases': [],
+            'loader': _get_ps_tdew_data
+        },
+        'monthly_eurocordex': {
+            'aliases': ['cordex_data', 'model_data'],
+            'loader': _get_monthly_eurocordex_data
+        },
+        'global_data': {
+            'aliases': [],
+            'loader': _get_global_data
+        },
+        'icon_grib_files': {
+            'aliases': [],
+            'loader': _get_icon_grib_files
+        },
+        'icon_grid_file': {
+            'aliases': [],
+            'loader': _get_icon_grid_file
+        },
+        'CCCma_CanESM2_Amon_world': {
+            'aliases': [],
+            'loader': _get_CCCma_CanESM2_Amon_world
+        }
+    }
+
+
 def list_test_data(include_aliases=False):
     """
     Returns a list of available dataset identifiers.
@@ -516,40 +610,33 @@ def list_test_data(include_aliases=False):
         include_aliases (bool): Defaults to False. If True, returns all valid
             strings. If False, returns only the primary identifier for each
             group.
+
+    Examples:
+
+        .. ipython::
+           :okwarning:
+
+           In [0]: import pyku
+              ...: pyku.list_test_data(include_aliases=True)
     """
 
-    datasets = [
-        ['air_temperature', 'air_temperature_data'],
-        ['fake_cmip6', 'fake_cmip6_data'],
-        ['cftime_data'],
-        ['hyras'],
-        ['hyras-tas-monthly', 'hyras-monthly'],
-        ['small_tas_dataset'],
-        ['cosmo-rea6', 'cosmo-rea6-daily'],
-        ['radolan'],
-        ['radolan_nc_files'],
-        ['low_res-hourly-data'],
-        ['hourly-tas', 'hourly_tas', 'hostrada'],
-        ['GCM_CanESM5'],
-        ['MPI_ESM1_2_HR_tas'],
-        ['MPI_ESM1_2_HR_pr'],
-        ['tas_hurs'],
-        ['tas_ps_huss'],
-        ['ps_tdew'],
-        ['monthly_eurocordex', 'cordex_data', 'model_data'],
-        ['global_data'],
-        ['icon_grib_files'],
-        ['icon_grid_file'],
-        ['CCCma_CanESM2_Amon_world'],
-    ]
+    registry = _get_registry()
 
     if include_aliases:
-        return [item for sublist in datasets for item in sublist]
+        result = []
+        for primary, info in registry.items():
+            aliases = info.get('aliases', [])
+            if aliases:
+                result.append(f"{primary} ({', '.join(aliases)})")
+            else:
+                result.append(primary)
+        return result
 
-    return [sublist[0] for sublist in datasets]
+    return list(registry.keys())
 
 
 def get_test_data(id):
+
     """
     Retrieves sample raster datasets for documentation and unit testing.
 
@@ -558,61 +645,27 @@ def get_test_data(id):
            Available identifiers can be listed using `pyku.list_identifiers()`.
 
     Returns:
-        xarray.Dataset: The requested test raster data.
+        :class:`xarray.Dataset`: The requested test raster data.
 
     Raises:
         ValueError: If the provided `id` is not a recognized dataset
             identifier.
+
+    Examples:
+
+        .. ipython::
+           :okwarning:
+
+           In [0]: import pyku
+              ...: pyku.resources.get_test_data('hyras')
+
     """
 
-    if id in ['air_temperature', 'air_temperature_data']:
-        return _get_air_temperature_data()
-    elif id in ['fake_cmip6', 'fake_cmip6_data']:
-        return generate_fake_cmip6_data()
-    elif id in ['cftime_data']:
-        return _get_cftime_data()
-    elif id in ['hyras', 'hyras_tas']:
-        return _get_hyras_tas_data()
-    elif id in ['small_tas_dataset']:
-        return _get_small_tas_dataset()
-    elif id in ['hyras_pr']:
-        return _get_hyras_pr_data()
-    elif id in ['hyras-tas-monthly', 'hyras-monthly']:
-        return _get_monthly_hyras_data()
-    elif id in ['cosmo-rea6', 'cosmo-rea6-daily']:
-        return _get_daily_cosmo_rea6_data()
-    elif id in ['radolan_nc_files']:
-        return _get_radolan_nc_files()
-    elif id in ['icon_grib_files']:
-        return _get_icon_grib_files()
-    elif id in ['icon_grid_file']:
-        return _get_icon_grid_file()
-    elif id in ['radolan']:
-        return _get_radolan_data()
-    elif id in ['low-res-hourly-data', 'low_res_hourly_data']:
-        return _get_low_res_hourly_data()
-    elif id in ['hourly-tas', 'hourly_tas', 'hostrada']:
-        return _get_hostrada_data()
-    elif id in ['GCM_CanESM5']:
-        return _get_GCM_CanESM5_data()
-    elif id in ['MPI_ESM1_2_HR_tas']:
-        return _get_MPI_ESM1_2_HR_tas_data()
-    elif id in ['MPI_ESM1_2_HR_pr']:
-        return _get_MPI_ESM1_2_HR_pr_data()
-    elif id in ['tas_hurs']:
-        return _get_tas_hurs_data()
-    elif id in ['tas_ps_huss']:
-        return _get_tas_ps_huss_data()
-    elif id in ['ps_tdew']:
-        return _get_ps_tdew_data()
-    elif id in ['monthly_eurocordex', 'cordex_data', 'model_data']:
-        return _get_monthly_eurocordex_data()
-    elif id in ['global_data']:
-        return _get_global_data()
-    elif id in ['CCCma_CanESM2_Amon_world']:
-        return _get_CCCma_CanESM2_Amon_world()
-    else:
-        raise ValueError(f"Dataset {id} does not exist")
+    registry = _get_registry()
+    for primary, info in registry.items():
+        if id == primary or id in info['aliases']:
+            return info['loader']()
+    raise ValueError(f"Dataset {id} does not exist")
 
 
 def _get_cftime_data():
@@ -654,12 +707,16 @@ def _get_cftime_data():
     )
 
     def to_zarr_processor(fname, action, pooch):
-        _warn_of_data_download(pooch_installer)
         zarr_path = Path(fname).with_suffix('.zarr')
         if not zarr_path.exists():
+            _warn_of_data_download(pooch_installer)
             with xr.open_dataset(fname) as ds:
                 _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-LAEA-50')  # Reduce data size
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+            Path(fname).unlink()  # Delete source netCDF file
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
         return zarr_path
 
@@ -711,9 +768,16 @@ def _get_tas_hurs_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Reduce resoltion and write to zarr
+            # ----------------------------------
 
             with xr.open_mfdataset(
                 files,
@@ -721,7 +785,17 @@ def _get_tas_hurs_data():
                 compat='no_conflicts',
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -758,16 +832,34 @@ def _get_tas_ps_huss_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Reduce resolution and write to zarr
+            # -----------------------------------
+
             with xr.open_mfdataset(
                 files,
                 data_vars='all',
                 compat='no_conflicts',
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -801,82 +893,41 @@ def _get_ps_tdew_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Reduce resolution and write to zarr
+            # -----------------------------------
+
             with xr.open_mfdataset(
                 files,
                 data_vars='all',
                 compat='no_conflicts',
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
 
-def _get_radolan_nc_files():
-
-    from pathlib import Path
-    import pooch
-    from filelock import FileLock
-
-    base_url = (
-        "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
-        "radolan/reproc/2017_002/netCDF/2020/"
-    )
-    file = "RW2017.002_2020_netcdf.tar.gz"
-    checksum = \
-        "878680f1bc5bac7d1d46a3d196b843aec2b3d51e508324d430619df0af918ba9"
-
-    # Get the pyku data directory
-    # --------------------------
-
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
-
-    # Create pooch installer
-    # ----------------------
-
-    pooch_installer = pooch.create(
-        path=pyku_data_dir,
-        base_url=base_url,
-        registry={
-            file: checksum,
-        }
-    )
-
-    # Define processor function
-    # -------------------------
-
-    def targz_processor(fname, action, pooch_instance):
-        _warn_of_data_download(pooch_installer)
-        _warn_if_default_data_dir()
-        extract_dir = Path(fname).parent / Path(fname).stem
-        unpacker = pooch.Untar(extract_dir=extract_dir)
-        extracted_files = unpacker(fname, action, pooch_instance)
-
-        return extracted_files
-
-    # Lock download to avoid fetching twice in parallel
-    # -------------------------------------------------
-
-    lock_path = Path(pyku_data_dir) / f"{file}.lock"
-    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
-
-    # Fetch and return dataset
-    # ------------------------
-
-    with FileLock(lock_path):
-        files = pooch_installer.fetch(
-            file,
-            processor=targz_processor,
-        )
-
-    return files
-
-
-def _get_radolan_data():
+def _get_low_res_hourly_tas_data():
 
     import xarray as xr
     from pathlib import Path
@@ -916,14 +967,21 @@ def _get_radolan_data():
         store.
         """
 
-        _warn_of_data_download(pooch_installer)
-        extract_dir = Path(fname).parent / Path(fname).stem
-        unpacker = pooch.Untar(extract_dir=extract_dir)
-        extracted_files = unpacker(fname, action, pooch_instance)
+        import shutil
 
         zarr_path = Path(fname).with_suffix('.zarr')
 
         if not zarr_path.exists():
+
+            _warn_of_data_download(pooch_installer)
+
+            extract_dir = Path(fname).parent / Path(fname).stem
+            unpacker = pooch.Untar(extract_dir=extract_dir)
+            extracted_files = unpacker(fname, action, pooch_instance)
+
+            # Reduce resolution of dataset and save to zarr
+            # ---------------------------------------------
+
             with xr.open_mfdataset(
                 extracted_files,
                 data_vars="minimal",
@@ -932,7 +990,21 @@ def _get_radolan_data():
                 join="override"
             ) as ds:
                 _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Delete the .tar.gz file
+            # -----------------------
+
+            Path(fname).unlink()
+
+            # Delete the extracted folder and all its contents
+            # ------------------------------------------------
+
+            shutil.rmtree(extract_dir)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
         return zarr_path
 
@@ -945,85 +1017,10 @@ def _get_radolan_data():
     # Fetch and return dataset
     # ------------------------
 
-    with FileLock(lock_path):
-        file_path = pooch_installer.fetch(
-            file,
-            processor=targz_zarr_processor,
-        )
+    zarr_path = Path(f"{file}").with_suffix('.zarr')
 
-    return xr.open_dataset(file_path)
-
-
-def _get_low_res_hourly_data():
-
-    import xarray as xr
-    from pathlib import Path
-    import pooch
-    from filelock import FileLock
-
-    base_url = (
-        "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
-        "radolan/reproc/2017_002/netCDF/2020/"
-    )
-    file = "RW2017.002_2020_netcdf.tar.gz"
-    checksum = \
-        "878680f1bc5bac7d1d46a3d196b843aec2b3d51e508324d430619df0af918ba9"
-
-    # Get the pyku data directory
-    # --------------------------
-
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
-
-    # Create pooch installer
-    # ----------------------
-
-    pooch_installer = pooch.create(
-        path=pyku_data_dir,
-        base_url=base_url,
-        registry={
-            file: checksum,
-        }
-    )
-
-    # Define processor function
-    # -------------------------
-
-    def targz_zarr_processor(fname, action, pooch_instance):
-        """
-        Extracts tar.gz and converts all contained NetCDF files into a Zarr
-        store.
-        """
-        _warn_of_data_download(pooch_installer)
-        extract_dir = Path(fname).parent / Path(fname).stem
-        unpacker = pooch.Untar(extract_dir=extract_dir)
-        extracted_files = unpacker(fname, action, pooch_instance)
-
-        p = Path(fname)
-        zarr_path = p.with_name(f"{p.stem}.lowres.zarr")
-
-        if not zarr_path.exists():
-            with xr.open_mfdataset(
-                extracted_files,
-                data_vars="minimal",
-                coords="minimal",
-                compat="override",
-                join="override"
-            ) as ds:
-                _warn_if_default_data_dir()
-                ds = ds.chunk(chunks={'time': 1000})
-                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
-                ds.to_zarr(zarr_path, mode="w", consolidated=True)
-
-        return zarr_path
-
-    # Lock download to avoid fetching twice in parallel
-    # -------------------------------------------------
-
-    lock_path = Path(pyku_data_dir) / "low_res_hourly_data.lock"
-    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
-
-    # Fetch and return dataset
-    # ------------------------
+    if zarr_path.exists():
+        return xr.open_dataset(zarr_path, engine="zarr")
 
     with FileLock(lock_path):
         file_path = pooch_installer.fetch(
@@ -1057,21 +1054,25 @@ def _get_icon_grid_file():
         }
     )
 
-    def processor(fname, action, pooch_instance):
-
-        _warn_of_data_download(pooch_installer)
-        _warn_if_default_data_dir()
-
-        return fname
-
     lock_path = Path(pyku_data_dir) / "icon_grid_file.lock"
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     with FileLock(lock_path):
-        file = pooch_installer.fetch(
-            file,
-            processor=processor,
-        )
+
+        # Send warnings if files need to be downloaded
+        # --------------------------------------------
+
+        if any(
+            not pooch_installer.is_available(f)
+            for f in pooch_installer.registry
+        ):
+            _warn_of_data_download(pooch_installer)
+            _warn_if_default_data_dir()
+
+        # Fetch files
+        # -----------
+
+        file = pooch_installer.fetch(file)
 
     return file
 
@@ -1098,16 +1099,6 @@ def _get_icon_grib_files():
         }
     )
 
-    # Define processor function
-    # -------------------------
-
-    def processor(fname, action, pooch_instance):
-
-        _warn_of_data_download(pooch_installer)
-        _warn_if_default_data_dir()
-
-        return fname
-
     # Lock download to avoid fetching twice in parallel
     # -------------------------------------------------
 
@@ -1119,8 +1110,16 @@ def _get_icon_grib_files():
 
     with FileLock(lock_path):
         registry_files = list(pooch_installer.registry.keys())
+
+        if any(
+            not pooch_installer.is_available(f)
+            for f in pooch_installer.registry
+        ):
+            _warn_of_data_download(pooch_installer)
+            _warn_if_default_data_dir()
+
         files = [
-            pooch_installer.fetch(fname, processor=processor)
+            pooch_installer.fetch(fname)
             for fname in registry_files
         ]
 
@@ -1157,10 +1156,19 @@ def _get_small_tas_dataset():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Write to zarr
+            # -------------
+
             with xr.open_mfdataset(
                 files,
                 data_vars='all'
@@ -1168,6 +1176,15 @@ def _get_small_tas_dataset():
                 _warn_if_default_data_dir()
                 ds = ds.isel(time=[0, 1, 2, 4]).pyku.project('HYR-GER-LAEA-5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -1206,10 +1223,16 @@ def _get_hyras_tas_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Convert netCDF files to zarr
+            # ----------------------------
+
             with xr.open_mfdataset(
                 files,
                 data_vars='all'
@@ -1217,6 +1240,14 @@ def _get_hyras_tas_data():
                 _warn_if_default_data_dir()
                 ds = ds.pyku.project('HYR-GER-LAEA-5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Delete the original netCDF files
+            # --------------------------------
+
+            for f in files:
+                Path(f).unlink()
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -1255,10 +1286,19 @@ def _get_hyras_pr_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
+
+            # Download netCDF files
+            # ---------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Convert netCDF files to zarr
+            # ----------------------------
+
             with xr.open_mfdataset(
                 files,
                 combine="nested",
@@ -1269,6 +1309,15 @@ def _get_hyras_pr_data():
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Delete the original netCDF files
+            # --------------------------------
+
+            for f in files:
+                Path(f).unlink()
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -1308,9 +1357,17 @@ def _get_monthly_hyras_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Write to zarr
+            # -------------
+
             with xr.open_mfdataset(
                 files,
                 data_vars='all'
@@ -1318,7 +1375,62 @@ def _get_monthly_hyras_data():
                 _warn_if_default_data_dir()
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
 
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
+
     return xr.open_zarr(zarr_path)
+
+
+def _get_monthly_hyras_files():
+
+    from pathlib import Path
+    import pooch
+    from filelock import FileLock
+
+    pyku_data_dir = Path(pyku_config.get('data_dir'))
+
+    pooch_installer = pooch.create(
+        path=pyku_data_dir,
+        base_url=(
+            "https://opendata.dwd.de/climate_environment/CDC/grids_germany/"
+            "monthly/hyras_de/air_temperature_mean/"
+        ),
+        registry={
+            "tas_hyras_1_1961_v6-1_de_monmean.nc": (
+                "sha256:bc89f78936d190db301b72bf19b914dc343c3401e3d74e126fcede"
+                "258444c53b"
+            ),
+            "tas_hyras_1_1962_v6-1_de_monmean.nc": (
+                "sha256:face20f31b0d2c421c4c5ccfde498a497a4645242a71c08f7d1431"
+                "32100f5c57"
+            ),
+        }
+    )
+
+    lock_path = Path(pyku_data_dir) / "monthly_hyras_files.lock"
+
+    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+
+    with FileLock(lock_path):
+
+        if any(
+            not pooch_installer.is_available(f)
+            for f in pooch_installer.registry
+        ):
+            _warn_of_data_download(pooch_installer)
+            _warn_if_default_data_dir()
+
+        files = [
+            pooch_installer.fetch(f) for f in pooch_installer.registry
+        ]
+
+    return files
 
 
 def _get_daily_cosmo_rea6_data():
@@ -1359,17 +1471,36 @@ def _get_daily_cosmo_rea6_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
+
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
             ]
+
+            # Convert to zarr
+            # ---------------
+
             with xr.open_mfdataset(
                 files,
                 engine='cfgrib',
-                data_vars='all'
+                data_vars='all',
+                backend_kwargs={"indexpath": ""}
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            for f in files:
+                Path(f).unlink(missing_ok=True)
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_zarr(zarr_path)
 
@@ -1407,13 +1538,24 @@ def _get_hostrada_data():
 
     def to_zarr_processor(fname, action, pooch):
 
-        _warn_of_data_download(pooch_installer)
-        zarr_path = Path(fname).with_suffix('.zarr')
-
         if not zarr_path.exists():
+
+            # Warn of download
+            # ----------------
+
+            _warn_of_data_download(pooch_installer)
+            _warn_if_default_data_dir()
+
+            # Write to zarr
+            # -------------
+
             with xr.open_dataset(fname) as ds:
-                _warn_if_default_data_dir()
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
+
+            # Remove netCDF files
+            # -------------------
+
+            Path(fname).unlink(missing_ok=True)
 
         return zarr_path
 
@@ -1422,6 +1564,10 @@ def _get_hostrada_data():
 
     lock_path = Path(pyku_data_dir) / f"{file}.lock"
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+    zarr_path = Path(pyku_data_dir) / f"{Path(file).stem}.zarr"
+
+    if zarr_path.exists():
+        return xr.open_dataset(zarr_path, engine="zarr")
 
     # Fetch and return dataset
     # ------------------------
@@ -1483,6 +1629,9 @@ def _get_CCCma_CanESM2_Amon_world():
 
             for d in datasets:
                 d.close()
+
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
     return xr.open_dataset(zarr_path)
 

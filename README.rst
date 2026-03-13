@@ -1,13 +1,29 @@
-Links
------
+.. |gitlab-badge| image:: https://img.shields.io/badge/gitlab-repo-red?style=flat&logo=gitlab
+  :target: https://gitlab.dwd.de/ku/libraries/pyku
+  :alt: GitLab Repository
 
-==================== ================================================
-Object               Link
-==================== ================================================
-repository           https://gitlab.dwd.de/ku/libraries/pyku/
-documentation        http://ku.pages.dwd.de/libraries/pyku/
-issues               https://gitlab.dwd.de/ku/libraries/pyku/-/issues
-==================== ================================================
+.. |github-badge| image:: https://img.shields.io/badge/github-repo-blue?style=flat&logo=github
+  :target: https://github.com/deutscherwetterdienst/pyku
+  :alt: GitHub Repository
+
+.. |documentation-badge| image:: https://img.shields.io/badge/Documentation-View%20on%20GitLab-green
+  :target: http://ku.pages.dwd.de/libraries/pyku/
+  :alt: Documentation
+
+.. |issue-badge| image:: https://img.shields.io/badge/Issues-View%20on%20GitLab-red
+  :target: https://gitlab.dwd.de/ku/libraries/pyku/-/issues
+  :alt: GitLab Issues
+
+.. |issue-github-badge| image:: https://img.shields.io/badge/Issues-View%20on%20GitHub-blue
+  :target: https://github.com/deutscherwetterdienst/pyku/issues
+  :alt: GitHub Issues
+
+
+|gitlab-badge| |github-badge|
+
+|documentation-badge|
+
+|issue-badge| |issue-github-badge|
 
 Comprehensive climate data handling with Xarray
 -----------------------------------------------
@@ -56,5 +72,5 @@ Acknowledgments
 Special thanks to `Seth Woodworth <https://github.com/sethwoodworth>`_ for his
 generosity in transferring the PyPI package name **pyku**. Seth originally
 established the name as an English portmanteau of "Python" and "Haiku." It is
-now being repurposed for the **py Klimat und Umwelt** project.
+now being repurposed for the **py Klima und Umwelt** project.
 
