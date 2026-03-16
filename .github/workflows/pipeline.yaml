@@ -1,0 +1,67 @@
+name: CI/CD Pipeline
+
+# on: [pull_request]
+
+env:
+  LANGUAGE: "en_US:en"
+  LANG: "en_US"
+  LC_ALL: C
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install System Binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev pandoc
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build and Test
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install --upgrade pip setuptools wheel cython nbstripout build
+          uv build
+          uv pip install dist/*.whl[documentation,cdo_bindings]
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            uv pip install flake8
+            flake8 pyku/
+            ipython ./testing/check_notebooks_are_cleared.ipy
+          fi
+
+          # Unit Tests
+          python3 -m unittest discover -v -s ./testing -p "*_test.py"
+
+          # Documentation
+          sphinx-build -j 10 ./doc/ documentation/
+
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: documentation
+
+  deploy:
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install System Binaries
+        run: sudo apt-get update && sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./documentation

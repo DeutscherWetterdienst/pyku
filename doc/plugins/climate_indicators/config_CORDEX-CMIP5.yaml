@@ -1,0 +1,18 @@
+---
+
+root_dir: /path/to/CORDEX/data/cordex/
+standard: cordex
+facets:
+    product: output
+    CORDEX_domain: EUR-11
+    institute_id: CLMcom
+    driving_model_id: CCCma-CanESM2
+    driving_model_ensemble_member: r1i1p1
+    driving_experiment_name:
+        - historical
+        - rcp85
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+    frequency: day
+    version: v20171121
+    variable_name: tas

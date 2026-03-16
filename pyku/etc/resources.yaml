@@ -1,0 +1,184 @@
+---
+
+# Data definition file
+# --------------------
+
+# url: path to data url
+# file: file path and name relative to the unzipped data
+# query: pandas query
+
+polygons:
+
+  ne_10m_admin_0_countries:
+    description: >
+        See https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_cultural/
+    archive_file: ne_10m_admin_0_countries.zip
+    target_file: ne_10m_admin_0_countries.shp
+    query: null
+    aliases:
+      - countries
+
+  ne_10m_coastline:
+    description: >
+        See https://www.naturalearthdata.com/downloads/10m_physical/ne_10m_coastline/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_physical/
+    archive_file: ne_10m_coastline.zip
+    target_file: ne_10m_coastline.shp
+    query: null
+
+  ne_10m_rivers:
+    description: >
+        See https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-rivers-lake-centerlines/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_physical/
+    archive_file: ne_10m_rivers_lake_centerlines.zip
+    target_file: ne_10m_rivers_lake_centerlines.shp
+    query: null
+
+  ne_10m_lakes:
+    description: >
+        See https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-lakes/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_physical/
+    archive_file: ne_10m_lakes.zip
+    target_file: ne_10m_lakes.shp
+    query: null
+
+  germany:
+    description: >
+        Germany selected from
+        https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_cultural/
+    archive_file: ne_10m_admin_0_countries.zip
+    target_file: ne_10m_admin_0_countries.shp
+    query: "SOVEREIGNT == 'Germany'"
+
+  austria:
+    description: >
+        Austria selected from
+        https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_cultural/
+    archive_file: ne_10m_admin_0_countries.zip
+    target_file: ne_10m_admin_0_countries.shp
+    query: "SOVEREIGNT == 'Austria'"
+
+  german_states:
+    description: >
+        German states selected from
+        https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-1-states-provinces/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_cultural/
+    archive_file: ne_10m_admin_1_states_provinces.zip
+    target_file: ne_10m_admin_1_states_provinces.shp
+    query: "iso_a2 == 'DE'"
+
+  german_cities:
+    description: >
+        See https://gdz.bkg.bund.de/index.php/default/digitale-geodaten/verwaltungsgebiete/verwaltungsgebiete-1-250-000-stand-01-01-vg250-01-01.html
+    base_url: https://daten.gdz.bkg.bund.de/produkte/vg/vg250_ebenen_0101/aktuell/
+    archive_file: vg250_01-01.tm32.shape.ebenen.zip
+    target_file: VG250_KRS.shp
+    query: null
+
+  ne_10m_geography_regions_polys:
+    description: >
+        See https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-physical-labels/
+    base_url: https://naturalearth.s3.amazonaws.com/10m_physical/
+    archive_file: ne_10m_geography_regions_polys.zip
+    target_file: ne_10m_geography_regions_polys.shp
+    query: null
+    aliases:
+      - geographic_regions
+
+  eobs_mask:
+    description: >
+
+      Mask for the usage of E-OBS data in anlyses like pyku.ana.mean_vs_time.
+      It was generated using E-OBS v27.0 ensemble mean data at 0.1 deg
+      resolution. It is the minimum overlap of valid data of all available
+      variables, averaged over the year 1979.
+
+      REFERENCES
+
+      * https://www.ecad.eu/download/ensembles/download.php
+      *  Cornes, R. C., van der Schrier, G., van den Besselaar, E. J. M., & Jones, P. D. (2018).
+         An ensemble version of the E-OBS temperature and precipitation data sets.
+         JGR: Atmospheres, 123, 9391-9409. https://doi.org/10.1029/2017JD028200
+    base_url: null
+    archive_file: null
+    target_file: "eobs_mask.geojson.zip"
+    query: null
+
+  prudence:
+    description: >
+
+      Prudence polygons, used in climatology, are spatial divisions developed
+      during the PRUDENCE project (Prediction of Regional scenarios and
+      Uncertainties for Defining EuropeaN Climate change risks and Effects).
+      These polygons are defined to represent consistent and climatically
+      homogeneous regions across Europe, facilitating regional climate change
+      analyses. They are widely used for studying the impacts of climate models
+      at sub-continental scales and are essential for evaluating regional
+      climate projections under various scenarios. The polygons provide a
+      framework for aggregating climate model data, aiding in the comparison of
+      regional impacts under different climate conditions. These regions
+      correspond to specific areas that experience similar climatic patterns
+      and help in better understanding variability and extreme events under
+      modeled and observed datasets.
+
+      REFERENCES
+
+      * https://ensemblesrt3.dmi.dk/quicklook/regions.html
+      * https://www.wcrp-climate.org/modelling-wgcm-mip-catalogue/modelling-wgcm-mips-2/288-modelling-wgcm-catalogue-prudence
+      * Christensen, J.H., Christensen, O.B. A summary of the PRUDENCE model
+        projections of changes in European climate by the end of this century.
+        Climatic Change 81 (Suppl 1), 7-30 (2007).
+        https://doi.org/10.1007/s10584-006-9210-7
+
+    base_url: null
+    archive_file: null
+    target_file: "prudence.geojson.zip"
+    query: null
+
+  natural_areas_of_germany:
+    description: Not documented
+    base_url: null
+    archive_file: null
+    target_file: "Regionen_NationalerKlimareport_2015_Namen.geojson.zip"
+    query: null
+
+  natural_areas_of_germany_merged4:
+    description: >
+        Natural areas of Germany divided into western, northern, eastern and
+        southern states.
+
+        Western  - Linksrheinische Mittelgebirge, Oberrheinisches Tiefland,
+                   Rechtsrheinische Mittelgebirge, Westdeutsche Tieflandsbucht
+        Northern - Nordostdeutsches Tiefland, Nordwestdeutsches Tiefland
+        Eastern  - Oestliche Mittelgebirge, Ostdeutsche Becken und Huegel,
+                   Zentrale Mittelgebirge und Harz
+        Southern - Suedwestdeutsche Mittelgebirge, Alpen, Alpenvorland
+
+        These polygons are built on-the-fly from Natural Areas of Germany data
+        available in pyku. See the source code in resources.py
+    base_url: null
+    archive_file: null
+    target_file: null
+    query: null
+
+  german_directions:
+    description: >
+        Germany divided into western, northern, eastern and southern states.
+
+        Western states  - Rheinland-Pfalz, Saarland, Nordrhein-Westfalen,
+                          Hessen,
+        Northern states - Schleswig-Holstein, Hamburg, Bremen, Niedersachsen,
+                          Mecklenburg-Vorpommern'
+        Eastern states  - Berlin, Brandenburg, Sachsen, Sachsen-Anhalt,
+                          Thüringen
+        Southern states - Bayern, Baden-Württemberg,
+
+        These polygons are built on-the-fly from German states data available
+        in ne_10m_admin_1_states_provinces. See the source code in resources.py
+    base_url: null
+    archive_file: null
+    target_file: null
+    query: null

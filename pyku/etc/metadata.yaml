@@ -1,0 +1,112 @@
+---
+
+spatial_vertices:
+    - lat_vertices
+    - lon_vertices
+    - vertices_lat
+    - vertices_lon
+
+spatial_bounds:
+    - latitude_bounds
+    - longitude_bounds
+    - latitude_bnds
+    - longitude_bnds
+    - lat_bnds
+    - lon_bnds
+    - lat_bounds
+    - lon_bounds
+    - bounds_lat
+    - bounds_lon
+    - clon_bnds
+    - clat_bnds
+    - rlon_bnds
+    - rlat_bnds
+    - x_bnds
+    - y_bnds
+    - X_bnds
+    - Y_bnds
+
+longitude_bounds:
+    - longitude_bounds
+    - longitude_bnds
+    - lon_bnds
+    - lon_bounds
+    - bounds_lon
+    - clon_bnds
+
+latitude_bounds:
+    - latitude_bounds
+    - latitude_bnds
+    - lat_bnds
+    - lat_bounds
+    - bounds_lat
+    - clat_bnds
+
+coordinate_reference_system:
+    - crs
+    - crs_HYRAS
+    - rotated_pole
+    - rotated_latitude_longitude
+    - Lambert_Conformal
+    - albers_conical_equal_area
+    - azimuthal_equidistant
+    - geostationary
+    - lambert_azimuthal_equal_area
+    - lambert_conformal_conic
+    - lambert_cylindrical_equal_area
+    - latitude_longitude
+    - mercator
+    - oblique_mercator
+    - orthographic
+    - polar_stereographic
+    - rotated_latitude_longitude
+    - sinusoidal
+    - stereographic
+    - transverse_mercator
+    - vertical_perspective
+
+geographic_longitude:
+    - clon
+    - lon
+    - lons
+    - longitude
+    - longitudes
+    - LON
+    - LONS
+    - LONGITUDE
+    - LONGITUDES
+    - Lon
+    - Lons
+    - Longitude
+    - Longitudes
+
+geographic_latitude:
+    - clat
+    - lat
+    - lats
+    - latitude
+    - latitudes
+    - LAT
+    - LATS
+    - LATITUDE
+    - LATITUDES
+    - Lat
+    - Lats
+    - Latitude
+    - Latitudes
+
+projection_coordinate_x:
+    - x
+    - X
+    - rlon
+    - RLON
+
+projection_coordinate_y:
+    - y
+    - Y
+    - rlat
+    - RLAT
+
+temporal_bounds:
+    - time_bnds
+    - time_bounds

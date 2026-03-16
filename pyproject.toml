@@ -1,0 +1,111 @@
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools_scm",
+    "wheel",
+    "cython",
+    "pip",
+    "numpy",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
+
+[tool.black]
+line-length = 80
+
+[project]
+name = "pyku"
+description = "pyku"
+requires-python = ">=3.11"
+dynamic = ["version"]
+readme = "README.md"
+authors = [
+    { name = "Stephane Haussler", email = "stephane.haussler@dwd.de"},
+    { name = "Igor Detring", email = "igor.detring@dwd.de"},
+    { name = "Klaus Pankatz", email = "klaus.pankatz@dwd.de"},
+    { name = "Harald Rybka", email = "harald.rybka@dwd.de"},
+]
+
+dependencies = [
+    "babel",
+    "bokeh!=3.0.*,>=2.4.2",
+    "braceexpand",
+    "cartopy",
+    "cf-xarray",
+    "cfgrib",
+    "dask",
+    "dask[distributed]",
+    "docutils",
+    "flox",
+    "geopandas",
+    "h5netcdf",
+    "h5py",
+    "jsonargparse==4.40",
+    "matplotlib",
+    "metpy",
+    "nbconvert",
+    "netCDF4==1.6.5",
+    "numpy==1.26.4",
+    "oracledb",
+    "pandas<3.0.0",
+    "parse",
+    "pillow",
+    "pooch",
+    "pyogrio",
+    "pyresample",
+    "PyYAML",
+    "RapidFuzz",
+    "rasterio",
+    "roman-numerals!=4.1.0,",
+    "rst2pdf",
+    "scikit-misc",
+    "seaborn",
+    "setuptools_scm",
+    "Shapely",
+    "siphon",
+    "tqdm",
+    "tz",
+    "xarray==2025.10.1",
+    "xclim>=0.59.1",
+    "xskillscore",
+    "zarr",
+    "s3fs"
+]
+
+[project.optional-dependencies]
+documentation = [
+    "ipython",
+    "nbclassic",
+    "nbsphinx",
+    "pickleshare",
+    "pyfakefs",
+    "sphinx-autobuild",
+    "sphinx-book-theme",
+    "sphinx-gallery",
+    "sphinx-togglebutton",
+    "sphinx",
+    "sphinx>=6.1",
+    "sphinxcontrib-jupyter",
+    "sphinxcontrib-napoleon",
+    "sphinxcontrib-programoutput",
+]
+cdo_bindings = [
+    "cdo"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+pyku = ["etc/*.yaml", "etc/static/*.*", "etc/geodata/*.geojson"]
+
+[project.scripts]
+pyku = "pyku.pyku:main"
+clixrun = "pyku.clix.core:main"

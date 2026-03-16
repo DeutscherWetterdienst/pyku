@@ -1,0 +1,59 @@
+#!/usr/bin/env ipython
+
+############################################################
+# This ipython script checks if notebooks are stripped out #
+############################################################
+
+# To use, cd to the root of your repository and run with ipython
+# ipython3 housekeeping/check_notebooks_are_cleared.ipy
+
+# Find all notebooks in current directory
+
+notebooks = !find ./ -name *.ipynb
+
+# Imports
+# -------
+
+import nbformat
+import sys
+import glob
+
+def notebook_is_clear(notebook):
+
+    """
+    Check if notebook is clear
+
+    Arguments:
+        notebook (str): Name of the notebook
+
+    Returns:
+        bool: Whether the notebook is stripped out.
+    """
+
+    with open(notebook, 'r') as f:
+        nb = nbformat.read(f, as_version=4)
+
+    for cell in nb.cells:
+        if hasattr(cell, 'outputs') and cell.outputs:
+            return False
+
+    return True
+
+# Get list of unstripped notebooks
+# --------------------------------
+
+unclear_notebooks = [
+    notebook for notebook in notebooks if notebook_is_clear(notebook) is False
+]
+
+
+# Raise execption if there are unstripped notebooks
+# -------------------------------------------------
+
+if len(unclear_notebooks) > 0:
+    print("Unclear notebooks:")
+    for notebook in unclear_notebooks:
+        print(notebook)
+    sys.exit(1)
+else:
+    print("All notebooks are clear")

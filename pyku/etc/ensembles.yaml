@@ -1,0 +1,941 @@
+---
+
+# DWD CMIP5 Reference Ensemble
+# ----------------------------
+#
+# References:
+# - https://www.dwd.de/DE/leistungen/klimaprojektionen/referenz-ensemble_tabelle.html
+# - https://www.dwd.de/DE/forschung/klima_umwelt/klimaprojektionen/fuer_deutschland/fuer_dtsl_rcp-datensatz_node.html
+
+dwd_cmip5_reference:
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: IPSL-IPSL-CM5A-MR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: IPSL-IPSL-CM5A-MR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: IPSL-IPSL-CM5A-MR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: CLMcom-BTU-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1a
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1a
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1a
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: SMHI-RCA4
+    rcm_version_id: v1a
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+
+# DWD CMIP5 Core Ensemble
+# ----------------------------
+#
+# References:
+# - https://www.dwd.de/DE/forschung/klima_umwelt/klimaprojektionen/fuer_deutschland/fuer_dtsl_rcp-datensatz_node.html
+
+dwd_cmip5_core:
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: CCCma-CanESM2
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r12i1p1
+    driving_model_id: ICHEC-EC-EARTH
+    model_id: SMHI-RCA4
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MIROC-MIROC5
+    model_id: GERICS-REMO2015
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: KNMI-RACMO22E
+    rcm_version_id: v2
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MOHC-HadGEM2-ES
+    model_id: CLMcom-CCLM4-8-17
+    rcm_version_id: v1
+  - driving_experiment_name: rcp26
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: rcp45
+    driving_model_ensemble_member: r2i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: MPI-CSC-REMO2009
+    rcm_version_id: v1
+  - driving_experiment_name: historical
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+  - driving_experiment_name: rcp85
+    driving_model_ensemble_member: r1i1p1
+    driving_model_id: MPI-M-MPI-ESM-LR
+    model_id: UHOH-WRF361H
+    rcm_version_id: v1
+
+# DWD CMIP6 Reference Ensemble
+# ----------------------------
+#
+# References:
+# - tbd
+
+dwd_cmip6_reference:
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: CLMcom-DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: CLMcom-KIT
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: KNMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: CLMcom-Hereon
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: KNMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CLMcom-BTU
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: KNMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CNRM-MF
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: CNRM-ALADIN64E1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: KNMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: HCLIMcom-DMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: KNMI
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: GERICS
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: GERICS
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: GERICS
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: CLMcom-DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: CLMcom-KIT
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: KNMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: CLMcom-GERICS
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: KNMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CLMcom-BTU
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f2
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: KNMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f2
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CNRM-MF
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f2
+    source_id: CNRM-ALADIN64E1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: KNMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f2
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: HCLIMcom-DMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: KNMI
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+#  - driving_source_id: EC-Earth3-Veg
+#    institution_id: GERICS
+#    driving_experiment_id: ssp126
+#    driving_variant_label: r1i1p1f1
+#    source_id: REMO2020-2-2
+#    version_realization: v1-r1
+#  - driving_source_id: MIROC6
+#    institution_id: GERICS
+#    driving_experiment_id: ssp126
+#    driving_variant_label: r1i1p1f1
+#    source_id: REMO2020-2-2
+#    version_realization: v1-r1
+#  - driving_source_id: MPI-ESM1-2-HR
+#    institution_id: GERICS
+#    driving_experiment_id: ssp126
+#    driving_variant_label: r1i1p1f1
+#    source_id: REMO2020-2-2
+#    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f2
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: DWD
+    driving_experiment_id: ssp126
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: CLMcom-DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: CLMcom-KIT
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: KNMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: CLMcom-GERICS
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: KNMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CLMcom-BTU
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f2
+    source_id: ICON-CLM-202407-1-1
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: KNMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f2
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: CNRM-MF
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f2
+    source_id: CNRM-ALADIN64E1
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: HCLIMcom-SMHI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: KNMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f2
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: HCLIMcom-DMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: HCLIM43-ALADIN
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: KNMI
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: RACMO23E
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: GERICS
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: GERICS
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: GERICS
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: REMO2020-2-2
+    version_realization: v1-r1
+  - driving_source_id: CNRM-ESM2-1
+    institution_id: DWD
+    driving_experiment_id: historical
+    driving_variant_label: r1i1p1f2
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: EC-Earth3-Veg
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: IPSL-CM6A-LR
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MIROC6
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: MPI-ESM1-2-HR
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1
+  - driving_source_id: NorESM2-MM
+    institution_id: DWD
+    driving_experiment_id: ssp370
+    driving_variant_label: r1i1p1f1
+    source_id: EPISODES-2025
+    version_realization: v1-r1

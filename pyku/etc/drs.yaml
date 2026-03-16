@@ -1,0 +1,969 @@
+---
+
+standards:
+
+    cmip6:
+
+        # References
+        # ----------
+
+        # https://wcrp-cmip.github.io/WGCM_Infrastructure_Panel/Papers/
+        # CMIP6_global_attributes_filenames_CVs_v6.2.7.pdf
+
+        metadata:
+            - variable_id
+            - table_id
+            - source_id
+            - experiment_id
+            - member_id
+            - grid_label
+            - mip_era
+            - activity_id
+            - institution_id
+
+        stem_pattern:
+            "{variable_id}_{table_id}_{source_id}_{experiment_id}_{member_id}_\
+            {grid_label}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{mip_era}/{activity_id}/{institution_id}/{source_id}/\
+             {experiment_id}/{member_id}/{table_id}/{variable_id}/\
+             {grid_label}/"
+
+    cmip5:
+
+        # References
+        # ----------
+
+        # https://pcmdi.llnl.gov/mips/cmip5/
+        # CMIP5_output_metadata_requirements.pdf
+
+        metadata:
+            - MIP_table
+            - model
+            - experiment
+            - ensemble_member
+            - activity
+            - product
+            - institute
+            - frequency
+            - modeling_realm
+
+        stem_pattern:
+            "{variable_name}_{MIP_table}_{model}_{experiment}_\
+             {ensemble_member}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{activity}/{product}/{institute}/{model}/{experiment}/\
+             {frequency}/{modeling_realm}/{variable_name}/{ensemble_member}"
+
+    cordex:
+
+        # References
+        # ----------
+
+        # http://is-enes-data.github.io/
+        # http://is-enes-data.github.io/cordex_archive_specifications.pdf
+        # http://is-enes-data.github.io/CORDEX_variables_requirement_table.pdf
+
+        # The stem/parent wording stems from the pathlib library
+        # https://docs.python.org/3/library/pathlib.html
+
+        metadata:
+            - CORDEX_domain
+            - driving_model_id
+            - driving_experiment_name
+            - driving_model_ensemble_member
+            - model_id
+            - rcm_version_id
+            - frequency
+            - product
+            - institute_id
+            - experiment_id
+
+        stem_pattern:
+            "{variable_name}_{CORDEX_domain}_{driving_model_id}_\
+             {driving_experiment_name}_{driving_model_ensemble_member}_\
+             {model_id}_{rcm_version_id}_{frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{product}/{CORDEX_domain}/{institute_id}/{driving_model_id}/\
+             {driving_experiment_name}/{driving_model_ensemble_member}/{model_id}/\
+             {rcm_version_id}/{frequency}/{variable_name}"
+
+
+    cordex_adjust:
+
+        # References
+        # ----------
+
+        # https://github.com/IS-ENES-Data/IS-ENES-Data.github.io/blob/master/
+        # CORDEX_adjust_drs.pdf
+        # Adapted for CORDEX-CMIP6
+
+        metadata:
+            - variable_id
+            - project_id
+            - activity_id
+            - domain_id
+            - institution_id
+            - driving_source_id
+            - driving_experiment_id
+            - driving_variant_label
+            - source_id
+            - version_realization
+            - frequency
+            - bc_method_id
+            - bc_observation_id
+            - bc_period
+            - bc_info
+            - frequency
+            - start_time
+            - end_time
+
+        stem_pattern:
+            "{variable_id}_{domain_id}_{driving_source_id}_{driving_experiment_id}_\
+	     {driving_variant_label}_{institution_id}_{source_id}_\
+	     {version_realization}_{bc_method_id}_\
+             {frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{project_id}/{activity_id}/{domain_id}/{institution_id}/\
+	     {driving_source_id}/{driving_experiment_id}/\
+	     {driving_variant_label}/{source_id}/{version_realization}/\
+	     {bc_method_id}/{frequency}/{variable_id}/"
+
+    cordex_interp:
+
+        # References
+        # ----------
+
+        # No existing reference, loosely based on:
+        # https://github.com/IS-ENES-Data/IS-ENES-Data.github.io/blob/master/
+        # CORDEX_adjust_drs.pdf
+        # Adapted for CORDEX-CMIP6
+
+        metadata:
+            - variable_id
+            - project_id
+            - activity_id
+            - domain_id
+            - institution_id
+            - driving_source_id
+            - driving_experiment_id
+            - driving_variant_label
+            - source_id
+            - version_realization
+            - frequency
+            - bc_method_id
+            - bc_observation_id
+            - bc_period
+            - interp_method_id
+            - interp_observation_id
+            - interp_period
+            - interp_info
+            - frequency
+            - start_time
+            - end_time
+
+        stem_pattern:
+            "{variable_id}_{domain_id}_{driving_source_id}_{driving_experiment_id}_\
+	     {driving_variant_label}_{institution_id}_{source_id}_\
+	     {version_realization}_{interp_method_id}_\
+             {frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{project_id}/{activity_id}/{domain_id}/{institution_id}/\
+	     {driving_source_id}/{driving_experiment_id}/\
+	     {driving_variant_label}/{source_id}/{version_realization}/\
+	     {interp_method_id}/{frequency}/{variable_id}/"
+
+    cordex_adjust_interp:
+
+        # Adapted for CORDEX-CMIP6
+
+        metadata:
+            - variable_id
+            - project_id
+            - activity_id
+            - domain_id
+            - institution_id
+            - driving_source_id
+            - driving_experiment_id
+            - driving_variant_label
+            - source_id
+            - version_realization
+            - frequency
+            - bc_method_id
+            - bc_observation_id
+            - bc_period
+            - bc_info
+            - interp_method_id
+            - interp_observation_id
+            - interp_period
+            - interp_info
+            - bc_interp_method_id
+            - bc_interp_observation_id
+            - bc_interp_period
+            - bc_interp_info
+            - frequency
+            - start_time
+            - end_time
+
+        stem_pattern:
+            "{variable_id}_{domain_id}_{driving_source_id}_{driving_experiment_id}_\
+	     {driving_variant_label}_{institution_id}_{source_id}_\
+	     {version_realization}_{bc_interp_method_id}_\
+             {frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{project_id}/{activity_id}/{domain_id}/{institution_id}/\
+	     {driving_source_id}/{driving_experiment_id}/\
+	     {driving_variant_label}/{source_id}/{version_realization}/\
+	     {bc_interp_method_id}/{frequency}/{variable_id}/"
+
+    cordex_cmip6:
+
+        # References
+        # ----------
+
+        # https://zenodo.org/records/15047096
+        # CORDEX-CMIP6_archiving_specifications_20250321.pdf
+        # https://github.com/WCRP-CORDEX/archive-specifications
+
+        metadata:
+            - project_id
+            - activity_id
+            - domain_id
+            - institution_id
+            - driving_source_id
+            - driving_experiment_id
+            - driving_variant_label
+            - source_id
+            - version_realization
+            - frequency
+            - variable_id
+
+        stem_pattern:
+            "{variable_id}_{domain_id}_{driving_source_id}_{driving_experiment_id}_\
+	     {driving_variant_label}_{institution_id}_{source_id}_\
+	     {version_realization}_{frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{project_id}/{activity_id}/{domain_id}/{institution_id}/\
+	     {driving_source_id}/{driving_experiment_id}/\
+	     {driving_variant_label}/{source_id}/{version_realization}/\
+	     {frequency}/{variable_id}/"
+
+    hyras:
+
+        metadata: []
+
+        stem_pattern: "{variable_name}_hyras_{resolution}_{yyyy}_{hyr_version}"
+
+        parent_pattern: "{product}/{variable_name}/{hyr_version}/{hyr_res}/"
+
+    sk_raw:
+
+        metadata: []
+
+        stem_pattern:
+            "{variable_name}_{domain_id}_{driving_model_id}_\
+             {driving_experiment_name}_{driving_model_ensemble_member}_\
+             {model_id}_{rcm_version_id}_{frequency}_{rest}"
+
+        parent_pattern: null
+
+    sk_cmor:
+
+        metadata:
+            - product
+            - domain_id
+            - model_id
+            - rcm_version_id
+            - driving_model_id
+            - driving_experiment_name
+            - driving_model_ensemble_member
+            - input_institute_id
+            - experiment_id
+            - frequency
+            - bc_method_id
+            - bc_observation_id
+            - bc_period
+            - bc_info
+            - interp_method_id
+            - interp_observation_id
+            - interp_period
+            - interp_info
+            - bc_interp_method_id
+            - bc_interp_observation_id
+            - bc_interp_period
+            - bc_interp_info
+
+        stem_pattern:
+            "{variable_name}_{domain_id}_{driving_model_id}_\
+             {driving_experiment_name}_{driving_model_ensemble_member}_\
+             {model_id}_{rcm_version_id}-{bc_interp_method_id}_\
+             {bc_adjust_method_id}_{frequency}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{product}/{domain_id}/{input_institute_id}/{driving_model_id}/\
+             {experiment_id}/{driving_model_ensemble_member}/{model_id}/\
+             {bc_interp_info}/{frequency}/{variable_name}"
+
+    reanalysis:
+
+        #      This format is based upon ERA5 data in DWD MAVIS
+        #
+        #      Exemplary file name is
+        #        /path/to/reanalysis/reanalysis/ECMWF/IFS/ERA5/day/atmos/\
+        #        tas/r1i1p1/tas_day_reanalysis_ERA5_r1i1p1_20100101-20101231.nc
+        #
+        #      Exemplary attributes are
+        #          institute_id = ECMWF
+        #          experiment_id = ERA5
+        #          model_id = IFS
+        #          product = reanalysis
+        #          frequency = day
+        #          modeling_realm = atmos
+
+        metadata:
+            - institute_id
+            - experiment_id
+            - model_id
+            - product
+            - frequency
+            - modeling_realm
+            - ensemble_member_id
+
+        stem_pattern:
+            "{variable_name}_{frequency}_{product}_{experiment_id}_\
+             {ensemble_member_id}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "reanalysis/reanalysis/{institute_id}/{model_id}/{experiment_id}/\
+             {frequency}/{modeling_realm}/{variable_name}/\
+             {ensemble_member_id}/"
+
+    cosmo-rea6:
+
+        metadata: []
+
+        stem_pattern:
+            "{variable_name}_{frequency}_reanalysis_COSMO-REA6_r1i1p1_{rest}"
+
+        parent_pattern: null
+
+    eobs:
+
+        metadata: []
+
+        stem_pattern: "{variable_name}_EOBS-0.1deg_v27.0e_{version}_{rest}"
+
+        parent_pattern: null
+
+    obs4mips:
+
+        # References
+        # ----------
+
+        # https://pcmdi.github.io/obs4MIPs/dataStandards.html
+
+        metadata:
+            - variable_id
+            - frequency
+            - source_id
+            - variant_label
+            - grid_label
+            - activity_id
+            - institution_id
+            - source_id
+            - frequency
+            - variable_id
+            - grid_label
+            - version
+
+        stem_pattern:
+            "{variable_id}_{frequency}_{source_id}_{variant_label}_\
+             {grid_label}_{start_time}-{end_time}"
+
+        parent_pattern:
+            "{activity_id}/{institution_id}/{source_id}/{frequency}\
+             /{variable_id}/{grid_label}/{version}"
+
+    seamless:
+
+        # This file pattern is and ad-hoc construction mimicking the CMOR
+        # standard for DWD seamless. Ensemble member (e.g. r1i1p1) seems to be
+        # missing from the files metadata
+
+        metadata:
+            - institute_id  # DWD
+            - experiment_id  # seas200001
+            - model_id  # GCFS1
+            - product  # hindcast
+            - modeling_realm  # atmos
+            - frequency  # day
+            - ensemble_member  # r1i1p1
+
+        # Exemplary file
+        # --------------
+
+        # tas_day_GCFS1_seas200001_r1i1p1_2000010100-2000063018.nc
+
+        stem_pattern: "{variable_id}_{frequency}_{model_id}_{experiment_id}_\
+                       {ensemble_member}_{start_time}-{end_time}"
+
+        # Exemplary directory
+        # -------------------
+
+        # /path/to/projectdata/seasonalfc/hindcasts/DWD/GCFS1/seas200001/\
+        # day/atmos/tas/r1i1p1/
+
+        parent_pattern: "{product}/{institute_id}/{model_id}/\
+                         {experiment_id}/{frequency}/{modeling_realm}/\
+                         {variable_id}/{ensemble_member}"
+
+
+coordinates:
+
+    time:
+        attrs:
+            standard_name: "time"
+            long_name: "time"
+            axis: "T"
+            # units: set in the encoding field `ds.time.encoding`
+            # calendar: Set automatically from ds.time.dt.calendar
+        encoding:
+            dtype: 'float64'
+            _FillValue: null
+            units: 'days since 1949-12-01T00:00:00Z'
+        aliases: []
+
+    lat:
+        attrs:
+            standard_name: 'latitude'
+            long_name: 'latitude'
+            units: 'degrees_north'
+        aliases:
+            - 'lats'
+            - 'latitude'
+            - 'latitudes'
+            - 'LAT'
+            - 'LATS'
+            - 'LATITUDE'
+            - 'LATITUDES'
+
+    lon:
+        attrs:
+            standard_name: 'longitude'
+            long_name: 'longitude'
+            units: 'degrees_east'
+        aliases:
+            - 'lons'
+            - 'longitude'
+            - 'longitudes'
+            - 'LON'
+            - 'LONS'
+            - 'LONGITUDE'
+            - 'LONGITUDES'
+
+    y:
+        attrs:
+            long_name: 'y coordinate of projection'
+            standard_name: 'projection_y_coordinate'
+            units: 'm'
+        aliases:
+            - 'Y'
+
+    x:
+        attrs:
+            long_name: 'x coordinate of projection'
+            standard_name: 'projection_x_coordinate'
+            units: 'm'
+        aliases:
+            - 'X'
+
+    rlat:
+        attrs:
+            standard_name: 'grid_latitude'
+            long_name: 'latitude in rotated pole grid'
+            units: 'degrees'
+            axis: 'Y'
+        aliases:
+            - 'RLAT'
+
+    rlon:
+        attrs:
+            standard_name: 'grid_longitude'
+            long_name: 'longitude in rotated pole grid'
+            units: 'degrees'
+            axis: 'X'
+        aliases:
+            - 'RLON'
+
+variables:
+
+    tos:
+        long_name: Sea Surface Temperature
+        standard_name: sea_surface_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - sst  # GRIB 34
+            - sea_surface_temperature  # CDS
+
+    ta:
+        long_name: Air Temperature
+        standard_name: air_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - t  # GRIB 130
+            # - temperature  # CDS would conflict with HOSTRADA below
+
+    tas:
+        long_name: Near-Surface Air Temperature
+        standard_name: air_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - t2m  # GRIB 167
+            - 2m_temperature  # CDS
+            - T_2M  # COSMO CLM
+            - tasAdjustInterp  # SK CORDEX adjusted and interpolated
+            - temperature  # HOSTRADA
+
+    tasmax:
+        long_name: Daily Maximum Near-Surface Air Temperature
+        standard_name: air_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - mx2t  # GRIB 201
+            - maximum_2m_temperature_since_previous_post_processing  # CDS
+            - TMAX_2M  # CLM
+            - tmax  # HYRAS
+            - tasmaxAdjustInterp  # SK CORDEX adjusted and interpolated
+
+    tasmin:
+        long_name: Daily Minimum Near-Surface Air Temperature
+        standard_name: air_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - mn2t  # GRIB 202
+            - minimum_2m_temperature_since_previous_post_processing  # CDS
+            - TMIN_2M  # CLM
+            - tmin  # HYRAS
+            - tasminAdjustInterp  # SK CORDEX adjusted and interpolated
+
+    ts:
+        long_name: Surface Temperature
+        standard_name: surface_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - T_S  # COSMO CLM
+
+    tdps:
+        long_name: Near-Surface Dewpoint Temperature
+        standard_name: dewpoint_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [-1000, 1000]
+        other_names:
+            - d2m  # GRIB 168
+            - 2m_dewpoint_temperature  # CDS
+
+    tdew:
+        comment: tdew is not defined in the CMOR standard
+        long_name: Daily Mean Dew-point Temperature
+        standard_name: dew_point_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - dewpoint  # HOSTRADA
+            - tdewAdjustInterp  # SK CORDEX adjusted and interpolated
+
+    cclm-td-2m:
+        comment: Variable without CORDEX standard
+        long_name: 2m Dew Point Temperature
+        standard_name: dew_point_temperature
+        units: kelvins
+        cmor_units: 'K'
+        valid_bounds: [50, 500]
+        other_names:
+            - TD_2M  # COSMO-CLM
+
+    hur:
+        long_name: Relative Humidity
+        standard_name: relative_humidity
+        units: percent
+        cmor_units: '%'
+        valid_bounds: [0, 100]
+        other_names:
+            - r  # GRIB 157
+            - humidity  # CDS
+
+    hurs:
+        long_name: Near-Surface Relative Humidity
+        standard_name: relative_humidity
+        units: percent
+        cmor_units: '%'
+        valid_bounds: [0, 100]
+        other_names:
+            - humidity  # HOSTRADA
+            - hursAdjustInterp  # SK CORDEX adjusted and interpolated
+
+    pr:
+        long_name: Precipitation
+        standard_name: precipitation_flux
+        units: kg m^-2 s^-1
+        cmor_units: 'kg m-2 s-1'
+        valid_bounds: [0, 0.3]
+        other_names:
+            - tp  # GRIB 228
+            - avg_tprate  # CDS averaged
+            - TOT_PREC  # CLM
+            - prAdjustInterp  # SK CORDEX adjusted-interpolated
+            - RR  # RADKLIM
+            - precipitation_flux
+
+    rsds:
+        long_name: Surface Downwelling Shortwave Radiation
+        standard_name: surface_downwelling_shortwave_flux_in_air
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-3000, 3000]
+        other_names:
+            - ssrd  # GRIB 169
+            - surface_solar_radiation_downwards  # CDS
+            - rsdsAdjustInterp  # CORDEX adjusted-interpolated
+            - ASWD_S  # COSMO-CLM
+            - SIS  # HR HOSTRADA
+
+    sfcWind:
+        long_name: Near-Surface Wind Speed
+        standard_name: wind_speed
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [0, 100]
+        other_names:
+            - sfcWindAdjustInterp  # SK CORDEX adjusted and interpolated
+            - FF  # HR HOSTRADA
+            - SP_10M  # COSMO-CLM
+
+    psl:
+        long_name: Sea Level Pressure
+        standard_name: air_pressure_at_sea_level
+        units: Pa
+        cmor_units: Pa
+        valid_bounds: [60000, 120000]
+        other_names:
+            - msl  # GRIB 151
+            - mean_sea_level_pressure  # CDS
+            - pslAdjustInterp  # SK CORDEX adjusted and interpolated
+            - SLP  # HR HOSTRADA
+            - PMSL  # COSMO-CLM
+
+    ps:
+        long_name: Surface Air Pressure
+        standard_name: surface_air_pressure
+        units: Pa
+        cmor_units: Pa
+        valid_bounds: [60000, 120000]
+        other_names:
+            - sp  # GRIB 134
+            - surface_pressure  # CDS
+            - psAdjustInterp  # SK CORDEX adjusted-interpolated
+            - air_pressure  # HR HOSTRADA
+
+    huss:
+        long_name: Near-Surface Specific Humidity
+        standard_name: specific_humidity
+        units: dimensionless
+        cmor_units: '1'
+        valid_bounds: [0, 1]
+        other_names:
+            - hussAdjustInterp  # SK CORDEX adjusted and interpolated
+            - QV_2M  # COSMO-CLM
+
+    mixr:
+        comment: >
+            humrs is not defined in the CMOR standard see GRIB2 - TABLE 4.2-0-1
+            number 02 Humidity mixing ratio of a parcel of moist air is the
+            ratio of the mass of water vapor to the mass of dry air.
+        long_name: Near-Surface Water Vapor Mixing Ratio
+        standard_name: humidity_mixing_ratio
+        units: dimensionless
+        cmor_units: '1'
+        valid_bounds: [0, 1]
+        other_names:
+            - vapor  # HR HOSTRADA
+
+    clt:
+        comment: >
+            Cloud fraction is defined as a percentage of covered area not in
+            "Octas" like station observations
+        long_name: Total Cloud Fraction
+        standard_name: cloud_area_fraction
+        units: percent
+        cmor_units: '%'
+        valid_bounds: [0, 100]
+        other_names:
+            - tcc  # GRIB 164
+            - total_cloud_cover  # CDS
+            - CF  # HR HOSTRADA
+
+    cclm-clct:
+        comment: Variable without CORDEX standard
+        long_name: Total Cloud Cover
+        standard_name: cloud_area_fraction
+        units: percent
+        cmor_units: '%'
+        valid_bounds: [0, 100]
+        other_names:
+            - CLCT  # COSMO-CLM
+
+    ssr:
+        long_name: Surface Net Solar Radiation
+        standard_name: surface_net_solar_radiatio
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-100000, 100000]
+        other_names:
+            - ssr  # GRIB 176
+            - surface_net_solar_radiation  # CDS
+
+    rlut:
+        long_name: Top net thermal radiation
+        standard_name: toa_outgoing_longwave_flux
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-100000, 100000]
+        other_names:
+            - ttr  # GRIB 179
+            - top_net_thermal_radiation  # CDS
+
+    rlds:
+        long_name: Surface Downwelling Longwave Radiation
+        standard_name: surface_downwelling_longwave_flux_in_air
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-3000, 3000]
+        other_names:
+            - strd  # GRIB 175
+            - surface_thermal_radiation_downwards  # CDS
+            - SDL  # HOSTRADA
+            - ALWD_S  # COSMO-CLM
+
+    rlus:
+        long_name: Surface Upwelling Longwave Radiation
+        standard_name: surface_upwelling_longwave_flux_in_air
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-3000, 3000]
+        other_names:
+            - SOL  # HOSTRADA
+            - ALWU_S  # COSMO-CLM
+
+    sd:
+        comment: Unit to clarify
+        long_name: Snow depth
+        standard_name: snow_depth
+        units: 'm of water equivalen'
+        cmor_units: 'm of water equivalent'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - sd  # GRIB 141
+            - snow_depth  # CDS
+
+    snd:
+        long_name: Snow Depth
+        standard_name: surface_snow_thickness
+        units: m
+        cmor_units: 'm'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - H_SNOW  # COSMO-CLM
+
+    va:
+        long_name: Northward Wind
+        standard_name: northward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - v  # GRIB 132
+            - v_component_of_wind  # CDS
+
+    vas:
+        long_name: Northward Near-Surface Wind
+        standard_name: northward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - v10  # GRIB 166
+            - 10m_v_component_of_wind  # CDS
+            - V_10M  # COSMO-CLM
+
+    ua:
+        long_name: Eastward Wind
+        standard_name: eastward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - u  # GRIB 131
+            - u_component_of_wind  # CDS
+
+    uas:
+        long_name: Eastward Near-Surface Wind
+        standard_name: eastward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - u10  # GRIB 165
+            - 10m_u_component_of_wind  # CDS
+            - U_10M  # COSMO-CLM
+
+    va850:
+        long_name: Northward Wind
+        standard_name: northward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - V850p  # COSMO-CLM
+
+    ua850:
+        long_name: Eastward Wind
+        standard_name: eastward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - U850p  # COSMO-CLM
+
+    va100m:
+        long_name: Northward Wind at 100m
+        standard_name: northward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - V100z  # COSMO-CLM
+
+    ua100m:
+        long_name: Eastward Wind at 100m
+        standard_name: eastward_wind
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - U100z  # COSMO-CLM
+
+    sfcWindmax:
+        long_name: Daily Maximum Near-Surface Wind Speed
+        standard_name: wind_speed
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - VABSMX_10M  # COSMO-CLM
+
+    snc:
+        long_name: Snow Area Fraction
+        standard_name: surface_snow_area_fraction
+        units: percent
+        cmor_units: '%'
+        valid_bounds: [0, 100]
+        other_names:
+            - FR_SNOW  # COSMO-CLM
+
+    wsgsmax:
+        long_name: Maximum Near-Surface Wind Speed of Gust
+        standard_name: wind_speed_of_gust
+        units: m s^-1
+        cmor_units: 'm s-1'
+        valid_bounds: [-1E-6, 1E+6]
+        other_names:
+            - VMAX_10M  # COSMO-CLM
+
+    cclm-athb-s:
+        comment: Variable without CORDEX standard
+        long_name: Averaged Surface Net Downward Longwave Radiation
+        standard_name: surface_net_downward_longwave_flux
+        units: W m^-2
+        cmor_units: 'W m-2'
+        valid_bounds: [-3000, 3000]
+        other_names:
+            - ATHB_S  # COSMO-CLM
+
+    sfcWind_direction:
+        comment: Variable without CORDEX standard
+        long_name: Near-Surface Wind Direction
+        standard_name: wind_direction
+        units: degree
+        cmor_units: 'degree'
+        other_names:
+            - DD  # HR HOSTRADA
+
+    uhi:
+        comment: Variable without CORDEX standard
+        long_name: Canopy Urban Heat Island Intensity
+        standard_name: canopy_urban_heat_island_intensity
+        units: kelvins
+        cmor_units: 'K'
+        other_names:
+            - urbanheatisland  # HR HOSTRADA
+
+    zg:
+        comment: Not referenced.
+        long_name: Geopotential Height
+        standard_name: geopotential_height
+        units: m^2 s^-2
+        cmor_units: m2 s-2
+        other_names:
+            - z  # GRIB 129
+            - geopotential  # CDS
+
+    pevpr:
+        comment: Not referenced
+        long_name: Mean potential evaporation rate
+        standard_name: mean_potential_evaporation_rate
+        units: kg m^-2 s^-1
+        cmor_units: kg m-2 s-1
+        other_names:
+            - mper  # GRIB 70
+            - mean_potential_evaporation_rate  # CDS
+
+    evspsbl:
+        comment: "Unit is 'm of water equivalent'"
+        long_name: Evaporation
+        standard_name: water_evaporation
+        units: m
+        cmor_units: m
+        other_names:
+            - e  # GRIB 182
+            - evaporation  # CDS
+
+    sic:
+        comment: No comment
+        long_name: Sea Ice Cover
+        standard_name: sea_ice_cover
+        units: dimensionless
+        cmor_units: 1
+        other_names:
+            - ci  # GRIB 31
+            - sea_ice_cover  # CDS
