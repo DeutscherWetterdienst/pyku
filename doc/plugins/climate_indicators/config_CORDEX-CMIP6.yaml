@@ -1,0 +1,21 @@
+---
+
+root_dir: /path/to/CORDEX-CMIP6/
+standard: cordex_cmip6
+facets:
+  project_id: CORDEX-CMIP6
+  activity_id: DD
+  domain_id: EUR-12
+  institution_id: CLMcom-DWD
+  driving_source_id: MPI-ESM1-2-HR
+  driving_variant_label: r1i1p1f1
+  driving_experiment_id:
+    - historical
+    - ssp370
+  source_id: ICON-CLM-202407-1-1
+  version_realization: v1-r1
+  frequency: day
+  version: v20240920
+  variable_name:
+    - tasmax
+    - tasmin

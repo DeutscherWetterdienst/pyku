@@ -1,0 +1,518 @@
+# base colors for difference climate parameters and indicators
+
+---
+
+temp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#30123b"
+    - "#4145ab"
+    - "#4675ed"
+    - "#39a2fc"
+    - "#1bcfd4"
+    - "#24eca6"
+    - "#a4fc3b"
+    - "#d1e834"
+    - "#eeca39"
+    - "#faa730"
+    - "#f77b1f"
+    - "#e7500e"
+    - "#cd2f04"
+    - "#a91501"
+    - "#7a0402"
+
+temp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#053061"
+    - "#60A3CB"
+    - "#EBEBEB"
+    - "#DB7969"
+    - "#67001F"
+
+temp_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#87CEEB"
+
+temp_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#2171B5"
+    - "#F03C2B"
+
+temp_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#97BED8"
+    - "#B8B8B8"
+    - "#DF9589"
+
+temp_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#DAE9F1"
+    - "#97BED8"
+    - "#579ac1"
+    - "#306396"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#F1DADD"
+    - "#DF9589"
+    - "#BE5A56"
+    - "#982F3B"
+
+precip_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FFF9C4"
+    - "#9EDAB0"
+    - "#5D91B0"
+    - "#024FED"
+    - "#543C58"
+
+precip_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#543005"
+    - "#C8944E"
+    - "#EBEBEB"
+    - "#55A7A0"
+    - "#003C30"
+
+precip_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#6495ed"
+
+precip_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#dc974c"
+    - "#41a88b"
+
+precipKV_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#543005"
+    - "#CFA154"
+    - "#EBEBEB"
+    - "#63A6CD"
+    - "#053061"
+
+precipKV_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#DAB98B"
+    - "#B8B8B8"
+    - "#92C2DD"
+
+precipKV_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#E5D9C8"
+    - "#DAB98B"
+    - "#B57726"
+    - "#815318"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#D9E9F3"
+    - "#92C2DD"
+    - "#5296C7"
+    - "#1f62a7"
+
+sun_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#ffffc4"
+    - "#ffe016"
+    - "#f98000"
+    - "#b50014"
+
+sun_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#453c4c"
+    - "#74657f"
+    - "#EBEBEB"
+    - "#d7c42d"
+    - "#be6200"
+
+sun_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FFD700"
+
+sun_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#C0C0C0"
+    - "#FFC41D"
+
+sun_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#E6E3E8"
+    - "#B9B0BF"
+    - "#8E7E9A"
+    - "#65586F"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#F5F1D6"
+    - "#E8DD87"
+    - "#E8B130"
+    - "#C76700"
+
+radg_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FEF0CC"
+    - "#EFC88D"
+    - "#E39D4E"
+    - "#D46E00"
+    - "#B04320"
+    - "#7F1F2D"
+    - "#47001A"
+
+radg_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#3F3F3F"
+    - "#727272"
+    - "#EBEBEB"
+    - "#CFCF00"
+    - "#9A8401"
+
+dayscold_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#eaf9fc"
+    - "#bfd3e6"
+    - "#8c96c6"
+    - "#6a51a3"
+    - "#3f007d"
+
+dayscold_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#A50026"
+    - "#F5A454"
+    - "#EBEBEB"
+    - "#72BBDB"
+    - "#313695"
+
+dayscold_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#F2B57D"
+    - "#B8B8B8"
+    - "#90C6DF"
+
+dayscold_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#F8E5D3"
+    - "#F2B57D"
+    - "#D76642"
+    - "#B21528"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#DBEAF0"
+    - "#90C6DF"
+    - "#5989C0"
+    - "#313695"
+
+dayscold_ice_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#6A51A3"
+
+dayscold_ice_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#856FB8"
+    - "#544081"
+
+dayscold_frost_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#BFD3E6"
+
+dayscold_frost_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#E4ECF4"
+    - "#9ABAD8"
+
+dayswarm_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FFFFCC"
+    - "#FED976"
+    - "#FD8D3C"
+    - "#E31A1C"
+    - "#800026"
+
+dayswarm_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#313695"
+    - "#72BBDB"
+    - "#EBEBEB"
+    - "#F5A454"
+    - "#A50026"
+
+dayswarm_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#90C6DF"
+    - "#B8B8B8"
+    - "#F2B57D"
+
+dayswarm_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#DBEAF0"
+    - "#90C6DF"
+    - "#5989C0"
+    - "#313695"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#F8E5D3"
+    - "#F2B57D"
+    - "#D76642"
+    - "#B21528"
+
+dayswarm_summer_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FD8D3C"
+
+dayswarm_summer_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FEAB6E"
+    - "#FC6F0A"
+
+dayswarm_hot_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#E31A1C"
+
+dayswarm_hot_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#EA4648"
+    - "#B51516"
+
+dayswarm_tropical_anp_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FED976"
+
+dayswarm_tropical_anp_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FEE7A9"
+    - "#FECB43"
+
+pressure_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#321954"
+    - "#8274AC"
+    - "#E7E8F1"
+    - "#F8C379"
+    - "#954814"
+
+pressure_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#540F60"
+    - "#AD8ABC"
+    - "#EBEBEB"
+    - "#93C891"
+    - "#00441B"
+
+relhum_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FAFAD2"
+    - "#D2F0B4"
+    - "#96DC4B"
+    - "#4B964B"
+    - "#006D2C"
+
+relhum_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#005182"
+    - "#6dbcea"
+    - "#EBEBEB"
+    - "#f29ba8"
+    - "#80253A"
+
+HZ_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FF96FF"
+    - "#9C0075"
+    - "#4B0096"
+    - "#0000FF"
+    - "#000096"
+    - "#006300"
+
+HZ_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#73B2FF"
+    - "#EBEBEB"
+    - "#FFB0B0"
+    - "#FF6363"
+    - "#FF0000"
+    - "#B00000"
+
+WHZ_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#78a3e3"
+    - "#53d8fc"
+    - "#007a00"
+    - "#00c900"
+    - "#7bff00"
+    - "#bcff70"
+    - "#fdff87"
+    - "#fed400"
+    - "#feb200"
+    - "#eca713"
+    - "#d87529"
+    - "#c0513c"
+    - "#aa4646"
+
+WHZ_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#003CFF"
+    - "#0070ff"
+    - "#73b2ff"
+    - "#bed2ff"
+    - "#ebebeb"
+    - "#ffc8c8"
+    - "#ff9696"
+    - "#ff6464"
+    - "#ff0000"
+    - "#960000"
+    - "#630000"
+
+KV_skill:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#8E0152"
+    - "#C51B7C"
+    - "#DE77AD"
+    - "#F0B6DA"
+    - "#FDE0EF"
+    - "#E6F5D0"
+    - "#B8E085"
+    - "#7FBB41"
+    - "#4D9220"
+    - "#276302"
+
+snow_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#ffffff"
+    - "#D9D8F2"
+    - "#A188E5"
+    - "#6F3BAC"
+    - "#441A67"
+
+snow_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#2D7302"
+    - "#72A156"
+    - "#B9D0AA"
+    - "#EBEBEB"
+    - "#BBADCD"
+    - "#785C9C"
+    - "#350B6B"
+
+wind_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#6f3f0e"
+    - "#EE965D"
+    - "#EBEBEB"
+    - "#8789B9"
+    - "#29356f"
+
+wind_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#F7FCFF"
+    - "#ACBEE6"
+    - "#8B7FCF"
+    - "#6A3F99"
+    - "#4A0059"

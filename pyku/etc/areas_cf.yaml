@@ -1,0 +1,418 @@
+---
+# This file extends the area definitions defined in areas.yaml with a key for
+# CF conform area definitions.
+
+EUR-44:
+    crs_name: rotated_pole
+    crs_data:
+        grid_mapping_name: rotated_latitude_longitude
+        grid_north_pole_latitude: 39.25
+        grid_north_pole_longitude: -162.0
+        long_name: coordinates of the rotated North Pole
+    y_coordinate: 'rlat'
+    x_coordinate: 'rlon'
+    CORDEX_domain: 'EUR-44'
+
+EUR-11:
+    crs_name: rotated_pole
+    crs_data:
+        grid_mapping_name: rotated_latitude_longitude
+        grid_north_pole_latitude: 39.25
+        grid_north_pole_longitude: -162.0
+        long_name: coordinates of the rotated North Pole
+    y_coordinate: 'rlat'
+    x_coordinate: 'rlon'
+    CORDEX_domain: 'EUR-11'
+
+GER-0275:
+    crs_name: rotated_pole
+    crs_data:
+        grid_mapping_name: rotated_latitude_longitude
+        grid_north_pole_latitude: 39.25
+        grid_north_pole_longitude: -162.0
+        long_name: coordinates of the rotated North Pole
+    y_coordinate: 'rlat'
+    x_coordinate: 'rlon'
+
+DWD_RADOLAN_900x900:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: polar_stereographic
+        long_name: RADOLAN Grid
+        standard_parallel: 60
+        straight_vertical_longitude_from_pole: 10.0
+        earth_radius: 6370040.0
+        false_easting: 0.0
+        false_northing: 0.0
+        inverse_flattening: 0.0
+        units: m
+        proj4: '+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +x_0=0 +y_0=0 +R=6370040 +units=m +no_defs'
+        crs_wkt: 'PROJCS["Radolan Projection",GEOGCS["Radolan Coordinate System",DATUM["Radolan_Kugel",SPHEROID["Erdkugel",6370040,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Polar_Stereographic"],PARAMETER["latitude_of_origin",60],PARAMETER["central_meridian",10],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["kilometre",1000,AUTHORITY["EPSG","9036"]],AXIS["Easting",SOUTH],AXIS["Northing",SOUTH]]'
+        spatial_ref: 'PROJCS["Radolan Projection",GEOGCS["Radolan Coordinate System",DATUM["Radolan_Kugel",SPHEROID["Erdkugel",6370040,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Polar_Stereographic"],PARAMETER["latitude_of_origin",60],PARAMETER["central_meridian",10],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["kilometre",1000,AUTHORITY["EPSG","9036"]],AXIS["Easting",SOUTH],AXIS["Northing",SOUTH]]'
+
+DWD_RADOLAN_1100x900:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: polar_stereographic
+        long_name: RADOLAN Grid
+        standard_parallel: 60
+        straight_vertical_longitude_from_pole: 10.0
+        earth_radius: 6370040.0
+        false_easting: 0.0
+        false_northing: 0.0
+        inverse_flattening: 0.0
+        units: m
+        proj4: '+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +x_0=0 +y_0=0 +R=6370040 +units=m +no_defs'
+        crs_wkt: 'PROJCS["Radolan Projection",GEOGCS["Radolan Coordinate System",DATUM["Radolan_Kugel",SPHEROID["Erdkugel",6370040,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Polar_Stereographic"],PARAMETER["latitude_of_origin",60],PARAMETER["central_meridian",10],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["kilometre",1000,AUTHORITY["EPSG","9036"]],AXIS["Easting",SOUTH],AXIS["Northing",SOUTH]]'
+        spatial_ref: 'PROJCS["Radolan Projection",GEOGCS["Radolan Coordinate System",DATUM["Radolan_Kugel",SPHEROID["Erdkugel",6370040,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Polar_Stereographic"],PARAMETER["latitude_of_origin",60],PARAMETER["central_meridian",10],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["kilometre",1000,AUTHORITY["EPSG","9036"]],AXIS["Easting",SOUTH],AXIS["Northing",SOUTH]]'
+
+HYR-LCC-1:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: lambert_conformal_conic
+        long_name: DWD HYRAS ETRS89 LCC grid with 1200 columns and 100 rows
+        standard_parallel: [35.0, 65.0]
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.3142
+        inverse_flattening: 298.257223563
+        false_easting: 4000000.0
+        false_northing: 2800000.0
+        proj4: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        proj4_params: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        epsg_code: EPSG:3034
+        crs_wkt: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        spatial_ref: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+    CORDEX_domain: 'HYR-1'
+
+HYR-LCC-3:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: lambert_conformal_conic
+        long_name: DWD HYRAS ETRS89 LCC grid with 400 columns and 367 rows
+        standard_parallel: [35.0, 65.0]
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.3142
+        inverse_flattening: 298.257223563
+        false_easting: 4000000.0
+        false_northing: 2800000.0
+        proj4: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        proj4_params: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        epsg_code: EPSG:3034
+        crs_wkt: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        spatial_ref: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+    CORDEX_domain: 'HYR-3'
+
+HYR-LCC-5:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: lambert_conformal_conic
+        long_name: DWD HYRAS ETRS89 LCC grid with 240 columns and 220 rows
+        standard_parallel: [35.0, 65.0]
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.3142
+        inverse_flattening: 298.257223563
+        false_easting: 4000000.0
+        false_northing: 2800000.0
+        proj4: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        proj4_params: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        epsg_code: EPSG:3034
+        crs_wkt: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        spatial_ref: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+    CORDEX_domain: 'HYR-5'
+
+HYR-LCC-50:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: lambert_conformal_conic
+        long_name: DWD HYRAS ETRS89 LCC grid with 24 columns and 22 rows
+        standard_parallel: [35.0, 65.0]
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.3142
+        inverse_flattening: 298.257223563
+        false_easting: 4000000.0
+        false_northing: 2800000.0
+        proj4: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        proj4_params: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        epsg_code: EPSG:3034
+        crs_wkt: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        spatial_ref: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+    CORDEX_domain: 'HYR-50'
+
+HYR-LAEA-1:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 1290 columns and 1100 rows'
+
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 645 columns and 550 rows'
+
+HYR-LAEA-3:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 430 columns and 367 rows'
+
+HYR-LAEA-5:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 258 columns and 220 rows'
+
+HYR-LAEA-12.5:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 103 columns and 88 rows'
+
+HYR-LAEA-50:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 26 columns and 22 rows'
+
+HYR-LAEA-100:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 13 columns and 11 rows'
+
+HYR-GER-LAEA-1:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 665 columns and 890 rows'
+
+HYR-GER-LAEA-2:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 332 columns and 445 rows'
+
+HYR-GER-LAEA-3:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 222 columns and 297 rows'
+
+HYR-GER-LAEA-5:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 133 columns and 178 rows'
+
+HYR-GER-LAEA-12.5:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 53 columns and 71 rows'
+
+HYR-GER-LAEA-50:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 13 columns and 18 rows'
+
+HYR-GER-LAEA-100:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: 'lambert_azimuthal_equal_area'
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.31414036
+        inverse_flattening: 298.257222101
+        false_easting: 4321000.0
+        false_northing: 3210000.0
+        spatial_ref: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        crs_wkt: 'PROJCS["ETRS_1989_LAEA",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["False_Easting",4321000.0],PARAMETER["False_Northing",3210000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        proj4: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        proj4_params: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+        epsg_code: 'EPSG:3035'
+        long_name: 'DWD HYRAS ETRS89 LAEA grid with 7 columns and 9 rows'
+
+HOSTRADA-1:
+    crs_name: crs
+    crs_data:
+        grid_mapping_name: lambert_conformal_conic
+        long_name: DWD HOSTRADA ETRS89 LCC grid with 720 columns and 938 rows
+        standard_parallel: [35.0, 65.0]
+        longitude_of_central_meridian: 10.0
+        latitude_of_projection_origin: 52.0
+        semi_major_axis: 6378137.0
+        semi_minor_axis: 6356752.3142
+        inverse_flattening: 298.257223563
+        false_easting: 4000000.0
+        false_northing: 2800000.0
+        proj4: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        proj4_params: '+proj=lcc +lat_1=35 +lat_2=65 +lat_0=52 +lon_0=10 +x_0=4000000 +y_0=2800000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+        epsg_code: EPSG:3034
+        crs_wkt: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        spatial_ref: 'PROJCS["ETRS_1989_LCC",GEOGCS["GCS_ETRS_1989",DATUM["D_ETRS_1989",SPHEROID["GRS_1980",6378137.0, 298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree", 0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",4000000.0],PARAMETER["False_Northing",2800000.0],PARAMETER["Central_Meridian",10.0],PARAMETER["Standard_Parallel_1",35.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",52.0],UNIT["Meter",1.0]]'
+        CORDEX_domain: 'HOSTRADA-1'

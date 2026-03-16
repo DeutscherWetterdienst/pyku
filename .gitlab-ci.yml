@@ -1,0 +1,209 @@
+---
+
+workflow:
+  rules:
+    # Run pipeline for merge requests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Run pipeline for pushes to master
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    # Run pipeline when creating tags
+    - if: '$CI_COMMIT_TAG'
+      when: always
+    # Run pipeline for scheduled pipelines
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+    # allow manual trigger of pipeline from web interface
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    # Do not run pipeline for other cases
+    - when: never
+
+stages:
+  - build
+  - test
+  - deploy
+  - cleanup
+
+variables:
+  LANGUAGE: "en_US:en"
+  LANG: "en_US"
+  LC_ALL: C
+  TMPDIR: ${PYKU_CI_SCRATCH}/tmp
+  RUNNER_DATA: ${PYKU_CI_WORK}/gitlab-runner-data/
+  PYKU_DATA_DIR: ${RUNNER_DATA}/pyku_data_dir
+  PYKU_ENVIRONMENT: ${RUNNER_DATA}/pyku/${CI_PIPELINE_ID}
+
+.load_modules:
+  before_script:
+    - echo "Use modules"
+    - module use $PYKU_CI_MODULEDIR/modulesfiles
+    - module purge
+    - module load envs
+    - module load base/durian-cake
+    - module load uv
+
+install-wheel:
+  stage: build
+  extends: .load_modules
+  tags:
+    - ku1
+  script:
+    - echo "Create python virtual environment, build and install wheel"
+    - uv venv $PYKU_ENVIRONMENT/venv
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - uv pip install --upgrade pip setuptools
+    - uv pip install wheel cython nbstripout build
+    - uv build
+    - WHEEL_FILE=$(find . -name "*.whl")
+    - uv pip install $WHEEL_FILE[documentation,cdo_bindings]
+
+verify_clear_notebooks:
+  stage: test
+  extends: .load_modules
+  tags:
+    - ku1
+  script:
+    - echo "Activate python environment"
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - echo "Verify notebooks are clear"
+    - ipython ./testing/check_notebooks_are_cleared.ipy
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+verify_style_guideline:
+  stage: test
+  extends: .load_modules
+  tags:
+    - ku1
+  script:
+    - echo "Activate python environment and install flake8"
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - uv pip install flake8 || exit 1
+    - echo "Verify style guidlines are enforced"
+    - flake8 pyku/
+  allow_failure: false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+unit-testing:
+  stage: test
+  tags:
+    - ku1
+  parallel:
+    matrix:
+      - cake_module: ['cheese-cake', 'durian-cake']
+  before_script:
+    - module use $PYKU_CI_MODULEDIR/modulesfiles
+    - module purge
+    - module load envs
+    - module load base/${cake_module}
+    - module load uv
+    - |
+      uv venv $PYKU_ENVIRONMENT/${cake_module}
+      source $PYKU_ENVIRONMENT/${cake_module}/bin/activate
+      uv pip install --upgrade pip setuptools
+      uv pip install wheel cython nbstripout build
+      uv build
+      WHEEL_FILE=$(find . -name "*.whl")
+      uv pip install $WHEEL_FILE[documentation,cdo_bindings]
+  script:
+    - echo "Activate python environment"
+    - source $PYKU_ENVIRONMENT/${cake_module}/bin/activate
+    - echo "Run test units"
+    - python3 -m unittest discover -v -s ./testing -p "*_test.py"
+  after_script:
+    - rm -rf $PYKU_ENVIRONMENT/${cake_module}
+
+.documentation:
+  stage: test
+  tags:
+    - ku1
+  extends: .load_modules
+  script:
+    - echo "Activate python environment"
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - echo "Build documentation"
+    - sphinx-build -j 10 ./doc/ documentation/
+
+docu_build:
+  extends: .documentation
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: always   
+
+documentation:
+  extends: .documentation
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: always
+    - when: never
+  artifacts:
+    paths:
+      - documentation
+
+
+pypi-deploy:
+  stage: deploy
+  tags:
+    - ku1
+  extends: .load_modules
+  variables:
+    UV_PUBLISH_USERNAME: "gitlab-ci-token"
+    UV_PUBLISH_PASSWORD: "${CI_JOB_TOKEN}"
+  script:
+    - echo "Activate python environment at ${PYKU_ENVIRONMENT}"
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - echo "Build wheel"
+    - uv build
+    - echo "Deploy to ku-pypi"
+    - uv publish --publish-url $CI_API_V4_URL/projects/${PYPI_PROJECT_ID}/packages/pypi dist/*.whl    
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
+create-module-latest:
+  stage: deploy
+  extends: .load_modules
+  tags: 
+    - ku1
+  needs: 
+    - pypi-deploy
+  rules:
+    - if: '$CI_COMMIT_TAG'
+  script:
+   - | 
+      rm -rf ${PYKU_CI_MODULE}/pyku.latest/.venv 
+      uv venv ${PYKU_CI_MODULE}/pyku.latest/.venv 
+      source ${PYKU_CI_MODULE}/pyku.latest/.venv/bin/activate
+      uv pip install pyku --upgrade --index-url $CI_API_V4_URL/projects/${PYPI_PROJECT_ID}/packages/pypi/simple
+
+pages:
+  stage: deploy
+  needs:
+    - documentation
+  tags:
+    - ku1
+  script:
+    - echo "Serve documentation per gitlab page"
+    - cp -r documentation/ public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
+cleanup:
+  stage: cleanup
+  tags:
+    - ku1
+  script:
+    - |
+      if [ -d "$PYKU_ENVIRONMENT" ]; then 
+        rm -rf $PYKU_ENVIRONMENT
+      else
+        echo "No environment to clean up"
+        exit 1
+      fi
+  when: always
