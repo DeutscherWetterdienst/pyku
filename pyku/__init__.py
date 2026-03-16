@@ -168,6 +168,10 @@ class pykuDatasetAccessor:
         return magic.to_zarr(self._obj, *args, **kwargs)
     to_zarr.__doc__ = magic.to_zarr.__doc__
 
+    def sorcery(self, *args, **kwargs):
+        return magic.sorcery(self._obj, *args, **kwargs)
+    sorcery.__doc__ = magic.sorcery.__doc__
+
     # meta
     # ----
 
@@ -589,10 +593,6 @@ class pykuDatasetAccessor:
         return libcompute.calc_globalwarminglevels(self._obj, *args, **kwargs)
     calc_globalwarminglevels.__doc__ = \
         libcompute.calc_globalwarminglevels.__doc__
-
-    def magic(self, *args, **kwargs):
-        return libcompute.magic(self._obj, *args, **kwargs)
-    magic.__doc__ = libcompute.magic.__doc__
 
     def inpainting(self, *args, **kwargs):
         return libcompute.inpainting(self._obj, *args, **kwargs)

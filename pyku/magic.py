@@ -10,6 +10,36 @@ working with climate data.
 from . import logger
 
 
+def sorcery(ds):
+
+    """
+    Evil-magically makes datasets good. The evil_magic function attempts to
+    auto-magically:
+
+    * process datetimes reference to the lower bound of the time boundaries
+    * process variable names towards CMOR standard
+    * process units to SI units
+    * sort geographical and projection coordinates from top to bottom and
+      left to right
+
+    Arguments:
+        ds (:class:`xarray.Dataset`): The input dataset.
+
+    Returns:
+        :class:`xarray.Dataset`: Magicked dataset
+    """
+
+    import pyku.drs as drs
+    import pyku.timekit as timekit
+
+    ds = timekit.to_gregorian_calendar(ds)
+    ds = drs.to_cmor_varnames(ds)
+    ds = drs.to_cmor_units(ds)
+    ds = drs.to_cmor_attrs(ds)
+
+    return ds
+
+
 def open_mfdataset(files, option='auto'):
 
     """

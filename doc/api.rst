@@ -18,8 +18,5 @@ API
    postmodel.rst
    pdftransfer.rst
    downscale.rst
-   regression.rst
-   ogc.rst
-   read.rst
    find.rst
    resources.rst

@@ -4,13 +4,12 @@ Starter pack
 .. nbgallery::
 
    starter.rst
+   geographic_projections.ipynb
    polygons.rst
-   pdf_transfer.ipynb
-   downscaling_svd.ipynb
+   CMORization.rst
    customize_plots.ipynb
+   downscaling_svd.ipynb
    named_ensembles.ipynb
    colormaps.rst
-   CMORization.rst
-   geographic_projections.ipynb
    distributed_computing.rst
    loess_examples.ipynb

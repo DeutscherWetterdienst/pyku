@@ -1937,7 +1937,6 @@ def mean_bias_map(*dats, ref, var=None, crs=None, **kwargs):
               ...: # -----------------------------------------------
               ...:
               ...: ref = pyku.resources.get_test_data('hyras')\\
-              ...:       .pyku.magic()\\
               ...:       .pyku.project('HYR-LAEA-50')\\
               ...:       .sel(time='1981')\\
               ...:       .compute()
@@ -1946,7 +1945,6 @@ def mean_bias_map(*dats, ref, var=None, crs=None, **kwargs):
               ...: # -------------------------------------------
               ...:
               ...: ds = pyku.resources.get_test_data('model_data')\\
-              ...:      .pyku.magic()\\
               ...:      .pyku.project('HYR-LAEA-50')\\
               ...:      .sel(time='1981')\\
               ...:      .compute()
@@ -2046,7 +2044,6 @@ def seasonal_mean_bias_map(dats, ref, var=None, crs=None, **kwargs):
               ...:
               ...: ref = (
               ...:     pyku.resources.get_test_data('hyras')
-              ...:     .pyku.magic()
               ...:     .pyku.project('HYR-LAEA-50')
               ...:     .sel(time='1981')
               ...:     .compute()
@@ -2057,7 +2054,6 @@ def seasonal_mean_bias_map(dats, ref, var=None, crs=None, **kwargs):
               ...:
               ...: ds = (
               ...:     pyku.resources.get_test_data('model_data')
-              ...:     .pyku.magic()
               ...:     .pyku.project('HYR-LAEA-50')
               ...:     .sel(time='1981')
               ...:     .compute()

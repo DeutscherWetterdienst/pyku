@@ -1019,16 +1019,17 @@ def _get_low_res_hourly_tas_data():
 
     zarr_path = Path(f"{file}").with_suffix('.zarr')
 
-    if zarr_path.exists():
-        return xr.open_dataset(zarr_path, engine="zarr")
-
     with FileLock(lock_path):
+
+        if zarr_path.exists():
+            return xr.open_dataset(zarr_path, engine="zarr")
+
         file_path = pooch_installer.fetch(
             file,
             processor=targz_zarr_processor,
         )
 
-    return xr.open_dataset(file_path)
+    return xr.open_dataset(file_path, engine='zarr')
 
 
 def _get_icon_grid_file():
@@ -1109,6 +1110,7 @@ def _get_icon_grib_files():
     # ------------------------
 
     with FileLock(lock_path):
+
         registry_files = list(pooch_installer.registry.keys())
 
         if any(
@@ -1222,9 +1224,13 @@ def _get_hyras_tas_data():
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     with FileLock(lock_path):
+
         if not zarr_path.exists():
 
             _warn_of_data_download(pooch_installer)
+
+            # Fetch netCDF files
+            # ------------------
 
             files = [
                 pooch_installer.fetch(f) for f in pooch_installer.registry
@@ -1356,6 +1362,7 @@ def _get_monthly_hyras_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             _warn_of_data_download(pooch_installer)
 
             # Fetch netCDF files
@@ -1566,13 +1573,14 @@ def _get_hostrada_data():
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
     zarr_path = Path(pyku_data_dir) / f"{Path(file).stem}.zarr"
 
-    if zarr_path.exists():
-        return xr.open_dataset(zarr_path, engine="zarr")
-
     # Fetch and return dataset
     # ------------------------
 
     with FileLock(lock_path):
+
+        if zarr_path.exists():
+            return xr.open_dataset(zarr_path, engine="zarr")
+
         file_path = pooch_installer.fetch(
             file,
             processor=to_zarr_processor,
@@ -1614,7 +1622,9 @@ def _get_CCCma_CanESM2_Amon_world():
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     with FileLock(lock_path):
+
         if not zarr_path.exists():
+
             warnings.warn(f"Downloading NetCDFs to {zarr_path}")
             fs = s3fs.S3FileSystem(anon=True)
 
@@ -1659,6 +1669,7 @@ def _get_MPI_ESM1_2_HR_tas_data():
 
     with FileLock(lock_path):
         if not zarr_path.exists():
+
             warnings.warn(f"Downloading NetCDF: {s3_path} to {pyku_data_dir}")
 
             fs = s3fs.S3FileSystem(anon=True)
@@ -1700,9 +1711,7 @@ def _get_MPI_ESM1_2_HR_pr_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             warnings.warn(f"Downloading NetCDF: {s3_path} to {pyku_data_dir}")
-
             fs = s3fs.S3FileSystem(anon=True)
-
             with fs.open(s3_path) as f:
                 with xr.open_dataset(
                     f,
@@ -1739,9 +1748,7 @@ def _get_global_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             warnings.warn(f"Downloading NetCDF: {s3_path} to {pyku_data_dir}")
-
             fs = s3fs.S3FileSystem(anon=True)
-
             with fs.open(s3_path) as f:
                 with xr.open_dataset(f) as ds:
                     for var in ds.variables:
