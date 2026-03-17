@@ -27,13 +27,13 @@ jobs:
           sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev pandoc
 
       - name: Cache PYKU Data
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.PYKU_DATA_DIR }}
           key: global-pyku-data-cache
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v5
 
       - name: Build and Test
         run: |
@@ -55,7 +55,7 @@ jobs:
           sphinx-build -j 2 ./doc/ documentation/
 
       - name: Upload Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: documentation
           path: documentation
@@ -65,13 +65,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install System Binaries
         run: sudo apt-get update && sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v5
 
       - name: GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
