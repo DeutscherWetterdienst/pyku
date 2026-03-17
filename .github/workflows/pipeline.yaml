@@ -1,13 +1,9 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - maintenance/gh-action
   pull_request:
     branches:
       - main
-
 
 env:
   LANGUAGE: "en_US:en"
