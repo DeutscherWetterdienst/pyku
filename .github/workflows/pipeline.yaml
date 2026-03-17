@@ -1,6 +1,13 @@
 name: CI/CD Pipeline
 
-# on: [pull_request]
+on:
+  push:
+    branches:
+      - maintenance/gh-action
+  pull_request:
+    branches:
+      - main
+
 
 env:
   LANGUAGE: "en_US:en"
