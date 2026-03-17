@@ -52,7 +52,7 @@ jobs:
           fi
 
           python3 -m unittest discover -v -s ./testing -p "*_test.py"
-          sphinx-build -j 10 ./doc/ documentation/
+          sphinx-build -j 2 ./doc/ documentation/
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v4
