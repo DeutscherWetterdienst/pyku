@@ -34,7 +34,8 @@ jobs:
           source .venv/bin/activate
           uv pip install --upgrade pip setuptools wheel cython nbstripout build
           uv build
-          uv pip install dist/*.whl[documentation,cdo_bindings]
+          WHEEL_PATH=$(ls dist/*.whl)
+          uv pip install "$WHEEL_PATH[documentation,cdo_bindings]"
 
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             uv pip install flake8
@@ -42,10 +43,7 @@ jobs:
             ipython ./testing/check_notebooks_are_cleared.ipy
           fi
 
-          # Unit Tests
           python3 -m unittest discover -v -s ./testing -p "*_test.py"
-
-          # Documentation
           sphinx-build -j 10 ./doc/ documentation/
 
       - name: Upload Documentation
