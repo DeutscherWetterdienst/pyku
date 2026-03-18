@@ -42,11 +42,9 @@ jobs:
           WHEEL_PATH=$(ls dist/*.whl)
           uv pip install "$WHEEL_PATH[documentation,cdo_bindings]"
 
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            uv pip install flake8
-            flake8 pyku/
-            ipython ./testing/check_notebooks_are_cleared.ipy
-          fi
+          uv pip install flake8
+          flake8 pyku/
+          ipython ./testing/check_notebooks_are_cleared.ipy
 
           python3 -m unittest discover -v -s ./testing -p "*_test.py"
           sphinx-build -j 1 ./doc/ documentation/
