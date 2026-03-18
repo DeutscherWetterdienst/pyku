@@ -15,6 +15,11 @@ env:
   PYKU_DATA_DIR: ${{ github.workspace }}/pyku_cache
   CARTOPY_DATA_DIR: ${{ github.workspace }}/pyku_cache
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -50,13 +55,13 @@ jobs:
           ipython ./testing/check_notebooks_are_cleared.ipy
 
           python3 -m unittest discover -v -s ./testing -p "*_test.py"
-          sphinx-build -j 1 ./doc/ documentation/
+          sphinx-build -j 1 ./doc/ ./docs
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v4
         with:
-          name: documentation
-          path: documentation
+          name: docs
+          path: docs
 
   deploy:
     needs: build-and-test
@@ -65,14 +70,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install System Binaries
-        run: sudo apt-get update && sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev
-
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v3
-
       - name: GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
+          publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./documentation
+          publish_dir: ./docs
+          force_orphan: true
