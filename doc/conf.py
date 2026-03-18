@@ -74,7 +74,9 @@ nbsphinx_thumbnails = {
      'tutorials/customize_plots': '_static/pyku_customize.jpg',
 }
 
-include_patterns = [
-    "index.rst",
-]
+# For testing only
+# ----------------
 
+# include_patterns = [
+#     "index.rst",
+# ]
