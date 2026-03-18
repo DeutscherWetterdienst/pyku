@@ -20,7 +20,8 @@ env:
   LANG: "en_US"
   LC_ALL: C
   PYKU_DATA_DIR: ${{ github.workspace }}/pyku_cache
-  CARTOPY_DATA_DIR: ${{ github.workspace }}/pyku_cache
+  XDG_DATA_HOME: ${{ github.workspace }}/pyku_cache 
+  CARTOPY_DATA_DIR: ${{ github.workspace }}/pyku_cache/cartopy
 
 permissions:
   contents: write
@@ -42,7 +43,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.PYKU_DATA_DIR }}
-          key: global-pyku-data-cache
+          key: global-pyku-data-cache-${{ github.run_id }}
+          restore-keys: |
+            global-pyku-data-cache-
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v3
@@ -50,6 +53,7 @@ jobs:
       - name: Build and Test
         run: |
           mkdir -p "$PYKU_DATA_DIR"
+          mkdir -p "$CARTOPY_DATA_DIR"
           uv venv
           source .venv/bin/activate
           uv pip install --upgrade pip setuptools wheel cython nbstripout build
