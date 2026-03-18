@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    tags:
+      - 'v*'
 
 env:
   LANGUAGE: "en_US:en"
