@@ -16,7 +16,7 @@ env:
   CARTOPY_DATA_DIR: ${{ github.workspace }}/pyku_cache
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
