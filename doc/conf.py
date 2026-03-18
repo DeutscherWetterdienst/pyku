@@ -79,4 +79,6 @@ nbsphinx_thumbnails = {
 
 include_patterns = [
     "index.rst",
+    "api.rst",
+    "analyse.rst"
 ]
