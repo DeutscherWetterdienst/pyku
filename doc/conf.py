@@ -77,6 +77,6 @@ nbsphinx_thumbnails = {
 # For testing only
 # ----------------
 
-# include_patterns = [
-#     "index.rst",
-# ]
+include_patterns = [
+    "index.rst",
+]

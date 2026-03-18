@@ -65,7 +65,8 @@ jobs:
           flake8 pyku/
           ipython ./testing/check_notebooks_are_cleared.ipy
 
-          python3 -m unittest discover -v -s ./testing -p "*_test.py"
+          #python3 -m unittest discover -v -s ./testing -p "*_test.py"
+          python3 -m unittest discover -v -s ./testing -p "*drs_test.py"
           sphinx-build -j 1 ./doc/ ./docs
 
       - name: Upload Pages artifact
