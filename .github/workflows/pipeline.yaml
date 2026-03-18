@@ -70,7 +70,7 @@ jobs:
           sphinx-build -j 1 ./doc/ ./docs
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v6
+        uses: actions/upload-pages-artifact@v4
         with:
           path: docs
 
