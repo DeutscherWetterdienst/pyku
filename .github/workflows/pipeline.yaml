@@ -70,26 +70,26 @@ jobs:
           name: docs
           path: docs
 
-    deploy:
-      needs: build-and-test
-      # if: startsWith(github.ref, 'refs/tags/')
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-      runs-on: ubuntu-latest
-      steps:
+  deploy:
+    needs: build-and-test
+    # if: startsWith(github.ref, 'refs/tags/')
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
 
-        - name: Setup Pages
-          uses: actions/configure-pages@v5
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-        - name: Upload Pages artifact
-          uses: actions/upload-pages-artifact@v4
-          with:
-            path: ./docs
-            name: docs
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./docs
+          name: docs
 
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v4
-          with:
-            artifact_name: docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: docs
