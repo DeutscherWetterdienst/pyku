@@ -86,6 +86,15 @@ To install the dependencies to build the documentation:
 
    pip install "pyku[documentation] @ git+https://github.com/DeutscherWetterdienst/pyku"
 
+pin version
+-----------
+
+To pin a version:
+
+.. code:: bash
+
+   pip install "pyku @ git+https://github.com/DeutscherWetterdienst/pyku@v1.0.0"
+
 from source
 -----------
 
