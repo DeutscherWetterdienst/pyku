@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Inspect Hardware
+      - name: Inspect hardware
         run: |
           echo "CPU Details:"
           lscpu | grep -E '^Thread\(s\) per core|^Core\(s\) per socket|^CPU\(s\)'
@@ -44,12 +44,12 @@ jobs:
 
       - uses: actions/checkout@v6
 
-      - name: Install System Binaries
+      - name: Install system binaries
         run: |
           sudo apt-get update
           sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev pandoc
 
-      - name: Cache PYKU Data
+      - name: Cache pyku data
         uses: actions/cache@v5
         with:
           path: ${{ env.PYKU_DATA_DIR }}
@@ -58,7 +58,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Build and Test
+      - name: Build, test and generate documentation
         run: |
           mkdir -p "$PYKU_DATA_DIR"
           mkdir -p "$CARTOPY_DATA_DIR"
@@ -76,7 +76,7 @@ jobs:
           python3 -m unittest discover -v -s ./testing -p "*_test.py"
           sphinx-build -j 1 ./doc/ ./docs
 
-      - name: Upload Pages artifact
+      - name: Upload pages artifacts
         uses: actions/upload-pages-artifact@v4
         with:
           path: docs
@@ -89,6 +89,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub pages
         id: deployment
         uses: actions/deploy-pages@v4

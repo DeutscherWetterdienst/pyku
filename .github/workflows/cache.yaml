@@ -23,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install System Binaries
+      - name: Install system binaries
         run: |
           sudo apt-get update
           sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev pandoc
 
-      - name: Cache PYKU Data
+      - name: Cache pyku data
         uses: actions/cache@v5
         with:
           path: ${{ env.PYKU_DATA_DIR }}
@@ -37,7 +37,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Build and Test
+      - name: Build and cache test data
         run: |
           mkdir -p "$PYKU_DATA_DIR"
           mkdir -p "$CARTOPY_DATA_DIR"
