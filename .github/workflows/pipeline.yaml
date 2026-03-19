@@ -30,6 +30,18 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Inspect Hardware
+        run: |
+          echo "CPU Details:"
+          lscpu | grep -E '^Thread\(s\) per core|^Core\(s\) per socket|^CPU\(s\)'
+          echo "---"
+          echo "Memory Details:"
+          free -h
+          echo "---"
+          echo "Disk Space:"
+          df -h | grep '^/dev/'
+
       - uses: actions/checkout@v6
 
       - name: Install System Binaries
