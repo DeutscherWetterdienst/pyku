@@ -35,7 +35,7 @@ jobs:
           key: global-pyku-data
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v5
 
       - name: Build and Test
         run: |
