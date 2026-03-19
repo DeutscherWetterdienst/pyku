@@ -20,7 +20,7 @@ necessary
 Developer installation
 ----------------------
 
-First, create a new virtual environment and install*pyku:
+First, create a new virtual environment and install pyku:
 
 .. code:: bash
 
@@ -38,7 +38,7 @@ Clone and ``cd`` to the *pyku* directory:
 
 .. code:: bash
 
-   git clone https://gitlab.dwd.de/ku/libraries/pyku/
+   git clone https://github.com/deutscherwetterdienst/pyku
    cd pyku
 
 .. tip::
@@ -75,24 +75,6 @@ part of *pyku* that you are working on with ``importlib``:
 
    importlib.reload(meta)
    meta.get_frequency(ds, dtype='freqstr')
-
-.. warning::
-
-   How to debug with the xarray data accessor for debuggin is an open question.
-   That is it still needs to be clarified how to reload in jupyter if you use:
-
-   .. code:: python
-
-      ds.pyku.get_frequency(dtype='freqstr')
-
-   Instead you will can use for debugging:
-
-   .. code:: python
-
-      importlib.reload(meta)
-      meta.get_frequency(ds, dtype='freqstr')
-
-   If you know the solution, dont hesitate to let us know or update this doc.
 
 Doctests
 --------

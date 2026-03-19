@@ -1,29 +1,16 @@
-.. |gitlab-badge| image:: https://img.shields.io/badge/gitlab-repo-red?style=flat&logo=gitlab
-  :target: https://gitlab.dwd.de/ku/libraries/pyku
-  :alt: GitLab Repository
-
 .. |github-badge| image:: https://img.shields.io/badge/github-repo-blue?style=flat&logo=github
   :target: https://github.com/deutscherwetterdienst/pyku
   :alt: GitHub Repository
 
-.. |documentation-badge| image:: https://img.shields.io/badge/Documentation-View%20on%20GitLab-green
-  :target: http://ku.pages.dwd.de/libraries/pyku/
-  :alt: Documentation
-
-.. |issue-badge| image:: https://img.shields.io/badge/Issues-View%20on%20GitLab-red
-  :target: https://gitlab.dwd.de/ku/libraries/pyku/-/issues
-  :alt: GitLab Issues
+.. |docs-badge| image:: https://img.shields.io/badge/docs-gh--pages-blue?style=flat&logo=github
+   :target: https://deutscherwetterdienst.github.io/pyku/
+   :alt: Documentation Status
 
 .. |issue-github-badge| image:: https://img.shields.io/badge/Issues-View%20on%20GitHub-blue
   :target: https://github.com/deutscherwetterdienst/pyku/issues
   :alt: GitHub Issues
 
-
-|gitlab-badge| |github-badge|
-
-|documentation-badge|
-
-|issue-badge| |issue-github-badge|
+|github-badge| |docs-badge| |issue-github-badge|
 
 Comprehensive climate data handling with Xarray
 -----------------------------------------------

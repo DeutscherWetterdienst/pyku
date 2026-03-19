@@ -3,9 +3,7 @@ Installation
 
 .. warning::
 
-   pyku is not yet available on PyPI. Installation via pip install pyku will
-   fail until the official release. Please install directly from the source
-   repository.
+   Pyku is not yet on PyPI, but we're working on it.
 
 To install pyku, ensure your system is properly configured. The following
 non-python dependencies are necessary:
@@ -19,38 +17,59 @@ non-python dependencies are necessary:
 To build the documentation, you will additionally need `pandoc
 <https://pandoc.org/>`_.
 
-Once these prerequisites are met, you can install the latest release of pyku
-using the command ``pip install``.
+Once these prerequisites are met, you can install the latest release of pyku.
 
-.. code:: bash
+.. using the command ``pip install``.
+..
+.. .. code:: bash
+..
+..    # Install the latest stable pyku release
+..    # --------------------------------------
+..
+..    pip install pyku
+..
+..    # Install extra dependencies to build documentation
+..    # -------------------------------------------------
+..
+..    pip install pyku[documentation]
 
-   # Install the latest stable pyku release
-   # --------------------------------------
+.. Upgrade
+.. -------
+..
+.. This command installs or updates to the latest version.
+..
+.. .. code:: bash
+..
+..    pip install pyku --upgrade
 
-   pip install pyku
+.. Pin version
+.. -----------
+..
+.. By specifying an exact version, it can also be used to downgrade pyku:
+..
+.. .. code:: bash
+..
+..    pip install pyku==v1.0.0
 
-   # Install extra dependencies to build documentation
-   # -------------------------------------------------
-
-   pip install pyku[documentation]
-
-Upgrade
--------
-
-This command installs or updates to the latest version.
-
-.. code:: bash
-
-   pip install pyku --upgrade
-
-Downgrade
----------
-
-By specifying an exact version, it can also be used to downgrade pyku:
-
-.. code:: bash
-
-   pip install pyku==v1.0.0
+.. Optional packages
+.. -----------------
+..
+.. To install the necessary packages for building the documentation, including all
+.. Sphinx dependencies and Jupyter, use this setup. These packages will be
+.. installed automatically, making it an excellent starting point.
+..
+.. .. code:: bash
+..
+..    pip install pyku[documentation]
+..
+.. Bindings to CDO should generally be avoided within the scope of pyku. However,
+.. there is one exception: a function required for derotating wind components in
+.. rotated model data. This functionality is isolated from the rest of the code
+.. and can be installed using:
+..
+.. .. code:: bash
+..
+..    pip install pyku[cdo_bindings]
 
 from master
 -----------
@@ -59,16 +78,28 @@ To install the current master from the repository:
 
 .. code:: bash
 
-   pip install git+https://https://github.com/DeutscherWetterdienst/pyku
+   pip install "pyku @ git+https://github.com/DeutscherWetterdienst/pyku"
+
+To install the dependencies to build the documentation:
+
+.. code:: bash
+
+   pip install "pyku[documentation] @ git+https://github.com/DeutscherWetterdienst/pyku"
 
 from source
 -----------
 
-To install from source you will need to clone the repository first.
+To install from source, clone the repository and run:
 
 .. code:: bash
 
    pip install .
+
+To install from source with the dependencies to build the documentation
+
+.. code:: bash
+
+   pip install ".[documentation]"
 
 for development
 ---------------
@@ -79,25 +110,12 @@ To install in development mode:
 
    pip install -e .
 
-Optional packages
------------------
-
-To install the necessary packages for building the documentation, including all
-Sphinx dependencies and Jupyter, use this setup. These packages will be
-installed automatically, making it an excellent starting point.
+To install in development mode with the dependencies to build the
+documentation:
 
 .. code:: bash
 
-   pip install pyku[documentation]
-
-Bindings to CDO should generally be avoided within the scope of pyku. However,
-there is one exception: a function required for derotating wind components in
-rotated model data. This functionality is isolated from the rest of the code
-and can be installed using:
-
-.. code:: bash
-
-   pip install pyku[cdo_bindings]
+   pip install -e ".[documentation]"
 
 Compiled dependencies
 ---------------------

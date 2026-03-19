@@ -2,39 +2,23 @@ Maintainers
 ===========
 
 Maintainers possess elevated permissions in comparison to developers and carry
-the crucial responsibility of upholding code integrity. Their duties encompass
-not only integrating merge requests into the master branch but also overseeing
-the creation of new releases. This pivotal role involves ensuring that the
-codebase remains cohesive and robust, aligning with project objectives and
-quality standards. Additionally, maintainers play a pivotal role in fostering
-collaboration among team members, facilitating efficient code reviews, and
-resolving conflicts to uphold the overall health of the software development
-process.
+the responsibility of upholding code integrity. Their duties encompass not only
+integrating merge requests into the master branch but also overseeing the
+creation of new releases. This role involves ensuring that the codebase remains
+cohesive and robust, aligning with project objectives and quality standards.
+Additionally, maintainers play a pivotal role in fostering collaboration among
+team members, facilitating efficient code reviews, and resolving conflicts to
+uphold the overall health of the software development process.
 
-KU color map
-------------
-
-The official DWD color map is integrated in pyku. Updates of the colormaps are
-performed manually from the `official colormap repository
-<https://gitlab.dwd.de/ku/libraries/ku_colors>`_. To do this, the file
-``pyku/etc/base_colors.yaml`` in the pyku repository must be overwritten by the
-file ``base_colors.yaml`` from the `official colormap repository
-<https://gitlab.dwd.de/ku/libraries/ku_colors>`_.
-
-Merge request
+Pull request
 -------------
 
 Upon submission of a merge request, an automated pipeline is triggered to build
 and deploy the documentation, while also conducting doctests, unit tests and
-integration testing. It is imperative not to proceed with merging to the master
+integration testing. It is imperative not to proceed with merging to the main
 branch until the pipeline has completed successfully. The status of the
-pipeline can be monitored at the following link: `Pipeline Status
-<https://gitlab.dwd.de/ku/libraries/pyku/-/pipelines>`_.
-
-Once the pipeline has executed without errors, you may proceed to merge by
-clicking the designated button. At this juncture, conducting a thorough code
-review is highly encouraged before finalizing the merge, ensuring adherence to
-coding standards and promoting overall code quality.
+pipeline can be monitored in the action tab. Only once the pipeline has
+executed without errors may you proceed to merge.
 
 .. rubric:: Checklist
 
@@ -112,60 +96,4 @@ Now you can push the tag to the remote:
 
    git push --tags
 
-A new pipeline is triggered which deploys *pyku* to the ``pyku.stable``
-environment module for use in production. It also creates a python wheel which
-is then available in the `pypi registry set up on the KU gitlab server
-<https://gitlab.dwd.de/ku/pypi/-/packages>`_.
-
-.. rubric:: Create a new gitlab release
-
-Create a new gitlab release for the new tag under
-https://gitlab.dwd.de/ku/libraries/pyku/-/releases
-
-Copy the content of the ``CHANGELOG.rst``, reformat from rst to the Markdown.
-
-CI/CD Pipelines
----------------
-
-.. code:: bash
-
-   echo -n 'youpassword' | base64
-   eW91cGFzc3dvcmQ=
-
-To convert the password back, as is done in the pipeline:
-
-.. code:: bash
-
-   echo -n 'eW91cGFzc3dvcmQ=' | base64 --decode
-   youpassword
-
-.. rubric:: token for automated wheel deployment to to pypi registry
-
-The ``ku/pypi`` repository servers as a local pypi registry for automated
-deployment. At each release, the wheel is built and uploaded to the registry.
-The token for automated deployment of the wheel is located in the *pyku*
-repository under:
-
-.. code:: bash
-
-   cat .pypirc 
-   [distutils]
-   index-servers =
-       gitlab
-
-   [gitlab]
-   repository = https://gitlab.dwd.de/api/v4/projects/1719/packages/pypi
-   username = pypi
-   password = the_password
-
-The token is only valid for a limited time. Hence it must be renewed in the
-gitlab interface of the *pypi* repository at:
-
-https://gitlab.dwd.de/ku/pypi/-/settings/access_tokens
-
-The token should be created with the following permissions:
-
-* **Role**: ``developer``
-* **Scope**: ``api``
-
-Which then allows to write in the registry.
+A new pipeline is triggered which deploys the pyku documentation.
