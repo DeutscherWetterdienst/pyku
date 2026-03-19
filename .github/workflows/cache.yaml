@@ -1,0 +1,52 @@
+name: Manual cache update
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  LANGUAGE: "en_US:en"
+  LANG: "en_US"
+  LC_ALL: C
+  PYKU_DATA_DIR: ${{ github.workspace }}/pyku_cache
+  XDG_DATA_HOME: ${{ github.workspace }}/pyku_cache
+  CARTOPY_DATA_DIR: ${{ github.workspace }}/pyku_cache/cartopy
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install System Binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-dev libudunits2-dev libhdf5-dev libnetcdf-dev libproj-dev pandoc
+
+      - name: Cache PYKU Data
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.PYKU_DATA_DIR }}
+          key: global-pyku-data
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build and Test
+        run: |
+          mkdir -p "$PYKU_DATA_DIR"
+          mkdir -p "$CARTOPY_DATA_DIR"
+          uv venv
+          source .venv/bin/activate
+          uv pip install --upgrade pip setuptools wheel cython nbstripout build
+          uv build
+          WHEEL_PATH=$(ls dist/*.whl)
+          uv pip install "$WHEEL_PATH"
+          python3 ./definitions/download_test_data.py
