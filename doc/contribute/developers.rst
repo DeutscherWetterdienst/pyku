@@ -15,7 +15,7 @@ Alternatively use :class:`geopandas.GeoDataFrame` for the input and outputs
 where polyons or point data are needed.
 
 Write independent functions for simplicity, and only use objects where
-necessary
+necessary.
 
 Developer installation
 ----------------------
@@ -34,7 +34,7 @@ First, create a new virtual environment and install pyku:
 
    source yourvenv/bin/activate
 
-Clone and ``cd`` to the *pyku* directory:
+Create a fork, a feature branch, clone and ``cd`` to the pyku directory:
 
 .. code:: bash
 

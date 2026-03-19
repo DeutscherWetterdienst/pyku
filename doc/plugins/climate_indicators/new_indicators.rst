@@ -1,23 +1,43 @@
 Adding New Indicators
 =====================
 
-CLIX primarily uses functions available within the **xclim.indices** package. You can find their comprehensive documentation here: `xclim indices Documentation <https://xclim.readthedocs.io/en/stable/apidoc/xclim.indices.html>`_.
+CLIX primarily uses functions available within the **xclim.indices** package.
+You can find their comprehensive documentation here: `xclim indices
+Documentation
+<https://xclim.readthedocs.io/en/stable/apidoc/xclim.indices.html>`_.
 
-If you identify an essential indicator that is not yet implemented and is available in `xclim.indices`, please open a new issue on our GitHub repository: `pyku GitHub Issues <https://gitlab.dwd.de/ku/libraries/pyku/-/issues/>`_. When opening an issue, refer to the specific `xclim.indices` function and provide a clear definition of the new climate indicator you would like to see implemented.
+If you identify an essential indicator that is not yet implemented and is
+available in `xclim.indices`, please open a new issue on our GitHub repository:
+`pyku GitHub Issues <hhttps://github.com/deutscherwetterdienst/pyku/issues>`_.
+When opening an issue, refer to the specific `xclim.indices` function and
+provide a clear definition of the new climate indicator you would like to see
+implemented.
 
-For flexible integration of custom indicators not available through `xclim`, CLIX provides a mechanism to include them as functions within a centralized location. The `clix_custom_indicators.py` file serves this purpose as the entry point for individually defined indicators. To implement new indicators, the following instructions should be followed:
+For flexible integration of custom indicators not available through `xclim`,
+CLIX provides a mechanism to include them as functions within a centralized
+location. The `clix_custom_indicators.py` file serves this purpose as the entry
+point for individually defined indicators. To implement new indicators, the
+following instructions should be followed:
 
-* The function must accept at least one input ``xarray.DataArray``, defined as a mandatory argument.
+* The function must accept at least one input ``xarray.DataArray``, defined as
+  a mandatory argument.
 * The function's output must also be an ``xarray.DataArray``.
-* A complete docstring should be included for the function to aid in understanding the indicator's purpose and usage.
+* A complete docstring should be included for the function to aid in
+  understanding the indicator's purpose and usage.
 
-To ensure a consistent layout for the indicators, it can be helpful to review the indices defined in `xclim` and the `generic functions <https://xclim.readthedocs.io/en/stable/apidoc/xclim.indices.html#xclim-indices-generic-module>`_ that can be configured to address a broader set of problems.
+To ensure a consistent layout for the indicators, it can be helpful to review
+the indices defined in `xclim` and the `generic functions
+<https://xclim.readthedocs.io/en/stable/apidoc/xclim.indices.html#xclim-indices-generic-module>`_
+that can be configured to address a broader set of problems.
 
-Below is an example of a function within the `clix_custom_indicators.py` file and its integration within the `climate_indicators.yaml` file.
+Below is an example of a function within the `clix_custom_indicators.py` file
+and its integration within the `climate_indicators.yaml` file.
 
 **Example: Definition for a New Indicator (Potential Snow Days)**
 
-This example illustrates the definition of "Potential Snow Days" using a generic `xclim` function embedded as a Python wrapper, which is then linked within the YAML configuration file.
+This example illustrates the definition of "Potential Snow Days" using a
+generic `xclim` function embedded as a Python wrapper, which is then linked
+within the YAML configuration file.
 
 .. code-block:: python
 
