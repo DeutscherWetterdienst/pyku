@@ -435,6 +435,8 @@ def to_gregorian_calendar(ds, add_missing=False):
               ...: ds.pyku.to_gregorian_calendar()
     """
 
+    import numpy as np
+
     import xarray as xr
 
     # Set the aling_on option to year for 306_day calendar
