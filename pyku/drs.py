@@ -832,9 +832,6 @@ def _to_precipitations_cmor_units(ds, var=None):
         precipitations
     """
 
-    import pandas as pd
-    from pandas.tseries.frequencies import to_offset
-
     from pyku import meta
 
     # Sanity check

@@ -1077,8 +1077,8 @@ def get_frequency(ds, dtype="freqstr"):
             - 'DateOffset': Represents the frequency using pandas' DateOffset.
             - 'Timedelta': Represents the frequency using pandas' Timedelta.
     Returns:
-        freqstr, :class:`pandas.tseries.offsets.DateOffset`, :class:`pandas.Timedelta`:
-        The inferred frequency of the dataset.
+        freqstr, :class:`pandas.tseries.offsets.DateOffset`,
+        :class:`pandas.Timedelta`: The inferred frequency of the dataset.
 
     Examples:
 
@@ -1100,8 +1100,8 @@ def get_frequency(ds, dtype="freqstr"):
               ...: ds.pyku.get_frequency(dtype='Timedelta')
 
 
-        To create an offset that can be compared, use ``to_offset``,
-        which converts a frequency string into an offset object. This ensures that
+        To create an offset that can be compared, use ``to_offset``, which
+        converts a frequency string into an offset object. This ensures that
         the frequency of your data can be compared unambiguously.
 
         .. ipython::
