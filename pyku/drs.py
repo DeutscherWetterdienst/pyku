@@ -950,6 +950,8 @@ def to_cmor_units(ds):
               ...: ds.pyku.to_cmor_units()['tas'].attrs
     """
 
+    import metpy  # noqa: F401
+
     # Notes
     # -----
 
