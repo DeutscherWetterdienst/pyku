@@ -1653,9 +1653,11 @@ def monthly_bias_var(ds_mod, ds_obs, var, **kwargs):
               ...: ds.ana.monthly_bias_var(ref, var='tas')
     """  # noqa
 
-    import pyku.timekit as timekit
-    import numpy as np
     import calendar
+
+    import numpy as np
+
+    from pyku import timekit
 
     # Clear current figure
     # --------------------
@@ -1804,6 +1806,19 @@ def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
     if dat_mod is None or dat_obs is None:
         raise ValueError("Input shall no be None")
 
+    # Sanity checks
+    # -------------
+
+    if dat_mod.time.size == 0:
+        raise ValueError(
+            "dat_mod contains no time steps (dimension is empty)."
+        )
+
+    if dat_obs.time.size == 0:
+        raise ValueError(
+            "dat_obs contains no time steps (dimension is empty)."
+        )
+
     # Get xr.DataArray
     # ----------------
 
@@ -1827,12 +1842,22 @@ def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
     # Select common datetimes
     # -----------------------
 
-    da_mod, da_obs = timekit.select_common_datetimes(da_mod, da_obs)
+    inter_mod, inter_obs = timekit.select_common_datetimes(da_mod, da_obs)
+
+    # Sanity check
+    # ------------
+
+    if inter_mod.time.size == 0 or inter_obs.time.size == 0:
+        raise ValueError(
+            "The intersection of the datasets resulted in an empty time "
+            f"dimension. \n {da_mod.time=} \n{da_obs.time=}"
+        )
 
     # Calculate bias
     # --------------
 
-    bias_da = (da_mod-da_obs)
+    bias_da = (inter_mod-inter_obs)
+
     bias_df = \
         bias_da.groupby('time.month').mean(tuple(bias_da.dims)).to_dataframe()
 
