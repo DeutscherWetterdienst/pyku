@@ -436,12 +436,11 @@ def to_gregorian_calendar(ds, add_missing=False):
     """
 
     import xarray as xr
-    import numpy as np
 
     # Set the aling_on option to year for 306_day calendar
     # ----------------------------------------------------
 
-    if ds.time.dt.calendar in ['360_day']:
+    if ds.time.dt.calendar == '360_day':
         align_on = 'year'
     else:
         align_on = None
@@ -451,7 +450,7 @@ def to_gregorian_calendar(ds, add_missing=False):
 
     ds_out = ds.copy()
 
-    if ds.time.dt.calendar in ['proleptic_gregorian']:
+    if ds.time.dt.calendar == 'proleptic_gregorian':
 
         logger.info(
             "Dataset already with a proleptic_gregorian calendar. "
