@@ -73,6 +73,7 @@ dependencies = [
     "xskillscore",
     "zarr",
     "s3fs",
+    "ipywidgets",
     "ruff"
 ]
 

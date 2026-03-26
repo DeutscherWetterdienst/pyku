@@ -215,7 +215,10 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
             # -----------------------------------------------------
 
             da = da.metpy.dequantify().rename(var)
-            ds_out = xr.merge([ds_out.drop(var), da], compat='no_conflicts')
+            ds_out = xr.merge(
+                [ds_out.drop_vars(var), da],
+                compat='no_conflicts'
+            )
 
         ds_out = ds_out.resample(time=frequency).sum()
 

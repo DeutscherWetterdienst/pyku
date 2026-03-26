@@ -1808,6 +1808,6 @@ def cmorize(ds, global_metadata={}, area_def=None):
     invalid_cmor_coordinates = \
         set(dsvar.coords.keys()) - set(valid_cmor_coordinates)
 
-    dsvar = dsvar.drop(invalid_cmor_coordinates)
+    dsvar = dsvar.drop_vars(invalid_cmor_coordinates)
 
     return dsvar
