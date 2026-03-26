@@ -113,6 +113,7 @@ clixrun = "pyku.clix.core:main"
 
 [tool.ruff]
 extend-exclude = ["doc", "_typed_ops.pyi"]
+line-length = 80
 
 [tool.ruff.lint]
 extend-select = [
