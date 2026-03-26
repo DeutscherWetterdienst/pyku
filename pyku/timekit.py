@@ -1128,10 +1128,12 @@ def split_by_datetimes(ds):
         data.
     """
 
-    import pyku.meta as meta
-    import numpy as np
     import itertools
+
+    import numpy as np
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # Edge case
     # ---------
@@ -1177,7 +1179,7 @@ def split_by_datetimes(ds):
     if to_offset(data_frequency) in \
             [to_offset('h'), to_offset('3h'), to_offset('6h')]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 1)
@@ -1188,7 +1190,7 @@ def split_by_datetimes(ds):
 
     elif to_offset(data_frequency) in [to_offset('12h'), to_offset('1D')]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 5)
@@ -1197,9 +1199,11 @@ def split_by_datetimes(ds):
     # Split data into groups of 10 years, if monthly or seasonal
     # ----------------------------------------------------------
 
-    elif to_offset(data_frequency) in [to_offset('1ME'), to_offset('QS-DEC')]:
+    elif to_offset(data_frequency) in [
+        to_offset('1MS'), to_offset('1ME'), to_offset('QS-DEC')
+    ]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 10)
@@ -1209,7 +1213,7 @@ def split_by_datetimes(ds):
     # ----------------------------------------------
 
     elif (to_offset(data_frequency) == to_offset('1YS')):
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 100)
@@ -1219,7 +1223,7 @@ def split_by_datetimes(ds):
     # ------------------------------------------------------------------
 
     else:
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 5)
@@ -1251,8 +1255,9 @@ def add_missing_time_labels(ds, frequency=None):
         where corresponding slices are filled with NaN values.
     """
 
-    import pyku.meta as meta
     import pandas as pd
+
+    from pyku import meta
 
     if frequency is None:
         raise Exception("Parameter 'frequency' is mandatory")
