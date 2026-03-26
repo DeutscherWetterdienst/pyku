@@ -1054,7 +1054,7 @@ def _get_freqstr_from_two_time_bounds(ds):
             freqstr_from_two_time_bounds = freqstr_from_first_time_bound
             logger.warning(
                 "Guessing frequency from two time stamps with two time bounds"
-           )
+            )
 
     return freqstr_from_two_time_bounds
 
