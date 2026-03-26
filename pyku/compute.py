@@ -1229,7 +1229,7 @@ def persistent_processing(
             unprocessed_files (List[str]): List of unprocessed files.
         """
 
-        import pyku.magic as magic
+        from pyku import magic
 
         # Open file
         # ---------

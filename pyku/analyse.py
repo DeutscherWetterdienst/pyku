@@ -3644,7 +3644,7 @@ def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
     Arguments:
         *dats (:class:`xarray.Dataset`, List[:class:`xarray.Dataset`]):
             The input dataset(s).
-        time_resolution (freqstr): Time resolution (e.g. '1M' or '6D')
+        time_resolution (freqstr): Time resolution (e.g. '1MS' or '6D')
         var (str): The variable name.
         ax (:class:`matplotlib.pyplot.axes`): Optional. Matplotlib pyplot axis.
 
@@ -3659,11 +3659,11 @@ def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
         .. ipython::
            :okwarning:
 
-           @savefig mean_vs_time_1M.png width=4in
+           @savefig mean_vs_time_1MS.png width=4in
            In [0]: %%time
               ...: import pyku
               ...: ds = pyku.resources.get_test_data('hyras')
-              ...: ds.ana.mean_vs_time(var='tas', time_resolution='1M')
+              ...: ds.ana.mean_vs_time(var='tas', time_resolution='1MS')
     """
 
     import itertools
