@@ -1561,7 +1561,8 @@ def mae_map(*dats, ref=None, var=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.timekit as timekit
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4404,7 +4405,8 @@ def mse_map(*dats, ref, var=None, ds_ref=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.timekit as timekit
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4508,7 +4510,8 @@ def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.meta as meta
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4526,7 +4529,7 @@ def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
         # Select common datetimes and unchunk along time
         # ----------------------------------------------
 
-        sel_ref, sel_da = meta.select_common_datetimes(da_ref, da)
+        sel_ref, sel_da = timekit.select_common_datetimes(da_ref, da)
 
         sel_ref = _unchunk_along_time(sel_ref)
         sel_da = _unchunk_along_time(sel_da)
@@ -4616,7 +4619,8 @@ def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.meta as meta
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4634,7 +4638,7 @@ def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
         # Select common datetimes and unchunck along time
         # -----------------------------------------------
 
-        sel_ref, sel_da = meta.select_common_datetimes(da_ref, da)
+        sel_ref, sel_da = timekit.select_common_datetimes(da_ref, da)
 
         sel_ref = _unchunk_along_time(sel_ref)
         sel_da = _unchunk_along_time(sel_da)
