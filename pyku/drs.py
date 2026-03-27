@@ -832,9 +832,7 @@ def _to_precipitations_cmor_units(ds, var=None):
         precipitations
     """
 
-    import pyku.meta as meta
-    from pandas.tseries.frequencies import to_offset
-    import pandas as pd
+    from pyku import meta
 
     # Sanity check
     # ------------
@@ -892,23 +890,7 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Here with metpy.quantify it will be better to update
     # and use get_time_intervals for it to be more general
 
-    frequency = meta.get_frequency(ds_copy, dtype='freqstr')
-    time_delta = pd.Timedelta(to_offset(frequency))
-
-    # Sanity check
-    # ------------
-
-    # Only frequencies that can be converted to seconds are supported at the
-    # moment
-
-    try:
-        _ = time_delta.total_seconds()
-
-    except Exception:
-        raise Exception(
-            f"Unit conversion for {var} with units {pr_units} and frequency "
-            "{frequency} is not implemented"
-        )
+    time_delta = meta.get_frequency(ds_copy, dtype='Timedelta')
 
     # Divide by the total number of seconds
     # -------------------------------------
@@ -964,6 +946,8 @@ def to_cmor_units(ds):
               ...: ds = pyku.resources.get_test_data('cordex_data')
               ...: ds.pyku.to_cmor_units()['tas'].attrs
     """
+
+    import metpy  # noqa: F401
 
     # Notes
     # -----
@@ -1821,6 +1805,6 @@ def cmorize(ds, global_metadata={}, area_def=None):
     invalid_cmor_coordinates = \
         set(dsvar.coords.keys()) - set(valid_cmor_coordinates)
 
-    dsvar = dsvar.drop(invalid_cmor_coordinates)
+    dsvar = dsvar.drop_vars(invalid_cmor_coordinates)
 
     return dsvar

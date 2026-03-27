@@ -23,7 +23,7 @@ have projection coordinates (:func:`pyku.meta.has_projection_coordinates`).
 
 :func:`pyku.meta.get_frequency` is a specialized function for detecting
 temporal frequency with support for bounds checks and multiple output formats
-(`freqstr`, `DateOffset`, `Timedelta`). Functions like
+(`freqstr`, `DateOffset`). Functions like
 :func:`pyku.meta.get_time_bounds`, and :func:`pyku.meta.has_time_bounds`
 provide tools to inspect, validate, and manage spatial and temporal
 information.
@@ -1059,7 +1059,7 @@ def _get_freqstr_from_two_time_bounds(ds):
     return freqstr_from_two_time_bounds
 
 
-def get_frequency(ds, dtype="Timedelta"):
+def get_frequency(ds, dtype="freqstr"):
     """
     This function differs from the standard xarray function
     :func:`xarray.infer_freq` by additionally checking time bounds.
@@ -1076,11 +1076,9 @@ def get_frequency(ds, dtype="Timedelta"):
               recommended default.
             - 'DateOffset': Represents the frequency using pandas' DateOffset.
             - 'Timedelta': Represents the frequency using pandas' Timedelta.
-
     Returns:
         freqstr, :class:`pandas.tseries.offsets.DateOffset`,
-        :class:`pandas.Timedelta`:
-        The inferred frequency of the dataset.
+        :class:`pandas.Timedelta`: The inferred frequency of the dataset.
 
     Examples:
 
@@ -1099,7 +1097,8 @@ def get_frequency(ds, dtype="Timedelta"):
               ...: ds.pyku.get_frequency(dtype='DateOffset')
 
            In [0]: # Get the frequency as DateOffset
-             ...: ds.pyku.get_frequency(dtype='Timedelta')
+              ...: ds.pyku.get_frequency(dtype='Timedelta')
+
 
         To create an offset that can be compared, use ``to_offset``, which
         converts a frequency string into an offset object. This ensures that
@@ -1116,15 +1115,17 @@ def get_frequency(ds, dtype="Timedelta"):
     """
 
     import pandas as pd
-    import xarray as xr
     from pandas.tseries.frequencies import to_offset
+
+    import xarray as xr
 
     # Sanity checks
     # -------------
 
-    if dtype not in ["Timedelta", "DateOffset", "freqstr"]:
+    if dtype not in ["freqstr", "DateOffset", "Timedelta"]:
         raise ValueError(
-            "dtype is either freqstr, Timedelta, or DateOffset, not {dtype}."
+            f"Invalid dtype '{dtype}'. Expected one of: 'freqstr', "
+            "'DateOffset', or 'Timedelta'."
         )
 
     if "time" not in dict(ds.coords).keys():
@@ -1250,23 +1251,21 @@ def get_frequency(ds, dtype="Timedelta"):
     # Return
     # ------
 
-    if dtype in ["Timedelta"]:
-        try:
-            return pd.Timedelta(to_offset(freqstr))
-        except Exception as e:
-            message = (
-                f"{e} \n"
-                f"The detected frequency is {freqstr}. A time delta in seconds"
-                " cannot be returned. Try dtype='freqstr'"
+    if dtype == "Timedelta":
+        offset = to_offset(freqstr)
+        if hasattr(offset, "nanos"):
+            return pd.Timedelta(offset.nanos)
+        else:
+            raise Exception(
+                f"The detected frequency is {freqstr}. A time delta in "
+                "seconds cannot be returned. Try dtype='freqstr'"
             )
-            raise Exception(message)
-
-    elif dtype in ["DateOffset"]:
+    if dtype == "DateOffset":
         return to_offset(freqstr)
-    elif dtype in ["freqstr"]:
+    elif dtype == "freqstr":
         return freqstr
     else:
-        message = "dtype should be Timedelta, DateOffset, or freqstr"
+        message = "dtype should be DateOffset, or freqstr"
         raise Exception(message)
 
 

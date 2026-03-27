@@ -215,7 +215,10 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
             # -----------------------------------------------------
 
             da = da.metpy.dequantify().rename(var)
-            ds_out = xr.merge([ds_out.drop(var), da], compat='no_conflicts')
+            ds_out = xr.merge(
+                [ds_out.drop_vars(var), da],
+                compat='no_conflicts'
+            )
 
         ds_out = ds_out.resample(time=frequency).sum()
 
@@ -432,13 +435,14 @@ def to_gregorian_calendar(ds, add_missing=False):
               ...: ds.pyku.to_gregorian_calendar()
     """
 
-    import xarray as xr
     import numpy as np
+
+    import xarray as xr
 
     # Set the aling_on option to year for 306_day calendar
     # ----------------------------------------------------
 
-    if ds.time.dt.calendar in ['360_day']:
+    if ds.time.dt.calendar == '360_day':
         align_on = 'year'
     else:
         align_on = None
@@ -448,7 +452,7 @@ def to_gregorian_calendar(ds, add_missing=False):
 
     ds_out = ds.copy()
 
-    if ds.time.dt.calendar in ['proleptic_gregorian']:
+    if ds.time.dt.calendar == 'proleptic_gregorian':
 
         logger.info(
             "Dataset already with a proleptic_gregorian calendar. "
@@ -1128,10 +1132,12 @@ def split_by_datetimes(ds):
         data.
     """
 
-    import pyku.meta as meta
-    import numpy as np
     import itertools
+
+    import numpy as np
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # Edge case
     # ---------
@@ -1177,7 +1183,7 @@ def split_by_datetimes(ds):
     if to_offset(data_frequency) in \
             [to_offset('h'), to_offset('3h'), to_offset('6h')]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 1)
@@ -1188,7 +1194,7 @@ def split_by_datetimes(ds):
 
     elif to_offset(data_frequency) in [to_offset('12h'), to_offset('1D')]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 5)
@@ -1197,9 +1203,11 @@ def split_by_datetimes(ds):
     # Split data into groups of 10 years, if monthly or seasonal
     # ----------------------------------------------------------
 
-    elif to_offset(data_frequency) in [to_offset('1ME'), to_offset('QS-DEC')]:
+    elif to_offset(data_frequency) in [
+        to_offset('1MS'), to_offset('1ME'), to_offset('QS-DEC')
+    ]:
 
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 10)
@@ -1209,7 +1217,7 @@ def split_by_datetimes(ds):
     # ----------------------------------------------
 
     elif (to_offset(data_frequency) == to_offset('1YS')):
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 100)
@@ -1219,7 +1227,7 @@ def split_by_datetimes(ds):
     # ------------------------------------------------------------------
 
     else:
-        years, _ = zip(*ds.groupby('time.year'))
+        years, _ = zip(*ds.groupby('time.year'), strict=False)
         groups = np.array([
             list(g) for k, g
             in itertools.groupby(years, lambda i: (i - 1) // 5)
@@ -1251,8 +1259,9 @@ def add_missing_time_labels(ds, frequency=None):
         where corresponding slices are filled with NaN values.
     """
 
-    import pyku.meta as meta
     import pandas as pd
+
+    from pyku import meta
 
     if frequency is None:
         raise Exception("Parameter 'frequency' is mandatory")

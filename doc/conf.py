@@ -2,6 +2,22 @@ project = 'pyku'
 copyright = '2026, Deutscher Wetterdienst'
 author = 'KU'
 
+# Supress warnings
+# ----------------
+
+# RuntimeWarning: You are using an unsupported version of pandoc (2.0.6).
+# Your version must be at least (2.9.2) but less than (4.0.0).
+
+import warnings
+
+warnings.filterwarnings(
+    "ignore", 
+    category=RuntimeWarning, 
+    message="You are using an unsupported version of pandoc"
+)
+# Extensions
+# ----------
+
 extensions = [
     'matplotlib.sphinxext.mathmpl',
     'matplotlib.sphinxext.plot_directive',
