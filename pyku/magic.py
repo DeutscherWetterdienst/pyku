@@ -324,6 +324,9 @@ def to_zarr(ds, output_file, encoding='auto'):
             'dtype': 'str'
         }
 
+    if 'pr' in ds.data_vars:
+        encoding['pr'] = {"dtype": "float32"}
+
     # Write data to NetCDF
     # --------------------
 

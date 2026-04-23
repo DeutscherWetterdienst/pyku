@@ -149,8 +149,8 @@ class UQM:
             # The solution is to use np.unique in order to obtain the sorted
             # array of unique values
 
-            hist_cal_bins = np.unique(np.percentile(cal, hist_percentiles))
-            hist_obs_bins = np.unique(np.percentile(obs, hist_percentiles))
+            hist_cal_bins = np.unique(np.nanpercentile(cal, hist_percentiles))
+            hist_obs_bins = np.unique(np.nanpercentile(obs, hist_percentiles))
 
             cal_hist = np.histogram(cal, bins=hist_cal_bins, density=True)
             obs_hist = np.histogram(obs, bins=hist_obs_bins, density=True)
@@ -515,9 +515,9 @@ class QDM:
             # The solution is to use np.unique in order to obtain the sorted
             # array of unique values
 
-            hist_mod_bins = np.unique(np.percentile(mod, hist_percentiles))
-            hist_obs_bins = np.unique(np.percentile(obs, hist_percentiles))
-            hist_cal_bins = np.unique(np.percentile(cal, hist_percentiles))
+            hist_mod_bins = np.unique(np.nanpercentile(mod, hist_percentiles))
+            hist_obs_bins = np.unique(np.nanpercentile(obs, hist_percentiles))
+            hist_cal_bins = np.unique(np.nanpercentile(cal, hist_percentiles))
 
             mod_hist = np.histogram(mod, bins=hist_mod_bins, density=True)
             obs_hist = np.histogram(obs, bins=hist_obs_bins, density=True)

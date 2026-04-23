@@ -182,3 +182,12 @@ polygons:
     archive_file: null
     target_file: null
     query: null
+
+  natural_climatic_regions_of_germany: 
+      description: >
+          Natural climatic regions of Germany, as described in 
+          https://www.dwd.de/DE/leistungen/klimaprojektionsdaten/pdf/naturraeume.html (German)
+      base_url: https://github.com/deutscherwetterdienst/pyku-data/raw/main/geodata
+      archive_file: KliNat-DWD.geojson.zip
+      target_file: "KliNat-DWD.geojson"
+      query: null

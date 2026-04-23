@@ -19,7 +19,11 @@ from xclim.core.calendar import percentile_doy
 
 from .. import logger
 import pyku.drs as drs
-from pyku.meta import get_geodata_varnames, has_time_bounds
+from pyku.meta import (
+    get_geodata_varnames,
+    has_time_bounds,
+    get_crs_varname
+)
 from pyku.timekit import (
     set_time_bounds_from_time_labels,
     to_gregorian_calendar
@@ -156,7 +160,7 @@ def main(args=None):
     time_chunk = 5000
     ds_dict = {}
     ds_varmapping = {}
-    # crs_var = None
+    crs_var = None
     for i, files in enumerate(ifiles):
         # probably include data_vars='all' or 'minimal' in the future needed
         ds = xr.open_mfdataset(
@@ -166,10 +170,9 @@ def main(args=None):
         ds = to_gregorian_calendar(ds, add_missing=True)
 
         # Check for CRS variable
-        # var_roles = check_variables_role(ds)
-        # has_crs = var_roles.loc[var_roles["key"] == "crs_var","value"].squeeze()  # noqa
-        # if has_crs:
-        #     crs_var = ds[has_crs]
+        crs_varname = get_crs_varname(ds)
+        if crs_varname:
+            crs_var = ds[crs_varname]
 
         # Derive variable name(s) from dataset automatically
         ds_var = get_geodata_varnames(ds)[0]
@@ -477,6 +480,16 @@ def main(args=None):
             else:
                 ofile = args.ofile
 
+        # Include grid mapping attribute if CRS is available
+        if crs_var:
+            result.attrs['grid_mapping'] = crs_varname
+
+            crs_wkt = crs_var.attrs.get("crs_wkt") or \
+                crs_var.attrs.get("spatial_ref")
+
+            if crs_wkt:
+                result.attrs['esri_pe_string'] = crs_wkt
+
         ds = im.create_dataset(
             result,
             var_attrs=index_attrs,
@@ -488,6 +501,10 @@ def main(args=None):
 
         # Set time coordinates and bounds
         ds = im.set_time_labels_and_bounds(ds, ofreq, sd, ed)
+
+        # Include CRS variable in dataset
+        if crs_var:
+            ds[crs_varname] = crs_var
 
         ds = ds.compute()
         # Save result as netCDF

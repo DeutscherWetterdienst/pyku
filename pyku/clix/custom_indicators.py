@@ -123,7 +123,7 @@ def wet_spell_frequency_bounded_thresh(
 
 @declare_units(
     pr="[precipitation]",
-    thresh="[precipitation]",
+    thresh="[length]",
 )
 def wet_spell_frequency_bounded_window(
     pr: xr.DataArray,
@@ -205,7 +205,7 @@ def wet_spell_frequency_bounded_window(
     wsf_high = wet_spell_frequency(
         pr,
         thresh=thresh,
-        window=window_max,
+        window=window_max+1,
         freq=freq,
         resample_before_rl=resample_before_rl,
         op=op,
@@ -217,7 +217,7 @@ def wet_spell_frequency_bounded_window(
 
 @declare_units(
     pr="[precipitation]",
-    thresh="[precipitation]",
+    thresh="[length]",
 )
 def dry_spell_frequency_bounded_window(
     pr: xr.DataArray,
@@ -298,7 +298,7 @@ def dry_spell_frequency_bounded_window(
     dsf_high = dry_spell_frequency(
         pr,
         thresh=thresh,
-        window=window_max,
+        window=window_max+1,
         freq=freq,
         resample_before_rl=resample_before_rl,
         op=op,

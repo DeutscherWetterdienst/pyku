@@ -12,7 +12,8 @@ build/*
 #core.*
 build/*
 doc/_build/*
-#doc/jupyter/*
+uv.lock
+.DS_Store
 dist/*
 *__pycache__*
 resources/*

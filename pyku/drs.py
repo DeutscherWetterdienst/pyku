@@ -252,42 +252,27 @@ def drs_stem(ds, varname=None, standard=None):
 
         freqstr = meta.get_frequency(ds, dtype='freqstr')
 
-        is_1hourly_output = to_offset(freqstr) == to_offset('1h')
-        is_3hourly_output = to_offset(freqstr) == to_offset('3h')
-        is_6hourly_output = to_offset(freqstr) == to_offset('6h')
-        is_12hourly_output = to_offset(freqstr) == to_offset('12h')
-        is_daily_output = to_offset(freqstr) == to_offset('1D')
-        is_monthly_output = to_offset(freqstr) == to_offset('1MS')
-        is_seasonal_output = to_offset(freqstr) == to_offset('QS-DEC')
-        is_yearly_output = to_offset(freqstr) == to_offset('1YS')
+        # Define frequency mappings with their corresponding time formats
+        frequency_format_mapping = {
+            to_offset('1h'): "%Y%m%d%H",
+            to_offset('3h'): "%Y%m%d%H",
+            to_offset('6h'): "%Y%m%d%H",
+            to_offset('12h'): "%Y%m%d%H",
+            to_offset('1D'): "%Y%m%d",
+            to_offset('1MS'): "%Y%m",
+            to_offset('QS-DEC'): "%Y%m",
+            to_offset('1YS'): "%Y",
+        }
 
-        if is_1hourly_output:
-            start_time = start_time.strftime("%Y%m%d%H")
-            end_time = end_time.strftime("%Y%m%d%H")
-        elif is_3hourly_output:
-            start_time = start_time.strftime("%Y%m%d%H")
-            end_time = end_time.strftime("%Y%m%d%H")
-        elif is_6hourly_output:
-            start_time = start_time.strftime("%Y%m%d%H")
-            end_time = end_time.strftime("%Y%m%d%H")
-        elif is_12hourly_output:
-            start_time = start_time.strftime("%Y%m%d%H")
-            end_time = end_time.strftime("%Y%m%d%H")
-        elif is_daily_output:
-            start_time = start_time.strftime("%Y%m%d")
-            end_time = end_time.strftime("%Y%m%d")
-        elif is_monthly_output:
-            start_time = start_time.strftime("%Y%m%d")
-            end_time = end_time.strftime("%Y%m%d")
-        elif is_seasonal_output:
-            start_time = start_time.strftime("%Y%m%d")
-            end_time = end_time.strftime("%Y%m%d")
-        elif is_yearly_output:
-            start_time = start_time.strftime("%Y%m%d")
-            end_time = end_time.strftime("%Y%m%d")
-        else:
-            start_time = start_time.strftime("%Y%m%d%H%M%S")
-            end_time = end_time.strftime("%Y%m%d%H%M%S")
+        # Get the format string for this frequency, default to full timestamp
+        time_format = frequency_format_mapping.get(
+            to_offset(freqstr),
+            "%Y%m%d%H%M%S"
+        )
+
+        # Format the time strings
+        start_time = start_time.strftime(time_format)
+        end_time = end_time.strftime(time_format)
 
     # Get file pattern from json file
     # -------------------------------
@@ -318,11 +303,12 @@ def drs_stem(ds, varname=None, standard=None):
             )
 
             if ds.attrs.get('sub_experiment_id') == 'none':
-                exec(f"{key}='{ds.attrs.get('variant_label')}'", {}, namespace)
+                namespace[key] = ds.attrs.get('variant_label')
             else:
-                exec(f"{key}='{ds.attrs.get('sub_experiment_id')}'+'-'+'{ds.attrs.get('variant_label')}'", {}, namespace)  # noqa
+                namespace[key] = (f"{ds.attrs.get('sub_experiment_id')}-"
+                                  f"{ds.attrs.get('variant_label')}")
         else:
-            exec(f"{key}='{ds.attrs.get(key)}'", {}, namespace)
+            namespace[key] = ds.attrs.get(key)
 
     # Edge case
     # ---------
@@ -350,7 +336,7 @@ def drs_stem(ds, varname=None, standard=None):
     # Evaluate the file pattern as an f-string
     # ----------------------------------------
 
-    filename = eval(f"f'{filename_pattern}'", {}, namespace) + '.nc'
+    filename = _resolve_template(filename_pattern, namespace) + '.nc'
 
     return filename
 
@@ -469,11 +455,12 @@ def drs_parent(ds, varname=None, standard=None, version=None):
             # out in a nicer way...):
 
             if ds.attrs.get('sub_experiment_id') == 'none':
-                exec(f"{key}='{ds.attrs.get('variant_label')}'", {}, namespace)
+                namespace[key] = ds.attrs.get('variant_label')
             else:
-                exec(f"{key}='{ds.attrs.get('sub_experiment_id')}'+'-'+'{ds.attrs.get('variant_label')}'", {}, namespace)  # noqa
+                namespace[key] = (f"{ds.attrs.get('sub_experiment_id')}-"
+                                  f"{ds.attrs.get('variant_label')}")
         else:
-            exec(f"{key}='{ds.attrs.get(key)}'", {}, namespace)
+            namespace[key] = ds.attrs.get(key)
 
     # Add optional version to path name
     # ---------------------------------
@@ -501,7 +488,7 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # Evaluate the file pattern as an f-string
     # ----------------------------------------
 
-    pathname = eval(f"f'{pathname_pattern}'", {}, namespace)
+    pathname = _resolve_template(pathname_pattern, namespace)
 
     if version_is_in_pattern and version_from_attrs is None:
 
@@ -1349,43 +1336,33 @@ def _to_cmor_attrs_frequency(ds):
     # Find if frequency is part of the CMOR standard
     # ----------------------------------------------
 
-    is_1hourly_output = to_offset(frequency) == to_offset('1h')
-    is_3hourly_output = to_offset(frequency) == to_offset('3h')
-    is_6hourly_output = to_offset(frequency) == to_offset('6h')
-    is_12hourly_output = to_offset(frequency) == to_offset('12h')
-    is_daily_output = to_offset(frequency) == to_offset('1D')
-    is_monthly_output = to_offset(frequency) == to_offset('1MS')
-    is_seasonal_output = to_offset(frequency) == to_offset('QS-DEC')
-    is_yearly_output = to_offset(frequency) == to_offset('1YS')
+    # Mapping of frequency offsets to CMOR-conform frequency strings
+    frequency_mapping = {
+        to_offset('1h'): '1hr',
+        to_offset('3h'): '3hr',
+        to_offset('6h'): '6hr',
+        to_offset('12h'): '12hr',
+        to_offset('1D'): 'day',
+        to_offset('1MS'): 'mon',
+        to_offset('QS-DEC'): 'sem',
+        to_offset('1YS'): 'year',
+    }
 
     # Set CMOR-conform frequency attribute
     # ------------------------------------
 
-    if is_1hourly_output:
-        ds.attrs['frequency'] = '1hr'
-    elif is_3hourly_output:
-        ds.attrs['frequency'] = '3hr'
-    elif is_6hourly_output:
-        ds.attrs['frequency'] = '6hr'
-    elif is_12hourly_output:
-        ds.attrs['frequency'] = '12hr'
-    elif is_daily_output:
-        ds.attrs['frequency'] = 'day'
-    elif is_monthly_output:
-        ds.attrs['frequency'] = 'mon'
-    elif is_seasonal_output:
-        ds.attrs['frequency'] = 'sem'
-    elif is_yearly_output:
-        ds.attrs['frequency'] = 'year'
+    offset = to_offset(frequency)
+
+    if offset in frequency_mapping:
+        ds.attrs['frequency'] = frequency_mapping[offset]
     else:
         logger.warning(
             f"frequency not a CMOR standard, using frequency="
-            f"'{to_offset(frequency).freqstr}'. See "
+            f"'{offset.freqstr}'. See "
             "https://pandas.pydata.org/pandas-docs/stable/user_guide/"
             "timeseries.html#offset-aliases"
         )
-
-        ds.attrs['frequency'] = to_offset(frequency).freqstr
+        ds.attrs['frequency'] = offset.freqstr
 
     return ds
 
@@ -1808,3 +1785,30 @@ def cmorize(ds, global_metadata={}, area_def=None):
     dsvar = dsvar.drop_vars(invalid_cmor_coordinates)
 
     return dsvar
+
+
+def _resolve_template(tstring, namespace):
+    """
+    Templating a string with a namespace.
+
+    Arguments:
+        tstring (str or :class:`string.Template`): The string to resolve. If
+        a string.Template is provided, the function will use the substitute
+        method of the Template class. If a string is provided, the function
+        will use the format method of the string class.
+        namespace (dict): The namespace to use for templating. The keys of the
+        dictionary should correspond to the placeholders in the string.
+
+    Returns:
+        str: The templated string.
+
+    Raises:
+        KeyError: If there are unresolved placeholders in the string after
+        templating.
+    """
+    if isinstance(tstring, str):
+        return tstring.format(**namespace)
+
+    from string import Template
+    if isinstance(tstring, Template):
+        return tstring.substitute(namespace)

@@ -18,6 +18,17 @@ Welcome to pyku's documentation!
    contribute/index.rst
    plugins.rst
    troubleshooting.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: DWD Standards
+
+   standards/climatic_regions.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
    api.rst
 
 Indices and tables
