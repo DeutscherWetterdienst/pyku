@@ -653,7 +653,7 @@ ua1000:
   units: m s-1
   cmor_units: m s-1
   valid_bounds: [-1.0e+20, 1.0e+20]
-  aliases: []
+  aliases: [U]
 ua925:
   long_name: Eastward Wind at 925hPa
   standard_name: eastward_wind
@@ -688,7 +688,7 @@ ua400:
   units: m s-1
   cmor_units: m s-1
   valid_bounds: [-1.0e+20, 1.0e+20]
-  aliases: [U]
+  aliases: []
 ua300:
   long_name: Eastward Wind at 300hPa
   standard_name: eastward_wind
