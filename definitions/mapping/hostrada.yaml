@@ -1,0 +1,29 @@
+---
+
+tas:
+        - temperature  # HOSTRADA
+tdew:
+        - dewpoint  # HOSTRADA
+hurs:
+        - humidity  # HOSTRADA
+rsds:
+        - SIS  # HR HOSTRADA
+sfcWind:
+        - FF  # HR HOSTRADA
+psl:
+        - SLP  # HR HOSTRADA
+ps:
+        - air_pressure  # HR HOSTRADA
+mixr:
+        - vapor  # HR HOSTRADA
+clt:
+        - CF  # HR HOSTRADA
+rlds:
+        - SDL  # HOSTRADA
+rlus:
+        - SOL  # HOSTRADA
+sfcWind_direction:
+        - DD  # HR HOSTRADA
+uhi:
+    comment: Variable without CORDEX standard
+     - urbanheatisland  # HR HOSTRADA

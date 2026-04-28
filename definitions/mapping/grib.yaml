@@ -1,0 +1,50 @@
+---
+
+tos:
+        - sst  # GRIB 34
+ta:
+        - t  # GRIB 130
+tas:
+        - t2m  # GRIB 167
+tasmax:
+        - mx2t  # GRIB 201
+tasmin:
+        - mn2t  # GRIB 202
+tdps:
+        - d2m  # GRIB 168
+hur:
+        - r  # GRIB 157
+pr:
+        - tp  # GRIB 228
+rsds:
+        - ssrd  # GRIB 169
+psl:
+        - msl  # GRIB 151
+ps:
+        - sp  # GRIB 134
+clt:
+        - tcc  # GRIB 164
+ssr:
+        - ssr  # GRIB 176
+rlut:
+        - ttr  # GRIB 179
+rlds:
+        - strd  # GRIB 175
+sd:
+        - sd  # GRIB 141
+va:
+        - v  # GRIB 132
+vas:
+        - v10  # GRIB 166
+ua:
+        - u  # GRIB 131
+uas:
+        - u10  # GRIB 165
+zg:
+        - z  # GRIB 129
+pevpr:
+        - mper  # GRIB 70
+evspsbl:
+        - e  # GRIB 182
+sic:
+        - ci  # GRIB 31

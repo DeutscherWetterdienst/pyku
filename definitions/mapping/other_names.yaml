@@ -1,0 +1,28 @@
+---
+
+tas:
+        - tasAdjustInterp  # SK CORDEX adjusted and interpolated
+tasmax:
+        - tmax  # HYRAS
+        - tasmaxAdjustInterp  # SK CORDEX adjusted and interpolated
+tasmin:
+        - tmin  # HYRAS
+        - tasminAdjustInterp  # SK CORDEX adjusted and interpolated
+tdew:
+        - tdewAdjustInterp  # SK CORDEX adjusted and interpolated
+hurs:
+        - hursAdjustInterp  # SK CORDEX adjusted and interpolated
+pr:
+        - prAdjustInterp  # SK CORDEX adjusted-interpolated
+        - precipitation_flux
+rsds:
+        - rsdsAdjustInterp  # CORDEX adjusted-interpolated
+sfcWind:
+        - sfcWindAdjustInterp  # SK CORDEX adjusted and interpolated
+psl:
+        - pslAdjustInterp  # SK CORDEX adjusted and interpolated
+ps:
+        - psAdjustInterp  # SK CORDEX adjusted-interpolated
+huss:
+        - hussAdjustInterp  # SK CORDEX adjusted and interpolated
+

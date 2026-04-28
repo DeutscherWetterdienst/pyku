@@ -1,0 +1,41 @@
+---
+
+cclm-td-2m:
+    long_name: 2m Dew Point Temperature
+    other_names:
+        - TD_2M  # COSMO-CLM
+mixr:
+    comment: To be verified
+    long_name: Near-Surface Water Vapor Mixing Ratio
+    other_names:
+        - vapor  # HR HOSTRADA
+cclm-clct:
+    comment: Variable without CORDEX standard
+    long_name: Total Cloud Cover
+    other_names:
+        - CLCT  # COSMO-CLM
+cclm-athb-s:
+    comment: Variable without CORDEX standard
+    long_name: Averaged Surface Net Downward Longwave Radiation
+    standard_name: surface_net_downward_longwave_flux
+    units: W m^-2
+    cmor_units: 'W m-2'
+    valid_bounds: [-3000, 3000]
+    other_names:
+        - ATHB_S  # COSMO-CLM
+sfcWind_direction:
+    comment: Variable without CORDEX standard
+    long_name: Near-Surface Wind Direction
+    standard_name: wind_direction
+    units: degree
+    cmor_units: 'degree'
+    other_names:
+        - DD  # HR HOSTRADA
+uhi:
+    comment: Variable without CORDEX standard
+    long_name: Canopy Urban Heat Island Intensity
+    standard_name: canopy_urban_heat_island_intensity
+    units: kelvins
+    cmor_units: 'K'
+    other_names:
+        - urbanheatisland  # HR HOSTRADA
