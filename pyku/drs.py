@@ -1058,30 +1058,6 @@ def get_cmor_varname(da):
     if da.name in drs_data.get('variables').keys():
         return da.name
 
-    # Try identifying the variable with `other_names`
-    # -----------------------------------------------
-
-    for var in drs_data.get('variables').keys():
-        if da.name in drs_data.get('variables').get(var).get('other_names'):
-            return var
-
-    # Try identifying the variable with `standard_name`
-    # -------------------------------------------------
-
-    for var in drs_data.get('variables').keys():
-
-        if (
-            da.attrs.get('standard_name') is not None and
-            da.attrs.get('standard_name') in (
-                drs_data
-                .get('variables')
-                .get(var)
-                .get('standard_name')
-                )
-        ):
-
-            return var
-
     # Try identifying the variable with `long_name`
     # ---------------------------------------------
 
@@ -1096,7 +1072,13 @@ def get_cmor_varname(da):
                 .get('long_name')
             )
         ):
+            return var
 
+    # Try identifying the variable with `other_names`
+    # -----------------------------------------------
+
+    for var in drs_data.get('variables').keys():
+        if da.name in drs_data.get('variables').get(var).get('other_names'):
             return var
 
     # We have reached the end and could not find the variable
