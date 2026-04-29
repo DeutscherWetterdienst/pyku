@@ -1,0 +1,357 @@
+cape:
+  name: CAPE_ML
+  level: null
+clivi:
+  name: TQI
+  level: null
+clt:
+  name: ACLCT
+  level: null
+clwvi:
+  name: TQW
+  level: null
+evspsblpot:
+  name: APOTEVAP_S
+  level: null
+hfls:
+  name: ALHFL_S
+  level: null
+hfss:
+  name: ASHFL_S
+  level: null
+hurs:
+  name: RELHUM_2M
+  level: height2m
+hus50m:
+  name: QV
+  level: height50m
+huss:
+  name: QV_2M
+  level: height2m
+li:
+  name: SLI
+  level: null
+pr:
+  name: TOT_PREC
+  level: null
+prc:
+  name: PREC_CON
+  level: null
+prsn:
+  name: TOT_SNOW
+  level: null
+prw:
+  name: TQV
+  level: null
+ps:
+  name: PS
+  level: null
+psl:
+  name: PMSL
+  level: null
+rlds:
+  name: ATHD_S
+  level: null
+rlus:
+  name: ATHU_S
+  level: null
+rlut:
+  name: ATHB_T
+  level: null
+rsds:
+  name: ASOD_S
+  level: null
+rsdsdir:
+  name: ASODIRD_S
+  level: null
+rsdt:
+  name: ASOD_T
+  level: null
+rsus:
+  name: ASODIFU_S
+  level: null
+rsut:
+  name: ASOU_T
+  level: null
+sfcWind:
+  name: ASP_10M
+  level: height10m
+ta50m:
+  name: T
+  level: height50m
+tas:
+  name: T_2M
+  level: height2m
+tauu:
+  name: AUMFL_S
+  level: null
+tauv:
+  name: AVMFL_S
+  level: null
+ts:
+  name: T_G
+  level: null
+ua100m:
+  name: U100z
+  level: height100m
+ua150m:
+  name: U150z
+  level: height150m
+ua200m:
+  name: U200z
+  level: height200m
+ua250m:
+  name: U250z
+  level: height250m
+ua300m:
+  name: U300z
+  level: height300m
+ua50m:
+  name: U50z
+  level: height50m
+uas:
+  name: U_10M
+  level: height10m
+va100m:
+  name: V100z
+  level: height100m
+va150m:
+  name: V150z
+  level: height150m
+va200m:
+  name: V200z
+  level: height200m
+va250m:
+  name: V250z
+  level: height250m
+va300m:
+  name: V300z
+  level: height300m
+va50m:
+  name: V50z
+  level: height50m
+vas:
+  name: V_10M
+  level: height10m
+zmla:
+  name: HPBL
+  level: null
+clh:
+  name: ACLCH
+  level: null
+cll:
+  name: ACLCL
+  level: null
+clm:
+  name: ACLCM
+  level: null
+hus1000:
+  name: QV1000p
+  level: p1000
+hus200:
+  name: QV200p
+  level: p200
+hus250:
+  name: QV250p
+  level: p250
+hus300:
+  name: QV300p
+  level: p300
+hus400:
+  name: QV400p
+  level: p400
+hus500:
+  name: QV500p
+  level: p500
+hus600:
+  name: QV600p
+  level: p600
+hus700:
+  name: QV700p
+  level: p700
+hus750:
+  name: QV750p
+  level: p750
+hus850:
+  name: QV850p
+  level: p850
+hus925:
+  name: QV925p
+  level: p925
+ta1000:
+  name: T1000p
+  level: p1000
+ta200:
+  name: T200p
+  level: p200
+ta250:
+  name: T250p
+  level: p250
+ta300:
+  name: T300p
+  level: p300
+ta400:
+  name: T400p
+  level: p400
+ta500:
+  name: T500p
+  level: p500
+ta600:
+  name: T600p
+  level: p600
+ta700:
+  name: T700p
+  level: p700
+ta750:
+  name: T750p
+  level: p750
+ta850:
+  name: T850p
+  level: p850
+ta925:
+  name: T925p
+  level: p925
+ua1000:
+  name: U1000p
+  level: p1000
+ua200:
+  name: U200p
+  level: p200
+ua250:
+  name: U250p
+  level: p250
+ua300:
+  name: U300p
+  level: p300
+ua400:
+  name: U400p
+  level: p400
+ua500:
+  name: U500p
+  level: p500
+ua600:
+  name: U600p
+  level: p600
+ua700:
+  name: U700p
+  level: p700
+ua750:
+  name: U750p
+  level: p750
+ua850:
+  name: U850p
+  level: p850
+ua925:
+  name: U925p
+  level: p925
+va1000:
+  name: V1000p
+  level: p1000
+va200:
+  name: V200p
+  level: p200
+va250:
+  name: V250p
+  level: p250
+va300:
+  name: V300p
+  level: p300
+va400:
+  name: V400p
+  level: p400
+va500:
+  name: V500p
+  level: p500
+va600:
+  name: V600p
+  level: p600
+va700:
+  name: V700p
+  level: p700
+va750:
+  name: V750p
+  level: p750
+va850:
+  name: V850p
+  level: p850
+va925:
+  name: V925p
+  level: p925
+wa1000:
+  name: W1000p
+  level: p1000
+wa200:
+  name: W200p
+  level: p200
+wa250:
+  name: W250p
+  level: p250
+wa300:
+  name: W300p
+  level: p300
+wa400:
+  name: W400p
+  level: p400
+wa500:
+  name: W500p
+  level: p500
+wa600:
+  name: W600p
+  level: p600
+wa700:
+  name: W700p
+  level: p700
+wa750:
+  name: W750p
+  level: p750
+wa850:
+  name: W850p
+  level: p850
+wa925:
+  name: W925p
+  level: p925
+capemax:
+  name: CAPE_MLMAX
+  level: null
+limax:
+  name: SLIMAX
+  level: null
+prhmax:
+  name: TOT_PREC
+  level: null
+sfcWindmax:
+  name: SPMAX_10M
+  level: height10m
+sund:
+  name: DURSUN
+  level: null
+tasmax:
+  name: TMAX_2M
+  level: height2m
+tasmin:
+  name: TMIN_2M
+  level: height2m
+wsgsmax:
+  name: SPGUST_10M
+  level: height10m
+z0:
+  name: AZ0
+  level: null
+orog:
+  name: HSURF
+  level: null
+sftgif:
+  name: FR_GLAC
+  level: null
+sftlaf:
+  name: FR_LAKE
+  level: null
+sftlf:
+  name: FR_LAND
+  level: null
+sfturf:
+  name: FR_URB
+  level: null
+od550aer:
+  name: AAOD_550NM
+  level: null
