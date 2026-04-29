@@ -1,0 +1,96 @@
+tos:
+  comment: null
+  name: sea_surface_temperature
+  level: placeholder
+ta:
+  comment: Check for conflict with HOSTRADA name
+  name: temperature
+  level: placeholder
+tas:
+  comment: null
+  name: 2m_temperature
+  level: placeholder
+tasmax:
+  comment: null
+  name: maximum_2m_temperature_since_previous_post_processing
+  level: placeholder
+tasmin:
+  comment: null
+  name: minimum_2m_temperature_since_previous_post_processing
+  level: placeholder
+tdps:
+  comment: null
+  name: 2m_dewpoint_temperature
+  level: placeholder
+hur:
+  comment: null
+  name: humidity
+  level: placeholder
+pr:
+  comment: null
+  name: mean_total_precipitation_rate
+  level: placeholder
+rsds:
+  comment: null
+  name: surface_solar_radiation_downwards
+  level: placeholder
+psl:
+  comment: null
+  name: mean_sea_level_pressure
+  level: placeholder
+ps:
+  comment: null
+  name: surface_pressure
+  level: placeholder
+clt:
+  comment: null
+  name: total_cloud_cover
+  level: placeholder
+ssr:
+  comment: null
+  name: surface_net_solar_radiation
+  level: placeholder
+rlut:
+  comment: null
+  name: top_net_thermal_radiation
+  level: placeholder
+rlds:
+  comment: null
+  name: surface_thermal_radiation_downwards
+  level: placeholder
+sd:
+  comment: null
+  name: snow_depth
+  level: placeholder
+va:
+  comment: null
+  name: v_component_of_wind
+  level: placeholder
+vas:
+  comment: null
+  name: 10m_v_component_of_wind
+  level: placeholder
+ua:
+  comment: null
+  name: u_component_of_wind
+  level: placeholder
+uas:
+  comment: null
+  name: 10m_u_component_of_wind
+  level: placeholder
+zg:
+  comment: null
+  name: geopotential
+  level: placeholder
+pevpr:
+  comment: null
+  name: mean_potential_evaporation_rate
+  level: placeholder
+evspsbl:
+  comment: null
+  name: evaporation
+  level: placeholder
+sic:
+  comment: null
+  name: sea_ice_cover
+  level: placeholder

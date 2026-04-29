@@ -1,0 +1,27 @@
+tas:
+  - tasAdjustInterp
+tasmax:
+  - tmax
+  - tasmaxAdjustInterp
+tasmin:
+  - tmin
+  - tasminAdjustInterp
+tdew:
+  - tdewAdjustInterp
+hurs:
+  - hursAdjustInterp
+pr:
+  - prAdjustInterp
+  - precipitation_flux  # To be clarified, should be short_name
+  - avg_tprate  # To be clarified, likely origin from GRIB CDS data
+rsds:
+  - rsdsAdjustInterp
+sfcWind:
+  - sfcWindAdjustInterp
+psl:
+  - pslAdjustInterp
+ps:
+  - psAdjustInterp
+huss:
+  - hussAdjustInterp
+
