@@ -1,0 +1,2403 @@
+# DO NOT EDIT. Automatically generated configuration file.
+# https://raw.githubusercontent.com/WCRP-CORDEX/data-request-table/refs/heads/main/cmor-table/datasets.csv
+
+tas:
+  long_name: Near-Surface Air Temperature
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tasmax:
+  long_name: Daily Maximum Near-Surface Air Temperature
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tasmin:
+  long_name: Daily Minimum Near-Surface Air Temperature
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+pr:
+  long_name: Precipitation
+  standard_name: precipitation_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+evspsbl:
+  long_name: Evaporation Including Sublimation and Transpiration
+  standard_name: water_evapotranspiration_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+huss:
+  long_name: Near-Surface Specific Humidity
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hurs:
+  long_name: Near-Surface Relative Humidity
+  standard_name: relative_humidity
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ps:
+  long_name: Surface Air Pressure
+  standard_name: surface_air_pressure
+  units: Pa
+  cmor_units: Pa
+  valid_bounds: [-1.0e+20, 1.0e+20]
+psl:
+  long_name: Sea Level Pressure
+  standard_name: air_pressure_at_mean_sea_level
+  units: Pa
+  cmor_units: Pa
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sfcWind:
+  long_name: Near-Surface Wind Speed
+  standard_name: wind_speed
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+uas:
+  long_name: Eastward Near-Surface Wind
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+vas:
+  long_name: Northward Near-Surface Wind
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+clt:
+  long_name: Total Cloud Cover Percentage
+  standard_name: cloud_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsds:
+  long_name: Surface Downwelling Shortwave Radiation
+  standard_name: surface_downwelling_shortwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlds:
+  long_name: Surface Downwelling Longwave Radiation
+  standard_name: surface_downwelling_longwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+orog:
+  long_name: Surface Altitude
+  standard_name: surface_altitude
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sftlf:
+  long_name: Percentage of the Grid Cell Occupied by Land
+  standard_name: land_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ts:
+  long_name: Surface Temperature
+  standard_name: surface_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tsl:
+  long_name: Temperature of Soil
+  standard_name: soil_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+prc:
+  long_name: Convective Precipitation
+  standard_name: convective_precipitation_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+prhmax:
+  long_name: Daily Maximum Hourly Precipitation Rate
+  standard_name: precipitation_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+prsn:
+  long_name: Snowfall Flux
+  standard_name: snowfall_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrros:
+  long_name: Surface Runoff
+  standard_name: surface_runoff_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrro:
+  long_name: Total Runoff
+  standard_name: runoff_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+snm:
+  long_name: Surface Snow Melt
+  standard_name: surface_snow_melt_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tauu:
+  long_name: Surface Downward Eastward Wind Stress
+  standard_name: surface_downward_eastward_stress
+  units: Pa
+  cmor_units: Pa
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tauv:
+  long_name: Surface Downward Northward Wind Stress
+  standard_name: surface_downward_northward_stress
+  units: Pa
+  cmor_units: Pa
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sfcWindmax:
+  long_name: Daily Maximum Near-Surface Wind Speed
+  standard_name: wind_speed
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sund:
+  long_name: Daily Duration of Sunshine
+  standard_name: duration_of_sunshine
+  units: s
+  cmor_units: s
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsdsdir:
+  long_name: Surface Direct Downwelling Shortwave Radiation
+  standard_name: surface_direct_downwelling_shortwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsus:
+  long_name: Surface Upwelling Shortwave Radiation
+  standard_name: surface_upwelling_shortwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlus:
+  long_name: Surface Upwelling Longwave Radiation
+  standard_name: surface_upwelling_longwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlut:
+  long_name: TOA Outgoing Longwave Radiation
+  standard_name: toa_outgoing_longwave_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsdt:
+  long_name: TOA Incident Shortwave Radiation
+  standard_name: toa_incoming_shortwave_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsut:
+  long_name: TOA Outgoing Shortwave Radiation
+  standard_name: toa_outgoing_shortwave_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hfls:
+  long_name: Surface Upward Latent Heat Flux
+  standard_name: surface_upward_latent_heat_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hfss:
+  long_name: Surface Upward Sensible Heat Flux
+  standard_name: surface_upward_sensible_heat_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrfso:
+  long_name: Soil Frozen Water Content
+  standard_name: soil_frozen_water_content
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrfsos:
+  long_name: Frozen Water Content in Upper Portion of Soil Column
+  standard_name: frozen_water_content_of_soil_layer
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrsfl:
+  long_name: Frozen Water Content of Soil Layer
+  standard_name: frozen_water_content_of_soil_layer
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrso:
+  long_name: Total Soil Moisture Content
+  standard_name: mass_content_of_water_in_soil
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrsos:
+  long_name: Moisture in Upper Portion of Soil Column
+  standard_name: mass_content_of_water_in_soil_layer
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrsol:
+  long_name: Total Water Content of Soil Layer
+  standard_name: mass_content_of_water_in_soil_layer
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+snw:
+  long_name: Surface Snow Amount
+  standard_name: surface_snow_amount
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+snc:
+  long_name: Snow Area Percentage
+  standard_name: surface_snow_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+snd:
+  long_name: Snow Depth
+  standard_name: surface_snow_thickness
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+siconca:
+  long_name: Sea-Ice Area Percentage (Atmospheric Grid)
+  standard_name: sea_ice_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zmla:
+  long_name: Height of Boundary Layer
+  standard_name: atmosphere_boundary_layer_thickness
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+prw:
+  long_name: Water Vapor Path
+  standard_name: atmosphere_mass_content_of_water_vapor
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+clwvi:
+  long_name: Condensed Water Path
+  standard_name: atmosphere_mass_content_of_cloud_condensed_water
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+clivi:
+  long_name: Ice Water Path
+  standard_name: atmosphere_mass_content_of_cloud_ice
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua1000:
+  long_name: Eastward Wind at 1000hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua925:
+  long_name: Eastward Wind at 925hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua850:
+  long_name: Eastward Wind at 850hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua700:
+  long_name: Eastward Wind at 700hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua600:
+  long_name: Eastward Wind at 600hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua500:
+  long_name: Eastward Wind at 500hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua400:
+  long_name: Eastward Wind at 400hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua300:
+  long_name: Eastward Wind at 300hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua250:
+  long_name: Eastward Wind at 250hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua200:
+  long_name: Eastward Wind at 200hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va1000:
+  long_name: Northward Wind at 1000hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va925:
+  long_name: Northward Wind at 925hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va850:
+  long_name: Northward Wind at 850hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va700:
+  long_name: Northward Wind at 700hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va600:
+  long_name: Northward Wind at 600hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va500:
+  long_name: Northward Wind at 500hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va400:
+  long_name: Northward Wind at 400hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va300:
+  long_name: Northward Wind at 300hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va250:
+  long_name: Northward Wind at 250hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va200:
+  long_name: Northward Wind at 200hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta1000:
+  long_name: Air Temperature at 1000hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta925:
+  long_name: Air Temperature at 925hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta850:
+  long_name: Air Temperature at 850hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta700:
+  long_name: Air Temperature at 700hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta600:
+  long_name: Air Temperature at 600hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta500:
+  long_name: Air Temperature at 500hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta400:
+  long_name: Air Temperature at 400hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta300:
+  long_name: Air Temperature at 300hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta250:
+  long_name: Air Temperature at 250hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta200:
+  long_name: Air Temperature at 200hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus1000:
+  long_name: Specific Humidity at 1000hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus925:
+  long_name: Specific Humidity at 925hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus850:
+  long_name: Specific Humidity at 850hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus700:
+  long_name: Specific Humidity at 700hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus600:
+  long_name: Specific Humidity at 600hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus500:
+  long_name: Specific Humidity at 500hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus400:
+  long_name: Specific Humidity at 400hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus300:
+  long_name: Specific Humidity at 300hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus250:
+  long_name: Specific Humidity at 250hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus200:
+  long_name: Specific Humidity at 200hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg1000:
+  long_name: Geopotential Height at 1000hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg925:
+  long_name: Geopotential Height at 925hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg850:
+  long_name: Geopotential Height at 850hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg700:
+  long_name: Geopotential Height at 700hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg600:
+  long_name: Geopotential Height at 600hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg500:
+  long_name: Geopotential Height at 500hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg400:
+  long_name: Geopotential Height at 400hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg300:
+  long_name: Geopotential Height at 300hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg250:
+  long_name: Geopotential Height at 250hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg200:
+  long_name: Geopotential Height at 200hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa1000:
+  long_name: Upward Air Velocity at 1000hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa925:
+  long_name: Upward Air Velocity at 925hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa850:
+  long_name: Upward Air Velocity at 850hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa700:
+  long_name: Upward Air Velocity at 700hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa600:
+  long_name: Upward Air Velocity at 600hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa500:
+  long_name: Upward Air Velocity at 500hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa400:
+  long_name: Upward Air Velocity at 400hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa300:
+  long_name: Upward Air Velocity at 300hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa250:
+  long_name: Upward Air Velocity at 250hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa200:
+  long_name: Upward Air Velocity at 200hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua50m:
+  long_name: Eastward Wind at 50m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua100m:
+  long_name: Eastward Wind at 100m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua150m:
+  long_name: Eastward Wind at 150m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va50m:
+  long_name: Northward Wind at 50m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va100m:
+  long_name: Northward Wind at 100m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va150m:
+  long_name: Northward Wind at 150m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta50m:
+  long_name: Air Temperature at 50m
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus50m:
+  long_name: Specific Humidity at 50m
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+evspsblpot:
+  long_name: Potential Evapotranspiration
+  standard_name: water_potential_evaporation_flux
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wsgsmax:
+  long_name: Daily Maximum Near-Surface Wind Speed of Gust
+  standard_name: wind_speed_of_gust
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+clh:
+  long_name: High Level Cloud Fraction
+  standard_name: cloud_area_fraction_in_atmosphere_layer
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+clm:
+  long_name: Mid Level Cloud Fraction
+  standard_name: cloud_area_fraction_in_atmosphere_layer
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cll:
+  long_name: Low Level Cloud Fraction
+  standard_name: cloud_area_fraction_in_atmosphere_layer
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsdscs:
+  long_name: Surface Downwelling Clear-Sky Shortwave Radiation
+  standard_name: surface_downwelling_shortwave_flux_in_air_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rldscs:
+  long_name: Surface Downwelling Clear-Sky Longwave Radiation
+  standard_name: surface_downwelling_longwave_flux_in_air_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsuscs:
+  long_name: Surface Upwelling Clear-Sky Shortwave Radiation
+  standard_name: surface_upwelling_shortwave_flux_in_air_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rluscs:
+  long_name: Surface Upwelling Clear-Sky Longwave Radiation
+  standard_name: surface_upwelling_longwave_flux_in_air_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsutcs:
+  long_name: TOA Outgoing Clear-Sky Shortwave Radiation
+  standard_name: toa_outgoing_shortwave_flux_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlutcs:
+  long_name: TOA Outgoing Clear-Sky Longwave Radiation
+  standard_name: toa_outgoing_longwave_flux_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+z0:
+  long_name: Surface Roughness Length
+  standard_name: surface_roughness_length
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cape:
+  long_name: Convective Available Potential Energy
+  standard_name: atmosphere_convective_available_potential_energy_wrt_surface
+  units: J kg^-1
+  cmor_units: J kg-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+li:
+  long_name: Lifted Index
+  standard_name: temperature_difference_between_ambient_air_and_air_lifted_adiabatically_from_the_surface
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cin:
+  long_name: Convective Inhibition
+  standard_name: atmosphere_convective_inhibition_wrt_surface
+  units: J kg^-1
+  cmor_units: J kg-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+capemax:
+  long_name: Daily Maximum Convective Available Potential Energy
+  standard_name: atmosphere_convective_available_potential_energy_wrt_surface
+  units: J kg^-1
+  cmor_units: J kg-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+limax:
+  long_name: Daily Maximum Lifted Index
+  standard_name: temperature_difference_between_ambient_air_and_air_lifted_adiabatically_from_the_surface
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cinmax:
+  long_name: Daily Maximum Convective Inhibition
+  standard_name: atmosphere_convective_inhibition_wrt_surface
+  units: J kg^-1
+  cmor_units: J kg-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550aer:
+  long_name: Ambient Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua150:
+  long_name: Eastward Wind at 150hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua100:
+  long_name: Eastward Wind at 100hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua70:
+  long_name: Eastward Wind at 70hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua50:
+  long_name: Eastward Wind at 50hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua30:
+  long_name: Eastward Wind at 30hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua20:
+  long_name: Eastward Wind at 20hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua10:
+  long_name: Eastward Wind at 10hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va150:
+  long_name: Northward Wind at 150hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va100:
+  long_name: Northward Wind at 100hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va70:
+  long_name: Northward Wind at 70hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va50:
+  long_name: Northward Wind at 50hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va30:
+  long_name: Northward Wind at 30hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va20:
+  long_name: Northward Wind at 20hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va10:
+  long_name: Northward Wind at 10hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta150:
+  long_name: Air Temperature at 150hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta100:
+  long_name: Air Temperature at 100hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta70:
+  long_name: Air Temperature at 70hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta50:
+  long_name: Air Temperature at 50hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta30:
+  long_name: Air Temperature at 30hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta20:
+  long_name: Air Temperature at 20hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta10:
+  long_name: Air Temperature at 10hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus150:
+  long_name: Specific Humidity at 150hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus100:
+  long_name: Specific Humidity at 100hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus70:
+  long_name: Specific Humidity at 70hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus50:
+  long_name: Specific Humidity at 50hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus30:
+  long_name: Specific Humidity at 30hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus20:
+  long_name: Specific Humidity at 20hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus10:
+  long_name: Specific Humidity at 10hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg150:
+  long_name: Geopotential Height at 150hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg100:
+  long_name: Geopotential Height at 100hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg70:
+  long_name: Geopotential Height at 70hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg50:
+  long_name: Geopotential Height at 50hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg30:
+  long_name: Geopotential Height at 30hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg20:
+  long_name: Geopotential Height at 20hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg10:
+  long_name: Geopotential Height at 10hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa150:
+  long_name: Upward Air Velocity at 150hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa100:
+  long_name: Upward Air Velocity at 100hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa70:
+  long_name: Upward Air Velocity at 70hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa50:
+  long_name: Upward Air Velocity at 50hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa30:
+  long_name: Upward Air Velocity at 30hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa20:
+  long_name: Upward Air Velocity at 20hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa10:
+  long_name: Upward Air Velocity at 10hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua750:
+  long_name: Eastward Wind at 750hPa
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va750:
+  long_name: Northward Wind at 750hPa
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ta750:
+  long_name: Air Temperature at 750hPa
+  standard_name: air_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hus750:
+  long_name: Specific Humidity at 750hPa
+  standard_name: specific_humidity
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zg750:
+  long_name: Geopotential Height at 750hPa
+  standard_name: geopotential_height
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wa750:
+  long_name: Upward Air Velocity at 750hPa
+  standard_name: upward_air_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua200m:
+  long_name: Eastward Wind at 200m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua250m:
+  long_name: Eastward Wind at 250m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ua300m:
+  long_name: Eastward Wind at 300m
+  standard_name: eastward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va200m:
+  long_name: Northward Wind at 200m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va250m:
+  long_name: Northward Wind at 250m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+va300m:
+  long_name: Northward Wind at 300m
+  standard_name: northward_wind
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sftgif:
+  long_name: Percentage of the Grid Cell Covered by Glacier
+  standard_name: land_ice_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mrsofc:
+  long_name: Capacity of Soil to Store Water  (Field Capacity)
+  standard_name: soil_moisture_content_at_field_capacity
+  units: kg m^-2
+  cmor_units: kg m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rootd:
+  long_name: Maximum Root Depth
+  standard_name: root_depth
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sftlaf:
+  long_name: Percentage of the Grid Cell Occupied by Lake
+  standard_name: area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sfturf:
+  long_name: Percentage of the Grid Cell Occupied by Urban Area
+  standard_name: area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+dtb:
+  long_name: Depth to Bedrock
+  standard_name: bedrock_depth_below_ground_level
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+areacella:
+  long_name: Atmosphere Grid-Cell Area
+  standard_name: cell_area
+  units: m^2
+  cmor_units: m2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+thetao:
+  long_name: Sea Water Potential Temperature
+  standard_name: sea_water_potential_temperature
+  units: celsius
+  cmor_units: degC
+  valid_bounds: [-1.0e+20, 1.0e+20]
+so:
+  long_name: Sea Water Salinity
+  standard_name: sea_water_salinity
+  units: '0.001'
+  cmor_units: '0.001'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+uo:
+  long_name: Sea Water X Velocity
+  standard_name: sea_water_x_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+vo:
+  long_name: Sea Water Y Velocity
+  standard_name: sea_water_y_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+zos:
+  long_name: Sea Surface Height Above Geoid
+  standard_name: sea_surface_height_above_geoid
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tos:
+  long_name: Sea Surface Temperature
+  standard_name: sea_surface_temperature
+  units: celsius
+  cmor_units: degC
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sos:
+  long_name: Sea Surface Salinity
+  standard_name: sea_surface_salinity
+  units: '0.001'
+  cmor_units: '0.001'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+mlotst:
+  long_name: Ocean Mixed Layer Thickness Defined by Sigma T
+  standard_name: ocean_mixed_layer_thickness_defined_by_sigma_t
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+areacello:
+  long_name: Grid-Cell Area for Ocean Variables
+  standard_name: cell_area
+  units: m^2
+  cmor_units: m2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+deptho:
+  long_name: Sea Floor Depth Below Geoid
+  standard_name: sea_floor_depth_below_geoid
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sftof:
+  long_name: Sea Area Percentage
+  standard_name: sea_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+thkcello:
+  long_name: Ocean Model Cell Thickness
+  standard_name: cell_thickness
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+volcello:
+  long_name: Ocean Grid-Cell Volume
+  standard_name: ocean_volume
+  units: m^3
+  cmor_units: m3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wo:
+  long_name: Sea Water Upward Velocity
+  standard_name: upward_sea_water_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rhop:
+  long_name: Sea Water Potential Density
+  standard_name: sea_water_potential_density
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hfds:
+  long_name: Downward Heat Flux at Sea Water Surface
+  standard_name: surface_downward_heat_flux_in_sea_water
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+hfcorr:
+  long_name: Heat Flux Correction
+  standard_name: heat_flux_correction
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsntds:
+  long_name: Net Downward Shortwave Radiation at Sea Water Surface
+  standard_name: net_downward_shortwave_flux_at_sea_water_surface
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tauuo:
+  long_name: Sea Water Surface Downward X Stress
+  standard_name: downward_x_stress_at_sea_water_surface
+  units: N m^2
+  cmor_units: N m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tauvo:
+  long_name: Sea Water Surface Downward Y Stress
+  standard_name: downward_y_stress_at_sea_water_surface
+  units: N m^2
+  cmor_units: N m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+uos:
+  long_name: Surface X Velocity
+  standard_name: surface_eastward_sea_water_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+vos:
+  long_name: Surface Y Velocity
+  standard_name: surface_northward_sea_water_velocity
+  units: m s^-1
+  cmor_units: m s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wfo:
+  long_name: Water Flux into Sea Water
+  standard_name: water_flux_into_sea_water
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+friver:
+  long_name: Water Flux into Sea Water from Rivers
+  standard_name: water_flux_into_sea_water_from_rivers
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wfonocorr:
+  long_name: Water Flux into Sea Water Without Flux Correction
+  standard_name: water_flux_into_sea_water_without_flux_correction
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+difvho:
+  long_name: Vertical Eddy Diffusivity
+  standard_name: ocean_vertical_heat_diffusivity
+  units: m^2 s^-1
+  cmor_units: m2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+tob:
+  long_name: Sea Water Potential Temperature at Sea Floor
+  standard_name: sea_water_potential_temperature_at_sea_floor
+  units: celsius
+  cmor_units: degC
+  valid_bounds: [-1.0e+20, 1.0e+20]
+siconc:
+  long_name: Sea-Ice Area Percentage (Ocean Grid)
+  standard_name: sea_ice_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sithick:
+  long_name: Sea Ice Thickness
+  standard_name: sea_ice_thickness
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sitemptop:
+  long_name: Surface Temperature of Sea Ice
+  standard_name: sea_ice_surface_temperature
+  units: kelvin
+  cmor_units: K
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550aer:
+  long_name: Ambient Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+asy550aer:
+  long_name: Aerosol Asymmetry Parameter at 550 nm
+  standard_name: asymmetry_factor_of_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550bc:
+  long_name: Black Carbon Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550dust:
+  long_name: Dust Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550nh4:
+  long_name: Ammonium Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_ammonium_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550no3:
+  long_name: Nitrate Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550oa:
+  long_name: Organic Matter Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550so4:
+  long_name: Sulfate Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550ss:
+  long_name: Sea-Salt Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ssa550aer:
+  long_name: Aerosol Single Scattering Albedo at 550 nm
+  standard_name: single_scattering_albedo_in_air_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+toz:
+  long_name: Total Column Ozone
+  standard_name: equivalent_thickness_at_stp_of_atmosphere_ozone_content
+  units: m
+  cmor_units: m
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000aer:
+  long_name: Ambient Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350aer:
+  long_name: Ambient Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440aer:
+  long_name: Ambient Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870aer:
+  long_name: Ambient Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+asy1000aer:
+  long_name: Aerosol Asymmetry Parameter at 1000 nm
+  standard_name: asymmetry_factor_of_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+asy350aer:
+  long_name: Aerosol Asymmetry Parameter at 350 nm
+  standard_name: asymmetry_factor_of_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+asy440aer:
+  long_name: Aerosol Asymmetry Parameter at 440 nm
+  standard_name: asymmetry_factor_of_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+asy870aer:
+  long_name: Aerosol Asymmetry Parameter at 870 nm
+  standard_name: asymmetry_factor_of_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+drybc:
+  long_name: Dry Deposition Rate of Black Carbon
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+drydust:
+  long_name: Dry Deposition Rate of Dust
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+drynh4:
+  long_name: Dry Deposition Rate of Ammonium
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+dryno3:
+  long_name: Dry Deposition Rate of Nitrate
+  standard_name: tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+dryoa:
+  long_name: Dry Deposition Rate of Organic Matter
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+dryso4:
+  long_name: Dry Deposition Rate of Sulfate
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+dryss:
+  long_name: Dry Deposition Rate of Sea-Salt
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emibc:
+  long_name: Total Emission Rate of Black Carbon
+  standard_name: tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emidust:
+  long_name: Total Emission Rate of Dust
+  standard_name: tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+eminh3:
+  long_name: Total Emission Rate of Ammonia
+  standard_name: tendency_of_atmosphere_mass_content_of_ammonia_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+eminox:
+  long_name: Total Emission Rate of NOx
+  standard_name: tendency_of_atmosphere_mass_content_of_nox_expressed_as_nitrogen_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emioa:
+  long_name: Total Emission Rate of Organic Matter
+  standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emiso2:
+  long_name: Total Emission Rate of Sulfure Dioxide
+  standard_name: tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emiso4:
+  long_name: Total Emission Rate of Sulfate
+  standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emiss:
+  long_name: Total Emission Rate of Sea-Salt
+  standard_name: tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+emivoc:
+  long_name: Total Emission Rate of NMVOC
+  standard_name: tendency_of_atmosphere_mass_content_of_nmvoc_due_to_emission
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000aer:
+  long_name: Ambient Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350aer:
+  long_name: Ambient Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440aer:
+  long_name: Ambient Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550lt1aer:
+  long_name: Ambient Fine Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_pm1_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od550soa:
+  long_name: Secondary Organic Aerosol Optical Thickness at 550nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870aer:
+  long_name: Ambient Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsutaf:
+  long_name: TOA Outgoing Aerosol-Free Shortwave Radiation
+  standard_name: toa_outgoing_shortwave_flux_assuming_no_aerosol
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsutcsaf:
+  long_name: TOA Outgoing Clear-Sky, Aerosol-Free Shortwave Radiation
+  standard_name: toa_outgoing_shortwave_flux_assuming_clear_sky_and_no_aerosol
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlutaf:
+  long_name: TOA Outgoing Aerosol-Free Longwave Radiation
+  standard_name: toa_outgoing_longwave_flux
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlutcsaf:
+  long_name: TOA Outgoing Clear-Sky, Aerosol-Free Longwave Radiation
+  standard_name: toa_outgoing_longwave_flux_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsdsaf:
+  long_name: Surface Downwelling Aerosol-Free Shortwave Radiation
+  standard_name: surface_downwelling_shortwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsdscsaf:
+  long_name: Surface Downwelling Clear-Sky, Aerosol-Free Shortwave Radiation
+  standard_name: surface_downwelling_shortwave_flux_in_air_assuming_clear_sky_and_no_aerosol
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsusaf:
+  long_name: Surface Upwelling Aerosol-Free Shortwave Radiation
+  standard_name: surface_upwelling_shortwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rsuscsaf:
+  long_name: Surface Upwelling Clear-Sky, Aerosol-Free Shortwave Radiation
+  standard_name: surface_upwelling_shortwave_flux_in_air_assuming_clear_sky_and_no_aerosol
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rldsaf:
+  long_name: Surface Downwelling Aerosol-Free Longwave Radiation
+  standard_name: surface_downwelling_longwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rldscsaf:
+  long_name: Surface Downwelling Clear-Sky, Aerosol-Free Longwave Radiation
+  standard_name: surface_downwelling_longwave_flux_in_air_assuming_clear_sky
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rlusaf:
+  long_name: Surface Upwelling Aerosol-Free Longwave Radiation
+  standard_name: surface_upwelling_longwave_flux_in_air
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+rluscsaf:
+  long_name: Surface Upwelling Clear-Sky, Aerosol-Free Longwave Radiation
+  standard_name: surface_upwelling_longwave_flux_in_air_assuming_clear_sky_and_no_aerosol
+  units: W m^-2
+  cmor_units: W m-2
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcbc:
+  long_name: Surface Concentration of Black Carbon
+  standard_name: mass_concentration_of_elemental_carbon_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcdust:
+  long_name: Surface Concentration of Dust
+  standard_name: mass_concentration_of_dust_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcnh4:
+  long_name: Surface Concentration of Ammonium
+  standard_name: mass_concentration_of_ammonium_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcno3:
+  long_name: Surface Concentration of Nitrate
+  standard_name: mass_concentration_of_nitrate_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcoa:
+  long_name: Surface Concentration of Organic Matter Aerosol
+  standard_name: mass_concentration_of_particulate_organic_matter_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcso4:
+  long_name: Surface Concentration of Sulfate
+  standard_name: mass_concentration_of_sulfate_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcsoa:
+  long_name: Surface Concentration of Secondary Organic Aerosol
+  standard_name: mass_concentration_of_secondary_particulate_organic_matter_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sconcss:
+  long_name: Surface Concentration of Sea-Salt Aerosol
+  standard_name: mass_concentration_of_sea_salt_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sedbc:
+  long_name: Sedimentation Rate of Black Carbon
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+seddust:
+  long_name: Sedimentation Rate of Dust
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sednh4:
+  long_name: Sedimentation Rate of Ammonium
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sedno3:
+  long_name: Sedimentation Rate of Nitrate
+  standard_name: tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sedoa:
+  long_name: Sedimentation Rate of Organic Matter
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sedso4:
+  long_name: Sedimentation Rate of Sulfate
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+sedss:
+  long_name: Sedimentation Rate of Sea-Salt
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_dry_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ssa1000aer:
+  long_name: Aerosol Single Scattering Albedo at 1000 nm
+  standard_name: single_scattering_albedo_in_air_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ssa350aer:
+  long_name: Aerosol Single Scattering Albedo at 350 nm
+  standard_name: single_scattering_albedo_in_air_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ssa440aer:
+  long_name: Aerosol Single Scattering Albedo at 440 nm
+  standard_name: single_scattering_albedo_in_air_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ssa870aer:
+  long_name: Aerosol Single Scattering Albedo at 870 nm
+  standard_name: single_scattering_albedo_in_air_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetbc:
+  long_name: Wet Deposition Rate of Black Carbon
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetdust:
+  long_name: Wet Deposition Rate of Dust
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetnh4:
+  long_name: Wet Deposition Rate of Ammonium
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetno3:
+  long_name: Wet Deposition Rate of Nitrate
+  standard_name: tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetoa:
+  long_name: Wet Deposition Rate of Organic Matter
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetso4:
+  long_name: Wet Deposition Rate of Sulfate
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+wetss:
+  long_name: Wet Deposition Rate of Sea-Salt
+  standard_name: minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_wet_deposition
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cdnc:
+  long_name: Cloud Liquid Droplet Number Concentration
+  standard_name: number_concentration_of_cloud_liquid_water_particles_in_air
+  units: m^-3
+  cmor_units: m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550aer:
+  long_name: Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550bc:
+  long_name: Black Carbon Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550dust:
+  long_name: Dust Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550nh4:
+  long_name: Ammonium Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550no3:
+  long_name: Nitrate Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550oa:
+  long_name: Organic Matter Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550so4:
+  long_name: Sulfate Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+ext550ss:
+  long_name: Sea-salt Aerosol Extinction Coefficient
+  standard_name: volume_extinction_coefficient_in_air_due_to_ambient_aerosol
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550aer:
+  long_name: Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550bc:
+  long_name: Black Carbon Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550dust:
+  long_name: Dust Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550nh4:
+  long_name: Ammonium Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550no3:
+  long_name: Nitrate Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550oa:
+  long_name: Organic Matter Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550so4:
+  long_name: Sulfate Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+scat550ss:
+  long_name: Sea-salt Aerosol Scattering Coefficient
+  standard_name: volume_scattering_coefficient_in_air_due_to_ambient_aerosol_particles
+  units: m^-1
+  cmor_units: m-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000bc:
+  long_name: Black Carbon Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000dust:
+  long_name: Dust Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000nh4:
+  long_name: Ammonium Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000no3:
+  long_name: Nitrate Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000oa:
+  long_name: Organic Matter Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000so4:
+  long_name: Sulfate Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs1000ss:
+  long_name: Sea-salt Aerosol Absorption Optical Thickness at 1000 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350bc:
+  long_name: Black Carbon Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350dust:
+  long_name: Dust Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350nh4:
+  long_name: Ammonium Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350no3:
+  long_name: Nitrate Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350oa:
+  long_name: Organic Matter Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350so4:
+  long_name: Sulfate Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs350ss:
+  long_name: Sea-salt Aerosol Absorption Optical Thickness at 350 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440bc:
+  long_name: Black Carbon Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440dust:
+  long_name: Dust Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440nh4:
+  long_name: Ammonium Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440no3:
+  long_name: Nitrate Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440oa:
+  long_name: Organic Matter Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440so4:
+  long_name: Sulfate Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs440ss:
+  long_name: Sea-salt Aerosol Absorption Optical Thickness at 440 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550bc:
+  long_name: Black Carbon Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550dust:
+  long_name: Dust Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550nh4:
+  long_name: Ammonium Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550no3:
+  long_name: Nitrate Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550oa:
+  long_name: Organic Matter Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550so4:
+  long_name: Sulfate Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs550ss:
+  long_name: Sea-salt Aerosol Absorption Optical Thickness at 550 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870bc:
+  long_name: Black Carbon Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870dust:
+  long_name: Dust Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870nh4:
+  long_name: Ammonium Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870no3:
+  long_name: Nitrate Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870oa:
+  long_name: Organic Matter Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870so4:
+  long_name: Sulfate Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+abs870ss:
+  long_name: Sea-salt Aerosol Absorption Optical Thickness at 870 nm
+  standard_name: atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000bc:
+  long_name: Black Carbon Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000dust:
+  long_name: Dust Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000nh4:
+  long_name: Ammonium Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_ammonium_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000no3:
+  long_name: Nitrate Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000oa:
+  long_name: Organic Matter Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000so4:
+  long_name: Sulfate Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od1000ss:
+  long_name: Sea-Salt Aerosol Optical Thickness at 1000nm
+  standard_name: atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350bc:
+  long_name: Black Carbon Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350dust:
+  long_name: Dust Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350nh4:
+  long_name: Ammonium Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_ammonium_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350no3:
+  long_name: Nitrate Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350oa:
+  long_name: Organic Matter Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350so4:
+  long_name: Sulfate Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od350ss:
+  long_name: Sea-Salt Aerosol Optical Thickness at 350nm
+  standard_name: atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440bc:
+  long_name: Black Carbon Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440dust:
+  long_name: Dust Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440nh4:
+  long_name: Ammonium Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_ammonium_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440no3:
+  long_name: Nitrate Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440oa:
+  long_name: Organic Matter Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440so4:
+  long_name: Sulfate Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od440ss:
+  long_name: Sea-Salt Aerosol Optical Thickness at 440nm
+  standard_name: atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870bc:
+  long_name: Black Carbon Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870dust:
+  long_name: Dust Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870nh4:
+  long_name: Ammonium Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_ammonium_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870no3:
+  long_name: Nitrate Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870oa:
+  long_name: Organic Matter Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870so4:
+  long_name: Sulfate Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+od870ss:
+  long_name: Sea-Salt Aerosol Optical Thickness at 870nm
+  standard_name: atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [-1.0e+20, 1.0e+20]
+chepnh4:
+  long_name: Chemical Production of Dry Ammonium Aerosol
+  standard_name: tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_net_chemical_production
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+chepno3:
+  long_name: Chemical Production of Dry Nitrate Aerosol
+  standard_name: tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_net_chemical_production
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+cheaqpso4:
+  long_name: Aqueous-Phase Production Rate of SO4
+  standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_aqueous_phase_net_chemical_production
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+chegpso4:
+  long_name: Gas-Phase Production Rate of SO4
+  standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_gaseous_phase_net_chemical_production
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+chepsoa:
+  long_name: Chemical Production of Dry Aerosol Secondary Organic Matter
+  standard_name: tendency_of_atmosphere_mass_content_of_secondary_particulate_organic_matter_dry_aerosol_particles_due_to_net_chemical_production
+  units: kg m^-2 s^-1
+  cmor_units: kg m-2 s-1
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concbc:
+  long_name: Concentration of Black Carbon
+  standard_name: mass_concentration_of_elemental_carbon_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concdust:
+  long_name: Concentration of Dust
+  standard_name: mass_concentration_of_dust_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concnh4:
+  long_name: Concentration of Ammonium
+  standard_name: mass_concentration_of_ammonium_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concno3:
+  long_name: Concentration of Nitrate
+  standard_name: mass_concentration_of_nitrate_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concoa:
+  long_name: Concentration of Organic Matter
+  standard_name: mass_concentration_of_particulate_organic_matter_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concso4:
+  long_name: Concentration of SO4
+  standard_name: mass_concentration_of_sulfate_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
+concss:
+  long_name: Concentration of Sea-Salt Aerosol
+  standard_name: mass_concentration_of_sea_salt_dry_aerosol_particles_in_air
+  units: kg m^-3
+  cmor_units: kg m-3
+  valid_bounds: [-1.0e+20, 1.0e+20]
