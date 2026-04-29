@@ -1,29 +1,39 @@
----
-
 tas:
-        - temperature  # HOSTRADA
+  comment: null
+  name: temperature
 tdew:
-        - dewpoint  # HOSTRADA
+  comment: null
+  name: dewpoint
 hurs:
-        - humidity  # HOSTRADA
+  comment: null
+  name: humidity
 rsds:
-        - SIS  # HR HOSTRADA
+  comment: null
+  name: SIS
 sfcWind:
-        - FF  # HR HOSTRADA
+  comment: null
+  name: FF
 psl:
-        - SLP  # HR HOSTRADA
+  comment: null
+  name: SLP
 ps:
-        - air_pressure  # HR HOSTRADA
+  comment: null
+  name: air_pressure
 mixr:
-        - vapor  # HR HOSTRADA
+  comment: null
+  name: vapor
 clt:
-        - CF  # HR HOSTRADA
+  comment: null
+  name: CF
 rlds:
-        - SDL  # HOSTRADA
+  comment: null
+  name: SDL
 rlus:
-        - SOL  # HOSTRADA
+  comment: null
+  name: SOL
 sfcWind_direction:
-        - DD  # HR HOSTRADA
+  comment: null
+  name: DD
 uhi:
-    comment: Variable without CORDEX standard
-     - urbanheatisland  # HR HOSTRADA
+  comment: Variable without CORDEX standard
+  name: urbanheatisland

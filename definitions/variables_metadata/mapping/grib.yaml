@@ -1,50 +1,72 @@
----
-
 tos:
-        - sst  # GRIB 34
+  grib_id: 34
+  name: sst
 ta:
-        - t  # GRIB 130
+  grib_id: 130
+  name: t
 tas:
-        - t2m  # GRIB 167
+  grib_id: 167
+  name: t2m:
 tasmax:
-        - mx2t  # GRIB 201
+  grib_id: 201
+  name: mx2t
 tasmin:
-        - mn2t  # GRIB 202
+  grib_id: 202
+  name: mn2t
 tdps:
-        - d2m  # GRIB 168
+  grib_id: 168
+  name: d2m
 hur:
-        - r  # GRIB 157
+  grib_id: 157
+  name: r
 pr:
-        - tp  # GRIB 228
+  grib_id: 228
+  name: tp
 rsds:
-        - ssrd  # GRIB 169
+  grib_id: 169
+  name: ssrd
 psl:
-        - msl  # GRIB 151
+  grib_id: 151
+  name: msl
 ps:
-        - sp  # GRIB 134
+  grib_id: 134
+  name: sp
 clt:
-        - tcc  # GRIB 164
+  grib_id: 164
+  name: tcc
 ssr:
-        - ssr  # GRIB 176
+  grib_id: 176
+  name: ssr
 rlut:
-        - ttr  # GRIB 179
+  grib_id: 179
+  name: ttr
 rlds:
-        - strd  # GRIB 175
+  grib_id: 175
+  name: strd
 sd:
-        - sd  # GRIB 141
+  grib_id: 141
+  name: sd
 va:
-        - v  # GRIB 132
+  grib_id: 132
+  name: v
 vas:
-        - v10  # GRIB 166
+  grib_id: 166
+  name: v10
 ua:
-        - u  # GRIB 131
+  grib_id: 131
+  name: u
 uas:
-        - u10  # GRIB 165
+  grib_id: 165
+  name: u10
 zg:
-        - z  # GRIB 129
+  grib_id: 129
+  name: z
 pevpr:
-        - mper  # GRIB 70
+  grib_id: 70
+  name: mper
 evspsbl:
-        - e  # GRIB 182
+  grib_id: 182
+  name: e
 sic:
-        - ci  # GRIB 31
+  grib_id: 31
+  name: ci

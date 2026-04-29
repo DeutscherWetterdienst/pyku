@@ -1,27 +1,39 @@
 tas:
   - tasAdjustInterp
+  - tasAdjust
 tasmax:
   - tmax
   - tasmaxAdjustInterp
+  - tasmaxAdjust
 tasmin:
+  comment: `tmin` originates from old HYRAS data files
   - tmin
   - tasminAdjustInterp
+  - tasminAdjust
 tdew:
   - tdewAdjustInterp
+  - tdewAdjust
 hurs:
   - hursAdjustInterp
+  - hursAdjust
 pr:
   - prAdjustInterp
-  - precipitation_flux  # To be clarified, should be short_name
+  - prAdjust
+  - precipitation_flux  # Should be short_name, kept for backward compatibility
   - avg_tprate  # To be clarified, likely origin from GRIB CDS data
 rsds:
   - rsdsAdjustInterp
+  - rsdsAdjust
 sfcWind:
   - sfcWindAdjustInterp
+  - sfcWindAdjust
 psl:
   - pslAdjustInterp
+  - pslAdjust
 ps:
   - psAdjustInterp
+  - psAdjust
 huss:
   - hussAdjustInterp
+  - hussAdjust
 
