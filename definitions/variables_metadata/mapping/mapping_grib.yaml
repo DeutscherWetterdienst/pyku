@@ -6,7 +6,7 @@ ta:
   name: t
 tas:
   comment: GRIB ID 167
-  name: t2m:
+  name: t2m
 tasmax:
   comment: GRIB ID 201
   name: mx2t

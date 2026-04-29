@@ -35,5 +35,11 @@ sfcWind_direction:
   comment: null
   name: DD
 uhi:
-  comment: Variable without CORDEX standard
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
   name: urbanheatisland
+sfcWind_direction:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: DD
+mixr:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: vapor

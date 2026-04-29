@@ -1,3 +1,5 @@
+# Manually-edited configuration file for COSMO-CLM variables
+
 vas:
   comment: null
   name: V_10M
@@ -16,3 +18,12 @@ va100m:
 ua100m:
   comment: null
   name: U100z
+cclm-td-2m:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: TD_2M
+cclm-clct:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: CLCT
+cclm-athb-s:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: ATHB_S
