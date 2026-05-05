@@ -4,9 +4,7 @@
 Functions for dealing with time
 """
 
-
-from . import logger
-from . import meta_dict
+from pyku import logger, PYKU_RESOURCES
 
 
 def date_range(*args, **kwargs):
@@ -287,11 +285,11 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
 
         elif how in ['min', 'minimum']:
             message = f"{varname}: min not implemented"
-            logger.warn(message)
+            logger.warning(message)
 
         elif how in ['max', 'maximum']:
             message = f"{varname}: max not implemented"
-            logger.warn(message)
+            logger.warning(message)
 
         elif how in ['sum']:
             output_cell_methods = 'time: sum'
@@ -401,7 +399,7 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
 
     else:
         message = f"frequency {frequency} not a CMOR standard."
-        logger.warn(message)
+        logger.warning(message)
 
         ds_out.attrs['frequency'] = to_offset(frequency).freqstr
 
@@ -476,7 +474,8 @@ def to_gregorian_calendar(ds, add_missing=False):
     # ---------------------------------------------------------
 
     time_bounds_exist = any(
-        elem in ds.keys() for elem in meta_dict['temporal_bounds']
+        elem in ds.keys() for elem in
+        PYKU_RESOURCES.get_value('metadata', 'temporal_bounds')
     )
 
     if time_bounds_exist:
@@ -741,7 +740,7 @@ def select_common_datetimes(ds1, ds2):
             "first 3 time labels of the second dataset are "
             f"{ds2.time.values[0:3]}"
         )
-        logger.warn(message)
+        logger.warning(message)
 
     # Select common datetimes
     # -----------------------
@@ -793,7 +792,8 @@ def filter_incomplete_datetimes(ds, frequency=None, freq_resampled=None):
             "Use parameter 'frequency' and set 'freq_resampled to None'")
 
     if freq_resampled is not None:
-        logger.warn("'freq_resampled' is deprecated. Please use 'frequency'")
+        logger.warning("'freq_resampled' is deprecated. "
+                       " Please use 'frequency'")
 
     if frequency is not None:
         freq_resampled = frequency

@@ -7,21 +7,11 @@ Reference implementation of DWD color maps
 # Load metadata at module initialization
 # --------------------------------------
 
-import importlib
-import yaml
-from . import logger
+from pyku import logger, PYKU_RESOURCES
+
 
 # Load metadata at module initialization
 # --------------------------------------
-
-base_colours_file = importlib.resources.files(
-    'pyku.etc') / 'base_colours.yaml'
-
-
-with open(base_colours_file) as f:
-    base_colours = yaml.safe_load(f)
-
-
 def get_colormaps_names():
 
     """
@@ -39,7 +29,7 @@ def get_colormaps_names():
               ...: colormaps.get_colormaps_names()
     """
 
-    return list(base_colours.keys())
+    return list(PYKU_RESOURCES.get_keys('base_colours'))
 
 
 def get_cmap_colors(name, kind='original', nbins=None, encoding='hex'):
@@ -125,7 +115,7 @@ def get_cmap(name, kind='original', nbins=None):
 
     if nbins is not None and kind in ['linear', 'original']:
         message = f"Option nbins is ignored when used with kind='{kind}'"
-        logger.warn(message)
+        logger.warning(message)
 
     if nbins is None and kind in ['segmented']:
         message = f"Option nbins shall passed when using kin='{kind}'"
@@ -180,7 +170,7 @@ def get_cmap(name, kind='original', nbins=None):
     # Get colors defined in configuration both as hex and convert to RGB
     # ------------------------------------------------------------------
 
-    hex_colors = base_colours.get(name).get('colours_hex')
+    hex_colors = PYKU_RESOURCES.get_value('base_colours', name, 'colours_hex')
     rgb_colors = [mcolors.hex2color(color) for color in hex_colors]
 
     # Get linear colormap
@@ -285,7 +275,7 @@ kind {kind} not implemented. kind should be one of 'original', 'linear', or \
 
     if nbins is not None and kind in ['linear', 'original']:
         message = f"Option nbins is ignored when used with type={type}"
-        logger.warn(message)
+        logger.warning(message)
 
     if nbins is None and kind in ['segmented']:
         message = f"Option nbins shall passed when using type={type}"

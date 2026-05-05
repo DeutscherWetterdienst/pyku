@@ -4,7 +4,7 @@
 Functions for dealing with features (polygons, points).
 """
 
-from . import logger
+from pyku import logger
 
 
 def rasterize_points(features, area_def, reference_datetime=None):
@@ -34,7 +34,7 @@ def rasterize_points(features, area_def, reference_datetime=None):
     import rasterio
     import rasterio.features
 
-    logger.warn("This function is not maintained.")
+    logger.warning("This function is not maintained.")
 
     # Get coordinates from area definition
     # ------------------------------------

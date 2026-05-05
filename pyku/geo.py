@@ -14,9 +14,8 @@ https://cordex.org/domains/
 
 """
 
-from . import logger
-from . import areas_cf_data
-from . import areas_data
+from pyku import PYKU_RESOURCES, logger
+
 
 # Define projections which are deprecated. This should be removed in a later
 # version of pyku
@@ -45,7 +44,7 @@ def list_standard_areas():
         List[str]: List of pyku standard areas
     """
 
-    return list(areas_data.keys())
+    return list(PYKU_RESOURCES.get_keys('areas'))
 
 
 def get_areas_cf_definitions():
@@ -64,7 +63,7 @@ def get_areas_cf_definitions():
 
     """
 
-    return areas_cf_data
+    return PYKU_RESOURCES.load_resource('areas_cf')
 
 
 def get_areas_definitions():
@@ -82,7 +81,7 @@ def get_areas_definitions():
               ...: geo.get_areas_definitions().keys()
     """
 
-    return areas_data
+    return PYKU_RESOURCES.load_resource('areas')
 
 
 def load_area_def(projection_name, area_file=None):
@@ -1988,7 +1987,7 @@ def select_area_extent(
     elif x_ordering == 'descending':
         ds_copy = ds_copy.sel({x_varname: slice(upper_right_x, lower_left_x)})
     else:
-        logger.warn(
+        logger.warning(
             f'Reordering projection coordinate {x_varname} in ascending order'
         )
         ds_copy = ds_copy.sortby(x_varname, ascending=True)
@@ -1999,7 +1998,7 @@ def select_area_extent(
     elif y_ordering == 'descending':
         ds_copy = ds_copy.sel({y_varname: slice(upper_right_y, lower_left_y)})
     else:
-        logger.warn(
+        logger.warning(
             f'Reordering projection coordinate {y_varname} in ascending order'
         )
         ds_copy = ds_copy.sortby(y_varname, ascending=True)
@@ -3361,13 +3360,13 @@ def project(
         # reading the CF-conform area definition.
 
         out_da.coords['lat'].attrs = \
-            drs.drs_data.get('coordinates').get('lat')['attrs']
+            PYKU_RESOURCES.get_value('drs', 'coordinates', 'lat')['attrs']
         out_da.coords['lon'].attrs = \
-            drs.drs_data.get('coordinates').get('lon')['attrs']
+            PYKU_RESOURCES.get_value('drs', 'coordinates', 'lon')['attrs']
         out_da.coords['y'].attrs = \
-            drs.drs_data.get('coordinates').get('y')['attrs']
+            PYKU_RESOURCES.get_value('drs', 'coordinates', 'y')['attrs']
         out_da.coords['x'].attrs = \
-            drs.drs_data.get('coordinates').get('x')['attrs']
+            PYKU_RESOURCES.get_value('drs', 'coordinates', 'x')['attrs']
 
         # Append DataArray to the list of DataArrays
         # ------------------------------------------

@@ -6,7 +6,7 @@ pyku command line utilities
 
 import argparse
 
-from . import __version__
+from pyku import __version__
 
 
 def read_parameters():

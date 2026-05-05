@@ -15,7 +15,7 @@ from rapidfuzz import process
 from xclim.core import Quantified  # register new type
 from xclim.core.units import units
 
-from . import indicator_data
+from pyku.clix import indicator_data
 from pyku.clix.manager import (
     get_indicator_description,
     load_function,

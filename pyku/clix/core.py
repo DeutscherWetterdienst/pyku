@@ -17,7 +17,7 @@ from dask.distributed import Client, LocalCluster
 from rapidfuzz import process
 from xclim.core.calendar import percentile_doy
 
-from .. import logger
+from pyku import logger
 import pyku.drs as drs
 from pyku.meta import (
     get_geodata_varnames,
@@ -36,7 +36,7 @@ from pyku.clix.custom_indicators import (
     expand_percentiles_to_daily,
     percentile_grouped
 )
-from . import indicator_data
+from pyku.clix import indicator_data
 
 
 # This is necessary to avoid warning using open_mfdataset

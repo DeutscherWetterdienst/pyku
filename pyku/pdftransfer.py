@@ -22,7 +22,7 @@ have dimensions (nfeatures x ntimes x nlats x nlons):
 
 """
 
-from . import logger
+from pyku import logger
 
 # Set precision
 # -------------
@@ -1078,7 +1078,7 @@ class PDFCorrector:
 
         if block_size is not None:
 
-            logger.warn(
+            logger.warning(
                 "block_size is deprecated, use parameter chunks while "
                 "opening with open_mfdataset"
             )

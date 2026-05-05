@@ -60,8 +60,7 @@ For more detailed information on each function, refer to their respective
 docstrings.
 """
 
-from . import meta_dict
-from . import logger
+from pyku import logger, PYKU_RESOURCES
 
 
 def find_match(searched_words, words, excluded_words=None):
@@ -146,7 +145,7 @@ def find_match(searched_words, words, excluded_words=None):
             f"Found {exact_words}. Using {exact_words[0]} "
         )
 
-        logger.warn(message)
+        logger.warning(message)
 
         return exact_words[0]
 
@@ -245,7 +244,7 @@ def get_pyku_metadata():
         dict: dictionary of pyku metadata
     """
 
-    return meta_dict
+    return PYKU_RESOURCES.get_value('metadata')
 
 
 def get_dataset_size(ds):
@@ -490,7 +489,8 @@ def get_spatial_vertices_varnames(ds):
     # --------------------------------------------
 
     spatial_vertices_varnames = list(
-        set(meta_dict.get("spatial_vertices")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'spatial_vertices')) &
+        set(ds.data_vars)
     )
 
     return spatial_vertices_varnames
@@ -519,7 +519,8 @@ def get_spatial_bounds_varnames(ds):
     # --------------------------------------------
 
     spatial_bnds_varnames = list(
-        set(meta_dict.get("spatial_bounds")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'spatial_bounds')) &
+        set(ds.data_vars)
     )
 
     return spatial_bnds_varnames
@@ -545,11 +546,13 @@ def get_latlon_bounds_varnames(ds):
     """
 
     possible_lat_bounds_varnames = list(
-        set(meta_dict.get("latitude_bounds")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'latitude_bounds')) &
+        set(ds.data_vars)
     )
 
     possible_lon_bounds_varnames = list(
-        set(meta_dict.get("longitude_bounds")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'longitude_bounds')) &
+        set(ds.data_vars)
     )
 
     if len(possible_lat_bounds_varnames) == 0:
@@ -656,7 +659,10 @@ def get_crs_varname(ds):
     # --------------------------------------------
 
     crs_varnames = list(
-        set(meta_dict.get("coordinate_reference_system")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata',
+                                     'coordinate_reference_system')
+            ) &
+        set(ds.data_vars)
     )
 
     if len(crs_varnames) > 1:
@@ -719,7 +725,8 @@ def get_time_bounds_varname(ds):
     # --------------------------------------------
 
     time_bnds_varnames = list(
-        set(meta_dict.get("temporal_bounds")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'temporal_bounds')) &
+        set(ds.data_vars)
     )
 
     # Raise a warning if multiple values are found
@@ -789,7 +796,8 @@ def get_time_bounds(ds, which=None):
     # --------------------------------------------
 
     time_bnds_names = list(
-        set(meta_dict.get("temporal_bounds")) & set(ds.data_vars)
+        set(PYKU_RESOURCES.get_value('metadata', 'temporal_bounds')) &
+        set(ds.data_vars)
     )
 
     if len(time_bnds_names) > 1:
@@ -1450,12 +1458,13 @@ def get_geographic_latlon_varnames(ds):
     # ---------------------------------------------
 
     # Get valid names
-    valid_lat_names = meta_dict["geographic_latitude"]
+    valid_lat_names = PYKU_RESOURCES.get_value('metadata',
+                                               'geographic_latitude')
 
     # Get other coordinate names, flatten the list of list to a list
     other_coord_names = [
         value
-        for key, value in meta_dict.items()
+        for key, value in PYKU_RESOURCES.load_resource('metadata').items()
         if key != "geographic_latitude"
     ]
 
@@ -1472,12 +1481,13 @@ def get_geographic_latlon_varnames(ds):
     # ---------------------------------------------
 
     # Get valid names
-    valid_lon_names = meta_dict["geographic_longitude"]
+    valid_lon_names = PYKU_RESOURCES.get_value('metadata',
+                                               'geographic_longitude')
 
     # Get other coordinate names, flattten the list of list ot a list
     other_coord_names = [
         value
-        for key, value in meta_dict.items()
+        for key, value in PYKU_RESOURCES.load_resource('metadata').items()
         if key != "geographic_longitude"
     ]
 
@@ -1533,12 +1543,13 @@ def get_projection_yx_varnames(ds):
     # ---------------------------------------------
 
     # Get valid names
-    valid_y_names = meta_dict["projection_coordinate_y"]
+    valid_y_names = PYKU_RESOURCES.get_value('metadata',
+                                             'projection_coordinate_y')
 
     # Get other coordinate names, flatten the list of list to a list
     other_coord_names = [
         value
-        for key, value in meta_dict.items()
+        for key, value in PYKU_RESOURCES.load_resource('metadata').items()
         if key != "projection_coordinate_y"
     ]
 
@@ -1553,12 +1564,13 @@ def get_projection_yx_varnames(ds):
     # ---------------------------------------------
 
     # Get valid names
-    valid_x_names = meta_dict["projection_coordinate_x"]
+    valid_x_names = PYKU_RESOURCES.get_value('metadata',
+                                             'projection_coordinate_x')
 
     # Get other coordinate names, flattten the list of list ot a list
     other_coord_names = [
         value
-        for key, value in meta_dict.items()
+        for key, value in PYKU_RESOURCES.load_resource('metadata').items()
         if key != "projection_coordinate_x"
     ]
 
@@ -1623,8 +1635,10 @@ def get_geodata_varnames(ds):
                 has_geographic_coordinates(ds[var]) or
                 has_projection_coordinates(ds[var])
             ) and
-            var not in meta_dict.get("spatial_vertices") and
-            var not in meta_dict.get("spatial_bounds")
+            var not in PYKU_RESOURCES.get_value('metadata',
+                                                'spatial_vertices') and
+            var not in PYKU_RESOURCES.get_value('metadata',
+                                                'spatial_bounds')
         )
     ]
 

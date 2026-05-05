@@ -2,18 +2,17 @@
 Package initializer
 """
 
-import os
-import tempfile
+import logging
+import warnings
+from importlib.metadata import (version as importlib_version,
+                                PackageNotFoundError)
+
 import xarray as xr
-from pathlib import Path
-import importlib
-import yaml
+
+from pyku.core import PYKU_RESOURCES, PYKU_CONFIG  # noqa
 
 # Set up the logger
 # -----------------
-
-import logging
-import warnings
 
 # Here the logger must be set at the top and before the import to the pyku
 # individual libaries in order to avoid a circular reference. Hence the flake
@@ -38,86 +37,6 @@ warnings.filterwarnings(
     "You will likely lose important projection information",
     UserWarning,
 )
-
-# Load pyku yaml data
-# -------------------
-
-# The loading of files need be set at the top and before the imports to avoid a
-# circular reference.
-
-drs_file = importlib.resources.files('pyku.etc') / 'drs.yaml'
-
-with open(drs_file) as f:
-    drs_data = yaml.safe_load(f)
-
-area_file = importlib.resources.files('pyku.etc') / 'areas.yaml'
-
-with open(area_file) as f:
-    areas_data = yaml.safe_load(f)
-
-area_cf_file = importlib.resources.files('pyku.etc') / 'areas_cf.yaml'
-
-with open(area_cf_file) as f:
-    areas_cf_data = yaml.safe_load(f)
-
-ensembles_file = \
-    importlib.resources.files('pyku.etc') / 'ensembles.yaml'
-
-with open(ensembles_file) as f:
-    ensembles_data = yaml.safe_load(f)
-
-pyku_metadata_file = \
-    importlib.resources.files('pyku.etc') / 'metadata.yaml'
-
-with open(pyku_metadata_file) as f:
-    meta_dict = yaml.safe_load(f)
-
-pyku_resources_file = \
-    importlib.resources.files('pyku.etc') / 'resources.yaml'
-
-with open(pyku_resources_file) as f:
-    pyku_resources = yaml.safe_load(f)
-
-
-# Set pyku data directories
-# -------------------------
-
-# for the writable data directory (i.e. the one where new data goes), follow
-# the XDG guidelines found at
-# https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-
-# Set default directories
-_writable_dir = Path.home() / '.local' / 'share'
-_data_dir = Path(os.environ.get("XDG_DATA_HOME", _writable_dir)) / 'pyku'
-_cache_dir = Path(tempfile.gettempdir()) / 'pyku_cache_dir'
-
-# Get PYKU_DATA_DIR if it exist
-pre_existing_data_dir = Path(os.environ.get('PYKU_DATA_DIR', ''))
-data_dir = Path(os.environ.get('PYKU_DATA_DIR', str(_data_dir)))
-data_dir_exist = data_dir.exists()
-data_dir_is_directory = data_dir.is_dir()
-data_dir_is_writable = os.access(data_dir, os.W_OK)
-
-# Sanity checks
-if not data_dir_exist:
-    logger.info(f"{data_dir} does not exist")
-if not data_dir_is_directory:
-    logger.info(f"{data_dir} not a directory")
-if not data_dir_is_writable:
-    logger.info(f"{data_dir} not writable")
-
-# Use default data directory if sanity checks failed
-if not data_dir_exist or not data_dir_is_directory or not data_dir_is_writable:
-    data_dir = _data_dir
-
-# Set the pyku configuration
-config = {
-    'pre_existing_data_dir': pre_existing_data_dir,
-    'data_dir': data_dir,
-    'cache_dir': _cache_dir,
-    'repo_data_dir': Path(__file__).parent / 'data',
-    'downloaders': {},
-}
 
 import pyku.magic as magic  # noqa
 import pyku.features as libfeatures  # noqa
@@ -146,8 +65,8 @@ from pyku.timekit import date_range  # noqa
 # -------------------
 
 try:
-    __version__ = importlib.metadata.version(__name__)
-except importlib.metadata.PackageNotFoundError:
+    __version__ = importlib_version(__name__)
+except PackageNotFoundError:
     __version__ = "unknown"
 
 

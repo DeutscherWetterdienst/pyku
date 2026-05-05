@@ -8,9 +8,13 @@ __all__ = [
     'list_polygon_identifiers'
 ]
 
-from . import config as pyku_config
-from . import pyku_resources
-from . import logger
+import warnings
+from zarr.errors import ZarrUserWarning
+
+from pyku import logger
+from pyku import PYKU_RESOURCES, PYKU_CONFIG
+
+pyku_resources = PYKU_RESOURCES.load_resource('resources')
 
 # Supress warnings
 # ----------------
@@ -26,9 +30,6 @@ from . import logger
 # by other Zarr libraries. Use this data type at your own risk! Check
 # https://github.com/zarr-developers/zarr-extensions/tree/main/data-types for
 # the status of data type specifications for Zarr V3.
-
-import warnings
-from zarr.errors import ZarrUserWarning
 
 warnings.filterwarnings(
     "ignore",
@@ -51,7 +52,7 @@ def _warn_if_default_data_dir():
     from . import _data_dir
 
     default_data_dir = Path(_data_dir).resolve()
-    current_path = pyku_config.get('data_dir')
+    current_path = Path(PYKU_CONFIG.get('data_dir'))
     current_data_dir = Path(current_path).resolve()
 
     if default_data_dir == current_data_dir:
@@ -72,7 +73,7 @@ def _warn_of_data_download(pooch_installer):
 
     from pathlib import Path
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     filenames = ", ".join(pooch_installer.registry.keys())
 
@@ -103,7 +104,7 @@ def _pooch_download(base_url=None, archive_file=None, target_file=None,
     # Get the pyku data directory
     # --------------------------
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     # Create pooch installer
     # ----------------------
@@ -213,7 +214,7 @@ def list_polygon_identifiers():
               ...: pyku.list_polygon_identifiers()
     """
 
-    return list(pyku_resources.get('polygons').keys())
+    return list(PYKU_RESOURCES.get_keys('resources', 'polygons'))
 
 
 def get_polygon_identifiers():
@@ -270,24 +271,27 @@ def get_geodataframe(identifier):
     # -------------------
 
     base_url = (
-        pyku_resources
-        .get('polygons')
-        .get(identifier)
-        .get('base_url', None)
+        PYKU_RESOURCES.get_value('resources',
+                                 'polygons',
+                                 identifier,
+                                 'base_url',
+                                 default=None)
     )
 
     archive_file = (
-        pyku_resources
-        .get('polygons')
-        .get(identifier)
-        .get('archive_file', None)
+        PYKU_RESOURCES.get_value('resources',
+                                 'polygons',
+                                 identifier,
+                                 'archive_file',
+                                 default=None)
     )
 
     target_file = (
-        pyku_resources
-        .get('polygons')
-        .get(identifier)
-        .get('target_file', None)
+        PYKU_RESOURCES.get_value('resources',
+                                 'polygons',
+                                 identifier,
+                                 'target_file',
+                                 default=None)
     )
 
     # Cases where polygons are built on-the-fly from other polygons
@@ -693,7 +697,7 @@ def _get_cftime_data():
     # Get the pyku data directory
     # --------------------------
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     # Create pooch installer
     # ----------------------
@@ -745,7 +749,7 @@ def _get_tas_hurs_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -807,7 +811,7 @@ def _get_tas_ps_huss_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -871,7 +875,7 @@ def _get_ps_tdew_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -945,7 +949,7 @@ def _get_low_res_hourly_tas_data():
     # Get the pyku data directory
     # --------------------------
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     # Create pooch installer
     # ----------------------
@@ -1045,7 +1049,7 @@ def _get_icon_grid_file():
     checksum = \
         "de22bb247525166865cdb8c396d3c39fecfadbc04cb613ced040074b60354c16"
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1084,7 +1088,7 @@ def _get_icon_grib_files():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1135,7 +1139,7 @@ def _get_small_tas_dataset():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1198,7 +1202,7 @@ def _get_hyras_tas_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1265,7 +1269,7 @@ def _get_hyras_pr_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1335,7 +1339,7 @@ def _get_monthly_hyras_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1400,7 +1404,7 @@ def _get_monthly_hyras_files():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1447,7 +1451,7 @@ def _get_daily_cosmo_rea6_data():
     import pooch
     from filelock import FileLock
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     pooch_installer = pooch.create(
         path=pyku_data_dir,
@@ -1530,7 +1534,7 @@ def _get_hostrada_data():
     # Get the pyku data directory
     # --------------------------
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     # Create pooch installer
     # ----------------------
@@ -1606,7 +1610,7 @@ def _get_CCCma_CanESM2_Amon_world():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_paths = [
         "s3://esgf-world/CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p1f1/Amon/"
@@ -1654,7 +1658,7 @@ def _get_MPI_ESM1_2_HR_tas_data():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_path = (
         "s3://esgf-world/CMIP6/CMIP/MPI-M/MPI-ESM1-2-HR/historical/r1i1p1f1/"
@@ -1695,7 +1699,7 @@ def _get_MPI_ESM1_2_HR_pr_data():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_path = (
         "s3://esgf-world/CMIP6/CMIP/MPI-M/MPI-ESM1-2-HR/historical/r1i1p1f1/"
@@ -1732,7 +1736,7 @@ def _get_global_data():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_path = (
         "s3://esgf-world/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/"
@@ -1768,7 +1772,7 @@ def _get_monthly_eurocordex_data():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_path = (
         "s3://euro-cordex/CMIP5/cordex/output/EUR-11/SMHI/MPI-M-MPI-ESM-LR/"
@@ -1802,7 +1806,7 @@ def _get_GCM_CanESM5_data():
     import s3fs
     import warnings
 
-    pyku_data_dir = Path(pyku_config.get('data_dir'))
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
     s3_path = (
         "s3://euro-cordex/CMIP5/cordex-reklies/output/EUR-11/CLMcom/"

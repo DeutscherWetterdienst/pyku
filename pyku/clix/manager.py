@@ -15,8 +15,8 @@ import xarray as xr
 import xclim
 from xclim.core.units import check_units
 
-from .. import logger
-from . import indicator_data
+from pyku import logger
+from pyku.clix import indicator_data
 
 
 @dataclass

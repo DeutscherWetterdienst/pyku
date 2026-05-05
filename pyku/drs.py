@@ -28,8 +28,26 @@ __all__ = [
             ]
 
 import xarray as xr
-from . import drs_data
-from . import logger
+
+from pyku import logger, PYKU_RESOURCES
+
+
+def _check_available_standards(standard):
+    """
+    Checks if a standard is defined in etc/drs.standards
+
+    Returns:
+        None
+
+    Raises:
+        Value Error if standard is not defined
+    """
+    _available_standards = PYKU_RESOURCES.get_keys('drs', 'standards')
+    if standard not in _available_standards:
+        raise ValueError(
+            f"DRS standard {standard} not implemented. Available standards "
+            f"are {_available_standards}"
+        )
 
 
 def list_drs_standards():
@@ -40,7 +58,7 @@ def list_drs_standards():
         List(str): List of DRS standards.
     """
 
-    return list(drs_data['standards'].keys())
+    return list(PYKU_RESOURCES.get_keys('drs', 'standards'))
 
 
 def drs_filename(ds, varname=None, standard=None, version=None):
@@ -99,19 +117,10 @@ def drs_filename(ds, varname=None, standard=None, version=None):
             f"following variables: {ds.data_vars}."
         )
 
-    # Get available standards from file
-    # ---------------------------------
+    # Check available standards
+    # -------------------------
 
-    available_standards = list(drs_data.get('standards').keys())
-
-    # Check the standard given as input of the function
-    # -------------------------------------------------
-
-    if standard not in available_standards:
-        raise ValueError(
-            f"DRS standard {standard} not implemented. Available standards "
-            f"are {available_standards}"
-        )
+    _check_available_standards(standard)
 
     path = drs_parent(
         ds,
@@ -201,19 +210,10 @@ def drs_stem(ds, varname=None, standard=None):
 
     variable_name = variable_names[0]  # noqa
 
-    # Get available standards from file
-    # ---------------------------------
+    # Check available standards
+    # -------------------------
 
-    available_standards = list(drs_data.get('standards').keys())
-
-    # Check the standard given as input of the function
-    # -------------------------------------------------
-
-    if standard not in available_standards:
-        raise ValueError(
-            f"DRS standard {standard} does not exist DRS standards available "
-            f"are: {available_standards}"
-        )
+    _check_available_standards(standard)
 
     # Initialize the filename
     # -----------------------
@@ -278,8 +278,7 @@ def drs_stem(ds, varname=None, standard=None):
     # -------------------------------
 
     filename_pattern = (
-        drs_data.get('standards')
-        .get(standard).get('stem_pattern')
+        PYKU_RESOURCES.get_value('drs', 'standards', standard, 'stem_pattern')
     )
 
     # Get all variables needed from file pattern
@@ -383,19 +382,10 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     if varname is not None:
         raise Exception("Parameter 'varname' is deprecated")
 
-    # Get available standards from file
-    # ---------------------------------
+    # Check available standards
+    # -------------------------
 
-    available_standards = list(drs_data.get('standards').keys())
-
-    # Check the standard given as input of the function
-    # -------------------------------------------------
-
-    if standard not in available_standards:
-        raise KeyError(
-            f"DRS standard {standard} does not exist. "
-            f"Available DRS standards available are: {available_standards}"
-        )
+    _check_available_standards(standard)
 
     # Generate a namespace to store local variables
     # ---------------------------------------------
@@ -427,11 +417,10 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # Get file pattern from json file
     # -------------------------------
 
-    pathname_pattern = (
-        drs_data.get('standards')
-        .get(standard)
-        .get('parent_pattern')
-    )
+    pathname_pattern = PYKU_RESOURCES.get_value('drs',
+                                                'standards',
+                                                standard,
+                                                'parent_pattern')
 
     # Get all variables needed from file pattern
     # ------------------------------------------
@@ -601,8 +590,8 @@ def to_drs_netcdfs(
         "One and only one CMOR variable in dataset supported"
 
     if 'time' not in list(dict(ds.sizes).keys()):
-        logger.warn("No 'time' dimension found in dataset")
-        logger.warn("Trying cmorization of a constant field")
+        logger.warning("No 'time' dimension found in dataset")
+        logger.warning("Trying cmorization of a constant field")
 
         # No grouping necessary
         groups = [1]
@@ -887,7 +876,10 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Set the CMOR precipitation units
     # --------------------------------
 
-    da.attrs['units'] = drs_data.get('variables').get('pr').get('cmor_units')
+    da.attrs['units'] = PYKU_RESOURCES.get_value('drs',
+                                                 'variables',
+                                                 'pr',
+                                                 'cmor_units')
 
     # Set CMOR attributes
     # -------------------
@@ -897,15 +889,11 @@ def _to_precipitations_cmor_units(ds, var=None):
     # standard_name and long_name, that this is set here.
 
     da.attrs['standard_name'] = (
-        drs_data.get('variables')
-        .get('pr')
-        .get('standard_name')
+        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'standard_name')
     )
 
     da.attrs['long_name'] = (
-        drs_data.get('variables')
-        .get('pr')
-        .get('long_name')
+        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'long_name')
     )
 
     # Overwrite DataArray into Dataset and return
@@ -968,7 +956,7 @@ def to_cmor_units(ds):
 
         cmor_varname = get_cmor_varname(ds_out[var])
 
-        if cmor_varname in drs_data.get('variables').keys():
+        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
 
             # Deal with units of precipitations, which can be creative
             # --------------------------------------------------------
@@ -983,9 +971,10 @@ def to_cmor_units(ds):
                 # --------------------------
 
                 units = (
-                    drs_data.get('variables')
-                    .get(cmor_varname)
-                    .get('units')
+                    PYKU_RESOURCES.get_value('drs',
+                                             'variables',
+                                             cmor_varname,
+                                             'units')
                 )
 
                 # Quantify
@@ -1007,9 +996,10 @@ def to_cmor_units(ds):
                 # ------------------
 
                 da.attrs['units'] = (
-                    drs_data.get('variables')
-                    .get(cmor_varname)
-                    .get('cmor_units')
+                    PYKU_RESOURCES.get_value('drs',
+                                             'variables',
+                                             cmor_varname,
+                                             'cmor_units')
                 )
 
                 ds_out[var] = da
@@ -1039,28 +1029,31 @@ def get_cmor_varname(da):
     # Case where the name of the variable is already CMOR-conform
     # -----------------------------------------------------------
 
-    if da.name in drs_data.get('variables').keys():
+    if da.name in PYKU_RESOURCES.get_keys('drs', 'variables'):
         return da.name
 
     # Try identifying the variable with `other_names`
     # -----------------------------------------------
 
-    for var in drs_data.get('variables').keys():
-        if da.name in drs_data.get('variables').get(var).get('other_names'):
+    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
+        if da.name in PYKU_RESOURCES.get_value('drs',
+                                               'variables',
+                                               var,
+                                               'other_names'):
             return var
 
     # Try identifying the variable with `standard_name`
     # -------------------------------------------------
 
-    for var in drs_data.get('variables').keys():
+    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
 
         if (
             da.attrs.get('standard_name') is not None and
             da.attrs.get('standard_name') in (
-                drs_data
-                .get('variables')
-                .get(var)
-                .get('standard_name')
+                PYKU_RESOURCES.get_value('drs',
+                                         'variables',
+                                         var,
+                                         'standard_name')
                 )
         ):
 
@@ -1069,15 +1062,14 @@ def get_cmor_varname(da):
     # Try identifying the variable with `long_name`
     # ---------------------------------------------
 
-    for var in drs_data.get('variables').keys():
-
+    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
         if (
             da.attrs.get('long_name') is not None and
             da.attrs.get('long_name') in (
-                drs_data
-                .get('variables')
-                .get(var)
-                .get('long_name')
+                PYKU_RESOURCES.get_value('drs',
+                                         'variables',
+                                         var,
+                                         'long_name')
             )
         ):
 
@@ -1194,7 +1186,7 @@ def _to_cmor_attrs_var(ds):
 
         cmor_varname = get_cmor_varname(ds[var])
 
-        if cmor_varname in drs_data.get('variables').keys():
+        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
 
             # Send a warning if rotated wind components are found
             # ---------------------------------------------------
@@ -1217,17 +1209,17 @@ def _to_cmor_attrs_var(ds):
             # -------------------
 
             ds[var].attrs['standard_name'] = (
-                drs_data
-                .get('variables')
-                .get(cmor_varname)
-                .get('standard_name')
+                PYKU_RESOURCES.get_value('drs',
+                                         'variables',
+                                         cmor_varname,
+                                         'standard_name')
             )
 
             ds[var].attrs['long_name'] = (
-                drs_data
-                .get('variables')
-                .get(cmor_varname)
-                .get('long_name')
+                PYKU_RESOURCES.get_value('drs',
+                                         'variables',
+                                         cmor_varname,
+                                         'long_name')
             )
 
         else:
@@ -1255,14 +1247,17 @@ def _get_cmor_coordinate_name(coordinate_name):
     # Case where the name of the coordinate is already CMOR-conform
     # -------------------------------------------------------------
 
-    if coordinate_name in drs_data.get('coordinates').keys():
+    if coordinate_name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
         return coordinate_name
 
     # Try identifying the variable with aliases
     # -----------------------------------------
 
-    for name in drs_data.get('coordinates').keys():
-        if name in drs_data.get('coordinates').get(name).get('aliases'):
+    for name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
+        if name in PYKU_RESOURCES.get_value('drs',
+                                            'coordinates',
+                                            name,
+                                            'aliases'):
             return name
 
     # We have reached the end and could not find the variable
@@ -1298,7 +1293,10 @@ def _to_cmor_attrs_coords(ds):
         if _get_cmor_coordinate_name(coordinate) is not None:
 
             ds[coordinate].attrs = \
-                drs_data.get('coordinates').get(coordinate).get('attrs')
+                PYKU_RESOURCES.get_value('drs',
+                                         'coordinates',
+                                         coordinate,
+                                         'attrs')
 
         else:
             message = \
@@ -1470,7 +1468,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     Note:
 
         The available standards are available in dictionary
-        ``pyku.drs.drs_data``:
+        ``pyku.PYKU_RESOURCES.load_resource('drs')``:
 
         .. ipython::
 
@@ -1481,9 +1479,10 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
 
         .. ipython::
 
-           In [0]: print(drs.drs_data.get('standards')\\
-              ...:                   .get('cordex')\\
-              ...:                   .get('parent_pattern'))
+           In [0]: print(pyku.PYKU_RESOURCES.get_value('drs', \
+                                                       'standards', \
+                                                       'cordex', \
+                                                       'parent_pattern'))
 
     Example:
 
@@ -1512,10 +1511,10 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     # ------------------------------
 
     parent_pattern = (
-        drs_data
-        .get('standards')
-        .get(standard)
-        .get('parent_pattern')
+        PYKU_RESOURCES.get_value('drs',
+                                 'standards',
+                                 standard,
+                                 'parent_pattern')
     )
 
     # Deal with the variable name
@@ -1590,20 +1589,21 @@ def get_facets_from_file_stem(filename, standard):
     Note:
 
         The available standards are available in dictionary
-        ``pyku.drs.drs_data``:
+        ``pyku.PYKU_RESOURCES.load_resource('drs')``:
 
         .. ipython::
 
            In [0]: import pyku.drs as drs
-              ...: list(drs.drs_data.get('standards').keys())
+              ...: list(drs.PYKU_RESOURCES.get_keys('drs', 'standards'))
 
         For example the patterns for the cordex standard can be obtained with:
 
         .. ipython::
 
-           In [0]: print(drs.drs_data.get('standards')\\
-              ...:                   .get('cordex')\\
-              ...:                   .get('stem_pattern'))
+           In [0]: print(pyku.PYKU_RESOURCES.get_value('drs', \
+                                                       'standards', \
+                                                       'cordex', \
+                                                       'stem_pattern'))
 
     Example:
 
@@ -1628,10 +1628,7 @@ def get_facets_from_file_stem(filename, standard):
     # ------------------------------
 
     stem_pattern = (
-        drs_data
-        .get('standards')
-        .get(standard)
-        .get('stem_pattern')
+        PYKU_RESOURCES.get_value('drs', 'standards', standard, 'stem_pattern')
     )
 
     # Get stem from file name

@@ -4,7 +4,7 @@
 Processing library
 """
 
-from . import logger
+from pyku import logger
 
 
 def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
@@ -414,7 +414,7 @@ def calc_tdew(ds):
     if tas_cm and hurs_cm and (tas_cm == hurs_cm):
         tdew.attrs['cell_methods'] = tas_cm
     else:
-        logger.warn(
+        logger.warning(
             "cell_methods not set: attributes either differ or are missing "
             "from input data"
         )
@@ -527,7 +527,7 @@ def calc_hurs(ds):
     if ps_cm and tas_cm and huss_cm and (ps_cm == tas_cm == huss_cm):
         hurs.attrs['cell_methods'] = ps_cm
     else:
-        logger.warn(
+        logger.warning(
             "cell_methods not set: attributes either differ or are missing "
             "from input data"
         )
@@ -616,7 +616,7 @@ def calc_huss(ds):
     if ps_cm and tdew_cm and (ps_cm == tdew_cm):
         huss.attrs['cell_methods'] = ps_cm
     else:
-        logger.warn(
+        logger.warning(
             "cell_methods not set: attributes either differ or are missing "
             "from input data"
         )
@@ -911,8 +911,8 @@ GWL_temp_offset must be a float, got {GWL_temp_offset}!
 
     if ds.attrs['frequency'] == 'day':
         fac = 365
-        logger.warn("Detected data frequency is 'day', " +
-                    "assuming a 365-day calendar on the underlying data.")
+        logger.warning("Detected data frequency is 'day', " +
+                       "assuming a 365-day calendar on the underlying data.")
 
     # Calculate temperature anomalies
     # -------------------------------
@@ -1266,7 +1266,7 @@ def persistent_processing(
             # ------------------------
 
             if 'time' not in processed_data.dims:
-                logger.warn(
+                logger.warning(
                     "The 'time' dimension is missing. This function is "
                     "specifically designed for datasets with a temporal "
                     "component."
