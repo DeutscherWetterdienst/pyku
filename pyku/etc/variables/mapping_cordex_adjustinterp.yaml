@@ -1,33 +1,33 @@
 tas:
   comment: null
-  - tasAdjustInterp
+  name: tasAdjustInterp
 tasmax:
   comment: null
-  - tasmaxAdjustInterp
+  name: tasmaxAdjustInterp
 tasmin:
   comment: null
-  - tasminAdjustInterp
+  name: tasminAdjustInterp
 tdew:
   comment: null
-  - tdewAdjustInterp
+  name: tdewAdjustInterp
 hurs:
   comment: null
-  - hursAdjustInterp
+  name: hursAdjustInterp
 pr:
   comment: null
-  - prAdjustInterp
+  name: prAdjustInterp
 rsds:
   comment: null
-  - rsdsAdjustInterp
+  name: rsdsAdjustInterp
 sfcWind:
   comment: null
-  - sfcWindAdjustInterp
+  name: sfcWindAdjustInterp
 psl:
   comment: null
-  - pslAdjustInterp
+  name: pslAdjustInterp
 ps:
   comment: null
-  - psAdjustInterp
+  name: psAdjustInterp
 huss:
   comment: null
-  - hussAdjustInterp
+  name: hussAdjustInterp

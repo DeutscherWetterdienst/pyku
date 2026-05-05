@@ -1,9 +1,9 @@
 tasmax:
-  comment: `tmax` originates from old HYRAS data files
+  comment: tmax originates from old HYRAS data files
   names:
     - tmax
 tasmin:
-  comment: `tmin` originates from old HYRAS data files
+  comment: tmin originates from old HYRAS data files
   names:
     - tmin
 pr:

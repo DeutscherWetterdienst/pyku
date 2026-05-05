@@ -24,14 +24,26 @@ class PykuResourceProvider:
         if resource_name in self._resource_cache:
             return self._resource_cache[resource_name]
 
-        resource_path = self._resource_dir / (resource_name + '.yaml')
+        # Recursive search for the filename
+        # ---------------------------------
 
-        if not resource_path.exists():
-            raise FileNotFoundError(f"Resource file not found: \
-                                    {resource_path}")
+        matches = list(self._resource_dir.rglob(f"{resource_name}.yaml"))
+
+        if not matches:
+            raise FileNotFoundError(
+                f"Resource {resource_name}.yaml not found in "
+                f"{self._resource_dir}"
+            )
+
+        # Use the only match found. Not the ','
+        # -------------------------------------
+
+        resource_path, = matches
+
+        # Parse and cache
+        # ---------------
 
         resource = _parse_yaml_file(resource_path)
-
         self._resource_cache[resource_name] = resource
 
         return resource
