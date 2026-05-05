@@ -10,9 +10,7 @@ See also:
     * ``./pyku/etc/metadata.yaml``
 """
 
-from . import logger
-from . import drs_data
-from . import meta_dict as meta_data
+from pyku import logger, PYKU_RESOURCES
 
 
 def check(ds, standard=None, completeness_period=None, all_nan_slices=False):
@@ -768,7 +766,7 @@ def check_valid_bounds(ds, bounds=None):
 
             return issues
 
-        bounds_dict = drs_data
+        bounds_dict = PYKU_RESOURCES.get_value('drs')
         ds_varnames = meta.get_geodata_varnames(ds_copy)
 
     data = []
@@ -1440,7 +1438,7 @@ def check_cmor_varnames(ds):
     import pyku.meta as meta
 
     data = [
-        (var, var, None) if var in drs_data.get('variables').keys()
+        (var, var, None) if var in PYKU_RESOURCES.get_keys('drs', 'variables')
         else ('variable name', var, 'Variable not CMOR-conform')
         for var in meta.get_geodata_varnames(ds)
     ]
@@ -1499,9 +1497,13 @@ could not check if standard_name is CMOR-conform"
             the_issue = "Variable has no attribute standard_name"
 
         else:
-            expected_std_name = drs_data.get('variables')\
-                                        .get(cmor_varname)\
-                                        .get('standard_name')
+            expected_std_name = PYKU_RESOURCES.get_value(
+                'drs',
+                'variables',
+                cmor_varname,
+                'standard_name'
+            )
+
             read_std_name = ds[varname].attrs.get('standard_name')
 
             the_result = \
@@ -1569,9 +1571,12 @@ def _check_variables_cmor_long_name(ds):
             the_issue = "Variable has no attribute long_name"
 
         else:
-            expected_long_name = drs_data.get('variables')\
-                                         .get(cmor_varname)\
-                                         .get('long_name')
+            expected_long_name = PYKU_RESOURCES.get_value(
+                'drs',
+                'variables',
+                cmor_varname,
+                'standard_name'
+            )
             read_long_name = ds[varname].attrs.get('long_name')
 
             the_result = \
@@ -1639,8 +1644,13 @@ def _check_variables_cmor_units(ds):
             the_issue = "Variable has no attribute units"
 
         else:
-            expected_units = drs_data.get('variables').get(cmor_varname)\
-                                     .get('cmor_units')
+            expected_units = PYKU_RESOURCES.get_value(
+                'drs',
+                'variables',
+                cmor_varname,
+                'cmor_units'
+            )
+
             read_units = ds[varname].attrs.get('units')
 
             the_result = \
@@ -1808,6 +1818,8 @@ def check_variables_role(ds):
     import pandas as pd
     import pyku.meta as meta
 
+    meta_data = PYKU_RESOURCES.load_resource('metadata')
+
     for var in ds.data_vars:
 
         # Check if crs information depends on time
@@ -1898,24 +1910,23 @@ def check_drs(ds, standard=None):
     # Get available standards from file
     # ---------------------------------
 
-    available_standards = list(drs_data.get('standards').keys())
+    available_standards = list(PYKU_RESOURCES.get_keys('drs', 'standards'))
 
     # Check the standard given as input of the function
     # -------------------------------------------------
 
     if standard not in available_standards:
 
-        message = (
+        raise Exception(
             f"DRS standard {standard} is not implemented. Available standards "
             f"are {available_standards} "
-        )
 
-        raise Exception(message)
+        )
 
     # Get all drs keys from the standard chosen
     # -----------------------------------------
 
-    keys = drs_data.get('standards').get(standard).get('metadata')
+    keys = PYKU_RESOURCES.get_value('drs', 'standards', standard, 'metadata')
 
     # Loop and check
     # --------------
@@ -1960,7 +1971,7 @@ def check_files_multi(
     import pandas as pd
     from dask import delayed
 
-    logger.warn('This function is deprecated')
+    logger.warning('This function is deprecated')
 
     @delayed
     def check_one_file(file):
@@ -2213,7 +2224,7 @@ def compare_datetimes(ds1, ds2):
     if not isinstance(ds1_datetimes[0], np.datetime64) or \
        not isinstance(ds2_datetimes[0], np.datetime64):
 
-        warnings.warn("Only np.datetime64 is fully supported.")
+        warnings.warning("Only np.datetime64 is fully supported.")
 
         issues = pd.DataFrame(
             data=list_of_issues,

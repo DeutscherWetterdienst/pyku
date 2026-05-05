@@ -3,10 +3,11 @@ import unittest
 
 class TestMetaMethods(unittest.TestCase):
 
-    import pyku.meta as meta
-    import pyku
-    import os
     import glob
+    import os
+
+    import pyku
+    from pyku import meta
 
     hyras_tas = pyku.resources.get_test_data('hyras')
     GCM_CanESM5 = pyku.resources.get_test_data('GCM_CanESM5')
@@ -34,7 +35,7 @@ class TestMetaMethods(unittest.TestCase):
         import pandas
 
         self.assertIsInstance(
-            self.meta.get_frequency(self.hyras_tas),
+            self.meta.get_frequency(self.hyras_tas, dtype='Timedelta'),
             pandas._libs.tslibs.timedeltas.Timedelta
         )
 

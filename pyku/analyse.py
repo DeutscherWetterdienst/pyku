@@ -1561,7 +1561,8 @@ def mae_map(*dats, ref=None, var=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.timekit as timekit
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -1653,9 +1654,11 @@ def monthly_bias_var(ds_mod, ds_obs, var, **kwargs):
               ...: ds.ana.monthly_bias_var(ref, var='tas')
     """  # noqa
 
-    import pyku.timekit as timekit
-    import numpy as np
     import calendar
+
+    import numpy as np
+
+    from pyku import timekit
 
     # Clear current figure
     # --------------------
@@ -1804,6 +1807,19 @@ def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
     if dat_mod is None or dat_obs is None:
         raise ValueError("Input shall no be None")
 
+    # Sanity checks
+    # -------------
+
+    if dat_mod.time.size == 0:
+        raise ValueError(
+            "dat_mod contains no time steps (dimension is empty)."
+        )
+
+    if dat_obs.time.size == 0:
+        raise ValueError(
+            "dat_obs contains no time steps (dimension is empty)."
+        )
+
     # Get xr.DataArray
     # ----------------
 
@@ -1827,12 +1843,22 @@ def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
     # Select common datetimes
     # -----------------------
 
-    da_mod, da_obs = timekit.select_common_datetimes(da_mod, da_obs)
+    inter_mod, inter_obs = timekit.select_common_datetimes(da_mod, da_obs)
+
+    # Sanity check
+    # ------------
+
+    if inter_mod.time.size == 0 or inter_obs.time.size == 0:
+        raise ValueError(
+            "The intersection of the datasets resulted in an empty time "
+            f"dimension. \n {da_mod.time=} \n{da_obs.time=}"
+        )
 
     # Calculate bias
     # --------------
 
-    bias_da = (da_mod-da_obs)
+    bias_da = (inter_mod-inter_obs)
+
     bias_df = \
         bias_da.groupby('time.month').mean(tuple(bias_da.dims)).to_dataframe()
 
@@ -3644,7 +3670,7 @@ def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
     Arguments:
         *dats (:class:`xarray.Dataset`, List[:class:`xarray.Dataset`]):
             The input dataset(s).
-        time_resolution (freqstr): Time resolution (e.g. '1M' or '6D')
+        time_resolution (freqstr): Time resolution (e.g. '1MS' or '6D')
         var (str): The variable name.
         ax (:class:`matplotlib.pyplot.axes`): Optional. Matplotlib pyplot axis.
 
@@ -3659,11 +3685,11 @@ def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
         .. ipython::
            :okwarning:
 
-           @savefig mean_vs_time_1M.png width=4in
+           @savefig mean_vs_time_1MS.png width=4in
            In [0]: %%time
               ...: import pyku
               ...: ds = pyku.resources.get_test_data('hyras')
-              ...: ds.ana.mean_vs_time(var='tas', time_resolution='1M')
+              ...: ds.ana.mean_vs_time(var='tas', time_resolution='1MS')
     """
 
     import itertools
@@ -4379,7 +4405,8 @@ def mse_map(*dats, ref, var=None, ds_ref=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.timekit as timekit
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4483,7 +4510,8 @@ def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.meta as meta
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4501,7 +4529,7 @@ def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
         # Select common datetimes and unchunk along time
         # ----------------------------------------------
 
-        sel_ref, sel_da = meta.select_common_datetimes(da_ref, da)
+        sel_ref, sel_da = timekit.select_common_datetimes(da_ref, da)
 
         sel_ref = _unchunk_along_time(sel_ref)
         sel_da = _unchunk_along_time(sel_da)
@@ -4591,7 +4619,8 @@ def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
     """  # noqa
 
     import xskillscore
-    import pyku.meta as meta
+
+    from pyku import timekit
 
     # Get xr.DataArrays
     # -----------------
@@ -4609,7 +4638,7 @@ def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
         # Select common datetimes and unchunck along time
         # -----------------------------------------------
 
-        sel_ref, sel_da = meta.select_common_datetimes(da_ref, da)
+        sel_ref, sel_da = timekit.select_common_datetimes(da_ref, da)
 
         sel_ref = _unchunk_along_time(sel_ref)
         sel_da = _unchunk_along_time(sel_da)

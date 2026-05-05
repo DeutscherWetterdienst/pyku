@@ -7,7 +7,7 @@ This modules redefines default parameters to fit the most common use when
 working with climate data.
 """
 
-from . import logger
+from pyku import logger
 
 
 def sorcery(ds):
@@ -56,7 +56,7 @@ def open_mfdataset(files, option='auto'):
 
     import xarray as xr
 
-    logger.warn("Experimental")
+    logger.warning("Experimental")
 
     if option not in ['auto']:
         raise Exception("Only option='auto' is implemented")

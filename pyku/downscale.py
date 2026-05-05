@@ -4,7 +4,7 @@
 Downscaling library
 """
 
-from . import logger
+from pyku import logger
 
 
 class Downscaler:

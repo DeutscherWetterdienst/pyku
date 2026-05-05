@@ -13,9 +13,7 @@ __all__ = [
 Functions for finding data
 """
 
-from . import logger
-from . import drs_data
-from . import ensembles_data
+from pyku import logger, PYKU_RESOURCES
 
 
 def expand_unix_patterns(patterns, regex=None):
@@ -234,7 +232,8 @@ def get_files_by_drs(standard, parent_dir=None,
     # Raise exception if the standard is not defined
     # ----------------------------------------------
 
-    if standard not in list(drs_data.get('standards').keys()):
+    if standard not in list(PYKU_RESOURCES.get_value('drs',
+                                                     'standards').keys()):
         message = f"standard {standard} not defined"
         raise Exception(message)
 
@@ -242,9 +241,10 @@ def get_files_by_drs(standard, parent_dir=None,
     # -------------------------------------------------
 
     parent_pattern = \
-        drs_data.get('standards').get(standard).get('parent_pattern')
+        PYKU_RESOURCES.get_value('drs', 'standards', standard,
+                                 'parent_pattern')
     stem_pattern = \
-        drs_data.get('standards').get(standard).get('stem_pattern')
+        PYKU_RESOURCES.get_value('drs', 'standards', standard, 'stem_pattern')
 
     # Raise exception if parent_dir does not exist
     # --------------------------------------------
@@ -592,7 +592,7 @@ def select_files_by_datetimes(
             ]
 
             if is_weird_calendar:
-                logger.warn("cftime implementation needs testing")
+                logger.warning("cftime implementation needs testing")
 
         # Convert to pandas Timestamp
         # ---------------------------
@@ -1106,7 +1106,7 @@ def get_file_dataframe(files, standard='cordex'):
     # Raise exception if the standard is not defined
     # ----------------------------------------------
 
-    if standard not in list(drs_data.get('standards').keys()):
+    if standard not in list(PYKU_RESOURCES.get_keys('drs', 'standards')):
         message = f"standard {standard} not defined"
         raise Exception(message)
 
@@ -1130,7 +1130,10 @@ def get_file_dataframe(files, standard='cordex'):
     # Get the current standard
     # ------------------------
 
-    stem_pattern = drs_data.get('standards').get(standard).get('stem_pattern')
+    stem_pattern = PYKU_RESOURCES.get_value('drs',
+                                            'standards',
+                                            standard,
+                                            'stem_pattern')
 
     # Filter files that do not match the pattern
     # ------------------------------------------
@@ -1149,7 +1152,7 @@ def get_file_dataframe(files, standard='cordex'):
             filtered_files.append(file)
         else:
             message = f"Cannot read pattern from {file}. Skipping."
-            logger.warn(message)
+            logger.warning(message)
 
     files = filtered_files
 
@@ -1238,7 +1241,7 @@ def get_ensemble_definition(ensemble):
     # Get data from yaml file
     # -----------------------
 
-    data = ensembles_data.get(ensemble)
+    data = PYKU_RESOURCES.load_resource('ensembles').get(ensemble)
 
     # Construct dataframe
     # -------------------
@@ -1349,4 +1352,4 @@ def list_ensembles():
               ...: pyku.list_ensembles()
     """
 
-    return list(ensembles_data.keys())
+    return list(PYKU_RESOURCES.get_keys('ensembles'))

@@ -47,10 +47,10 @@ dependencies = [
     "matplotlib",
     "metpy",
     "nbconvert",
-    "netCDF4==1.6.5",
-    "numpy==1.26.4",
+    "netCDF4",
+    "numpy",
     "oracledb",
-    "pandas<3.0.0",
+    "pandas",
     "parse",
     "pillow",
     "pooch",
@@ -68,11 +68,13 @@ dependencies = [
     "siphon",
     "tqdm",
     "tz",
-    "xarray==2025.10.1",
+    "xarray",
     "xclim>=0.59.1",
     "xskillscore",
     "zarr",
-    "s3fs"
+    "s3fs",
+    "ipywidgets",
+    "ruff"
 ]
 
 [project.optional-dependencies]
@@ -109,3 +111,76 @@ pyku = ["etc/*.yaml", "etc/static/*.*", "etc/geodata/*.geojson"]
 [project.scripts]
 pyku = "pyku.pyku:main"
 clixrun = "pyku.clix.core:main"
+
+[tool.ruff]
+extend-exclude = ["doc", "_typed_ops.pyi"]
+line-length = 80
+
+[tool.ruff.lint]
+extend-select = [
+  "YTT",  # flake8-2020
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "ISC",  # flake8-implicit-str-concat
+  "PIE",  # flake8-pie
+  "TID",  # flake8-tidy-imports (absolute imports)
+  "PYI",  # flake8-pyi
+  "SIM",  # flake8-simplify
+  "FLY",  # flynt
+  "I",    # isort
+  "PERF", # Perflint
+  "W",    # pycodestyle warnings
+  "PGH",  # pygrep-hooks
+  "PLC",  # Pylint Convention
+  "PLE",  # Pylint Errors
+  "PLR",  # Pylint Refactor
+  "PLW",  # Pylint Warnings
+  "UP",   # pyupgrade
+  "FURB", # refurb
+  "RUF",
+]
+extend-safe-fixes = [
+  "TID252", # absolute imports
+]
+ignore = [
+  "C40",     # unnecessary generator, comprehension, or literal
+  "PIE790",  # unnecessary pass statement
+  "PYI019",  # use `Self` instead of custom TypeVar
+  "PYI041",  # use `float` instead of `int | float`
+  "SIM102",  # use a single `if` statement instead of nested `if` statements
+  "SIM108",  # use ternary operator instead of `if`-`else`-block
+  "SIM117",  # use a single `with` statement instead of nested `with` statements
+  "SIM118",  # use `key in dict` instead of `key in dict.keys()`
+  "SIM300",  # yoda condition detected
+  "PERF203", # try-except within a loop incurs performance overhead
+  "E402",    # module level import not at top of file
+  "E731",    # do not assign a lambda expression, use a def
+  "PLC0415", # `import` should be at the top-level of a file
+  "PLC0206", # extracting value from dictionary without calling `.items()`
+  "PLR091",  # too many arguments / branches / statements
+  "PLR2004", # magic value used in comparison
+  "PLW0603", # using the global statement to update is discouraged
+  "PLW0642", # reassigned `self` variable in instance method
+  "PLW1641", # object does not implement `__hash__` method
+  "PLW2901", # `for` loop variable overwritten by assignment target
+  "UP007",   # use X | Y for type annotations
+  "FURB105", # unnecessary empty string passed to `print`
+  "RUF001",  # string contains ambiguous unicode character
+  "RUF002",  # docstring contains ambiguous acute accent unicode character
+  "RUF003",  # comment contains ambiguous no-break space unicode character
+  "RUF005",  # consider unpacking operator instead of concatenation
+  "RUF012",  # mutable class attributes
+]
+
+[tool.ruff.lint.per-file-ignores]
+# don't enforce absolute imports
+"asv_bench/**" = ["TID252"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["xarray"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"pandas.api.types.is_extension_array_dtype".msg = "Use xarray.core.utils.is_allowed_extension_array{_dtype} instead.  Only use the banend API if the incoming data has already been sanitized by xarray"
