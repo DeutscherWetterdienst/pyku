@@ -49,9 +49,9 @@ def _warn_if_default_data_dir():
     """
 
     from pathlib import Path
-    from . import _data_dir
+    from pyku import PYKU_CONFIG
 
-    default_data_dir = Path(_data_dir).resolve()
+    default_data_dir = Path(PYKU_CONFIG.get('_data_dir')).resolve()
     current_path = Path(PYKU_CONFIG.get('data_dir'))
     current_data_dir = Path(current_path).resolve()
 
