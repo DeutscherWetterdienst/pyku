@@ -32,6 +32,7 @@ class PykuConfigProvider:
         # Set the pyku configuration
         self.config = {
             'pre_existing_data_dir': pre_existing_data_dir,
+            '_data_dir': _data_dir,
             'data_dir': data_dir,
             'cache_dir': _cache_dir,
             'repo_data_dir': Path(__file__).parent / 'data',
