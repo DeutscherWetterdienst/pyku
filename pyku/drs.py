@@ -23,13 +23,11 @@ In contrast, newer standards like obs4mips explicitly include the variable name
 in global attributes with the key 'variable_id'.
 """
 
+from pyku import PYKU_RESOURCES, logger
+
 __all__ = [
-            'list_drs_standards'
-            ]
-
-import xarray as xr
-
-from pyku import logger, PYKU_RESOURCES
+    'list_drs_standards'
+]
 
 
 def _check_available_standards(standard):
@@ -169,10 +167,12 @@ def drs_stem(ds, varname=None, standard=None):
     """
 
     import re
-    from dateutil import parser
+
     import numpy as np
-    import pyku.meta as meta
+    from dateutil import parser
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # Sanity check
     # ------------
@@ -375,9 +375,10 @@ def drs_parent(ds, varname=None, standard=None, version=None):
               ...: ds.pyku.drs_parent(standard='cordex')
     """
 
-    import re
     import os
-    import pyku.meta as meta
+    import re
+
+    from pyku import meta
 
     if varname is not None:
         raise Exception("Parameter 'varname' is deprecated")
@@ -559,21 +560,22 @@ def to_drs_netcdfs(
 
     """
 
-    import os
-    import uuid
-    import itertools
-    import pathlib
     import calendar
+    import itertools
+    import os
+    import pathlib
+    import uuid
+
     import numpy as np
-    import pyku.meta as meta
-    import pyku.magic as magic
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import magic, meta
 
     # Sanity check if any of the attributes exist but is None
     # -------------------------------------------------------
 
     for key, value in ds.attrs.items():
-        assert value is not None, "Dataset key {} is None".format(key)
+        assert value is not None, f"Dataset key {key} is None"
 
     logger.debug(f"{ds.pyku.get_dataset_size()=}")
 
@@ -652,7 +654,9 @@ def to_drs_netcdfs(
 
         if interval_type == 'month':
             # year + month
-            times, _ = zip(*ds.groupby(['time.year', 'time.month']))
+            times, _ = zip(
+                *ds.groupby(['time.year', 'time.month']), strict=False
+            )
             times = list(times)
 
             # index for year-month-combination
@@ -667,7 +671,7 @@ def to_drs_netcdfs(
             ], dtype=object)
 
         else:
-            times, _ = zip(*ds.groupby(f'time.{interval_type}'))
+            times, _ = zip(*ds.groupby(f'time.{interval_type}'), strict=False)
 
             groups = np.array([
                 list(g) for k, g
@@ -782,14 +786,18 @@ def _is_precipitations(ds, var=None):
     long_name = ds[var].attrs.get('long_name', 'na').lower().strip()
 
     is_precipitation = (
-        get_cmor_varname(ds[var]) in ['pr']
-        or standard_name in ['precipitation_amount']
-        or standard_name in ["thickness_of_rainfall_amount"]
-        or long_name in ['total precipitation amount']
-        or long_name in ["precipitation heigth"]
-        or long_name in ["daily precipitation sum"]
-        or long_name in ["hourly rainfall"]
-        or long_name in ["daily rainfall"]
+        get_cmor_varname(ds[var]) == 'pr'
+        or standard_name in [
+            "precipitation_amount",
+            "thickness_of_rainfall_amount"
+        ]
+        or long_name in [
+            "total precipitation amount",
+            "precipitation heigth",
+            "daily precipitation sum",
+            "hourly rainfall",
+            "daily rainfall",
+        ]
     )
 
     return is_precipitation
@@ -808,6 +816,7 @@ def _to_precipitations_cmor_units(ds, var=None):
         precipitations
     """
 
+    import xarray as xr
     from pyku import meta
 
     # Sanity check
@@ -876,10 +885,12 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Set the CMOR precipitation units
     # --------------------------------
 
-    da.attrs['units'] = PYKU_RESOURCES.get_value('drs',
-                                                 'variables',
-                                                 'pr',
-                                                 'cmor_units')
+    da.attrs['units'] = PYKU_RESOURCES.get_value(
+        'drs',
+        'variables',
+        'pr',
+        'cmor_units'
+    )
 
     # Set CMOR attributes
     # -------------------
@@ -923,6 +934,9 @@ def to_cmor_units(ds):
     """
 
     import metpy  # noqa: F401
+
+    import xarray as xr
+
 
     # Notes
     # -----
@@ -1305,9 +1319,11 @@ def _to_cmor_attrs_frequency(ds):
         :class:`xarray.Dataset`: Dataset with CMOR-conform frequency attribute
     """
 
-    import xarray as xr
-    import pyku.meta as meta
     from pandas.tseries.frequencies import to_offset
+
+    import xarray as xr
+
+    from pyku import meta
 
     # Keep variables attributes
     # -------------------------
@@ -1390,10 +1406,9 @@ def has_cmor_time_labels(ds, var=None):
               ...: ds.pyku.has_cmor_time_labels(var='tas')
     """
 
-    import warnings
     import numpy as np
-    import pyku.meta as meta
-    import pyku.timekit as timekit
+
+    from pyku import meta, timekit
 
     # Sanity checks
     # -------------
@@ -1410,7 +1425,7 @@ def has_cmor_time_labels(ds, var=None):
     # ----------------------------------------------------------------
 
     if var_ds[var].attrs.get('cell_methods', None) is None:
-        warnings.warn("Variable has no 'cell_methods' attribute!")
+        logger.warn("Variable has no 'cell_methods' attribute!")
         return False
 
     # Initialize to True
@@ -1493,6 +1508,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     """
 
     from pathlib import Path
+
     import parse
 
     # Get stem pattern from standard
@@ -1519,7 +1535,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
 
     # Files are identified by checking if there is a suffix
 
-    has_file = Path(filename).suffix not in ['']
+    has_file = Path(filename).suffix !=''
 
     # Get directory
     # -------------
@@ -1610,6 +1626,7 @@ def get_facets_from_file_stem(filename, standard):
     """
 
     from pathlib import Path
+
     import parse
 
     # Get stem pattern from standard
@@ -1652,9 +1669,7 @@ def cmorize(ds, global_metadata={}, area_def=None):
         ValueError: If the file contains more than one climate variable.
     """
 
-    import pyku.timekit as timekit
-    import pyku.meta as meta
-    import pyku.geo as geo
+    from pyku import geo, meta, timekit
 
     if area_def is not None:
         raise DeprecationWarning(
