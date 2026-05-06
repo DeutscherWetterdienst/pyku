@@ -6,10 +6,13 @@ import yaml
 
 
 class PykuResourceProvider:
-    """Following the singleton design pattern, this class is meant
+    """
+    Following the singleton design pattern, this class is meant
     to provide an global instance of a resource manager. An instance is
     created during initialization of pyku, and provides access to all (yaml)
-    files in etc/ on a per-read basis (while enabling caching)"""
+    files in etc/ on a per-read basis (while enabling caching)
+    """
+
     def __init__(self, resource_dir='pyku.etc'):
         """ Initialise a resource manager with a given package internal
         directory/module
@@ -18,6 +21,22 @@ class PykuResourceProvider:
 
         self._resource_dir = importlib.resources.files(resource_dir)
         self.clear_cache()
+
+    def list_resources(self):
+        """
+        List resource files
+        """
+
+        # Recursive search for all resource file names, excluding python files
+        # --------------------------------------------------------------------
+
+        matches = [
+            f.name
+            for f in self._resource_dir.rglob("*")
+            if f.is_file() and f.suffix not in {".py", ".pyc"}
+        ]
+
+        return matches
 
     def load_resource(self, resource_name: str):
         """ On the fly resource loading and caching """
