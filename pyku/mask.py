@@ -69,12 +69,11 @@ def apply_polygon_mask(dat, mask, from_nans=False, tolerance=0.001):
     """
 
     import textwrap
+
     import numpy as np
+
     import xarray as xr
-    import pyku.meta as meta
-    import pyku.geo as geo
-    import pyku.check as check
-    import pyku.features as features
+    from pyku import check, features, geo, meta
 
     # Experimenting with automated reprojection
     # -----------------------------------------
@@ -100,7 +99,7 @@ def apply_polygon_mask(dat, mask, from_nans=False, tolerance=0.001):
     # If projection coordinates and geographic coordinates identical
     # --------------------------------------------------------------
 
-    if out_y_name in [out_lat_name] and out_x_name in [out_lon_name]:
+    if out_y_name == out_lat_name and out_x_name == out_lon_name:
 
         mask = mask.drop_vars([mask_lat_name, mask_lon_name])
 
@@ -246,9 +245,8 @@ def apply_raster_mask(dat, mask, from_nans=False, tolerance=0.001):
     """
 
     import textwrap
-    import pyku.meta as meta
-    import pyku.geo as geo
-    import pyku.check as check
+
+    from pyku import check, geo, meta
 
     # Experimenting with automated reprojection
     # -----------------------------------------
@@ -284,7 +282,7 @@ def apply_raster_mask(dat, mask, from_nans=False, tolerance=0.001):
     # If projection coordinates and geographic coordinates identical
     # --------------------------------------------------------------
 
-    if out_y_name in [out_lat_name] and out_x_name in [out_lon_name]:
+    if out_y_name == out_lat_name and out_x_name == out_lon_name:
 
         mask = mask.drop_vars([mask_lat_name, mask_lon_name])
 
@@ -435,6 +433,7 @@ def apply_mask(dat, mask, from_nans=False, tolerance=0.001):
     """
 
     import geopandas as gpd
+
     import xarray as xr
 
     # If the mask is given as a polygon, convert mask to raster
@@ -483,8 +482,9 @@ def combine_masks(*dats):
         :func:`~mask.get_mask`
     """
 
-    import xarray as xr
     import numpy as np
+
+    import xarray as xr
 
     # Check user inputs and deliver error
     # -----------------------------------
@@ -550,9 +550,10 @@ def get_mask(dat):
               ...: pyku.analyse.one_map(mask, var='mask')
     """
 
-    import pyku.meta as meta
     import numpy as np
+
     import xarray as xr
+    from pyku import meta
 
     if not isinstance(dat, xr.Dataset):
         message = "Input shall be a xarray.Dataset, not {type(dat)}"
