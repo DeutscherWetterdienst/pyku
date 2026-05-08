@@ -19,7 +19,7 @@ line-length = 80
 [project]
 name = "pyku"
 description = "pyku"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dynamic = ["version"]
 readme = "README.md"
 authors = [
@@ -43,7 +43,7 @@ dependencies = [
     "geopandas",
     "h5netcdf",
     "h5py",
-    "jsonargparse==4.40",
+    "jsonargparse",
     "matplotlib",
     "metpy",
     "nbconvert",
