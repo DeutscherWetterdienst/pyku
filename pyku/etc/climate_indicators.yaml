@@ -1,9 +1,9 @@
 # Indicator yaml-file containing all relevant information on DWD indicators
-# All indicators are grouped in section relying upon the input parameter
-# i.e.: groups so far: temperature, precipitation and wind based indicators
-# In the future combined groups possible like: temperature+precipitation
+# All indicators are grouped in section relying upon the input parameter(s)
+# Indicators that rely on multiple input variables are reffered to
+# specific groups like e.g.: tasmax+tasmin
 
-temperature:
+tas:
   tmmean:
     standard_name: air_temperature
     long_name: Mean of daily temperature
@@ -11,41 +11,37 @@ temperature:
     cell_methods: 'time: mean within days time: mean over days'
     function: xclim.indices.tg_mean
 
-  tnge20:
-    standard_name: >
-      number_of_days_with_air_temperature_at_or_above_threshold
+  gsl5:
+    standard_name: growing_season_length
     long_name: >
-      Number of Tropical Nights (Tmin >= 20C)
-    units: '1'
-    cell_methods: 'time: minimum within days time: sum over days'
-    function: xclim.indices.tn_days_above
+      ETCCDI Growing Season Length (Tmean > 5C)
+    units: days
+    cell_methods: >
+      time: mean within days time: sum over days (between start and end of
+      growing season)
+    function: xclim.indices.growing_season_length
     default_parameters:
-      thresh: 20 degC
+      thresh: 5 degC
+      window: 6
+      mid_date: 07-01
       op: '>='
 
-  tnlt0:
-    standard_name: >
-      number_of_days_with_air_temperature_below_threshold
+  gsl10:
+    standard_name: growing_season_length
     long_name: >
-      Number of Frost Days (Tmin < 0C)
-    units: '1'
-    cell_methods: 'time: minimum within days time: sum over days'
-    function: xclim.indices.frost_days
+      ETCCDI Growing Season Length (Tmean > 10C)
+    units: days
+    cell_methods: >
+      time: mean within days time: sum over days (between start and end of
+      growing season)
+    function: xclim.indices.growing_season_length
     default_parameters:
-      thresh: 0 degC
+      thresh: 10 degC
+      window: 6
+      mid_date: 07-01
+      op: '>='
 
-  tnlt4:
-    standard_name: >
-      number_of_days_with_air_temperature_below_threshold
-    long_name: >
-      Number of Days with Tmin < 4C
-    units: '1'
-    cell_methods: 'time: minimum within days time: sum over days'
-    function: xclim.indices.tn_days_below
-    default_parameters:
-      thresh: 4 degC
-      op: <
-
+tasmax:
   txlt0:
     standard_name: >
       number_of_days_with_air_temperature_below_threshold
@@ -97,19 +93,6 @@ temperature:
       window: 1
       op: '>='
 
-  csdi:
-    standard_name: >
-      spell_length_with_air_temperature_below_threshold_for_minimum_duration
-    long_name: >
-      Cold Spell Duration Index, count of days with at least 6 consecutive
-      days when Tmin < 10th percentile
-    units: days
-    function: xclim.indices.cold_spell_duration_index
-    default_parameters:
-      window: 6
-      op: <
-      tasmin_per: 10
-
   wsdi:
     standard_name: >
       number_of_days_with_air_temperature_above_threshold_for_minimum_duration
@@ -121,21 +104,6 @@ temperature:
     default_parameters:
       window: 6
       op: '>'
-      tasmax_per: 90
-
-  tnmean:
-    standard_name: air_temperature
-    long_name: Mean daily minimum temperature
-    units: degC
-    cell_methods: 'time: minimum within days time: mean over days'
-    function: xclim.indices.tn_mean
-
-  tnmin:
-    standard_name: air_temperature
-    long_name: Minimum daily minimum temperature
-    units: degC
-    cell_methods: 'time: minimum within days time: minimum over days'
-    function: xclim.indices.tn_min
 
   txmean:
     standard_name: air_temperature
@@ -151,6 +119,95 @@ temperature:
     cell_methods: 'time: maximum within days time: maximum over days'
     function: xclim.indices.tx_max
 
+  txge30ge3d:
+    standard_name:
+      number_of_occurances_with_air_temperature_at_or_above_threshold_for_minimum_duration
+    long_name: >
+      Hot Spell Index, count of occurrences with at least 3 consecutive
+      days when Tmax >= 30C
+    units: '1'
+    function: xclim.indices.hot_spell_frequency
+    default_parameters:
+      thresh: 30 degC
+      window: 3
+      op: '>='
+
+  txge30ge6d:
+    standard_name:
+      number_of_occurances_with_air_temperature_at_or_above_threshold_for_minimum_duration
+    long_name: >
+      Hot Spell Index, count of occurrences with at least 6 consecutive
+      days when Tmax >= 30C
+    units: '1'
+    function: xclim.indices.hot_spell_frequency
+    default_parameters:
+      thresh: 30 degC
+      window: 6
+      op: '>='
+
+tasmin:
+  tnge20:
+    standard_name: >
+      number_of_days_with_air_temperature_at_or_above_threshold
+    long_name: >
+      Number of Tropical Nights (Tmin >= 20C)
+    units: '1'
+    cell_methods: 'time: minimum within days time: sum over days'
+    function: xclim.indices.tn_days_above
+    default_parameters:
+      thresh: 20 degC
+      op: '>='
+
+  tnlt0:
+    standard_name: >
+      number_of_days_with_air_temperature_below_threshold
+    long_name: >
+      Number of Frost Days (Tmin < 0C)
+    units: '1'
+    cell_methods: 'time: minimum within days time: sum over days'
+    function: xclim.indices.frost_days
+    default_parameters:
+      thresh: 0 degC
+
+  tnlt4:
+    standard_name: >
+      number_of_days_with_air_temperature_below_threshold
+    long_name: >
+      Number of Days with Tmin < 4C
+    units: '1'
+    cell_methods: 'time: minimum within days time: sum over days'
+    function: xclim.indices.tn_days_below
+    default_parameters:
+      thresh: 4 degC
+      op: <
+
+  csdi:
+    standard_name: >
+      spell_length_with_air_temperature_below_threshold_for_minimum_duration
+    long_name: >
+      Cold Spell Duration Index, count of days with at least 6 consecutive
+      days when Tmin < 10th percentile
+    units: days
+    function: xclim.indices.cold_spell_duration_index
+    default_parameters:
+      window: 6
+      op: <
+
+  tnmean:
+    standard_name: air_temperature
+    long_name: Mean daily minimum temperature
+    units: degC
+    cell_methods: 'time: minimum within days time: mean over days'
+    function: xclim.indices.tn_mean
+
+  tnmin:
+    standard_name: air_temperature
+    long_name: Minimum daily minimum temperature
+    units: degC
+    cell_methods: 'time: minimum within days time: minimum over days'
+    function: xclim.indices.tn_min
+
+tasmax+tasmin:
   txge30tnge20ge3d:
     standard_name:
       number_of_occurances_with_air_temperature_at_or_above_thresholds_for_minimum_duration
@@ -210,62 +267,7 @@ temperature:
       op: '>='
       window: 3
 
-  txge30ge3d:
-    standard_name:
-      number_of_occurances_with_air_temperature_at_or_above_threshold_for_minimum_duration
-    long_name: >
-      Hot Spell Index, count of occurrences with at least 3 consecutive
-      days when Tmax >= 30C
-    units: '1'
-    function: xclim.indices.hot_spell_frequency
-    default_parameters:
-      thresh: 30 degC
-      window: 3
-      op: '>='
-
-  txge30ge6d:
-    standard_name:
-      number_of_occurances_with_air_temperature_at_or_above_threshold_for_minimum_duration
-    long_name: >
-      Hot Spell Index, count of occurrences with at least 6 consecutive
-      days when Tmax >= 30C
-    units: '1'
-    function: xclim.indices.hot_spell_frequency
-    default_parameters:
-      thresh: 30 degC
-      window: 6
-      op: '>='
-
-  gsl5:
-    standard_name: growing_season_length
-    long_name: >
-      ETCCDI Growing Season Length (Tmean > 5C)
-    units: days
-    cell_methods: >
-      time: mean within days time: sum over days (between start and end of
-      growing season)
-    function: xclim.indices.growing_season_length
-    default_parameters:
-      thresh: 5 degC
-      window: 6
-      mid_date: 07-01
-      op: '>='
-
-  gsl10:
-    standard_name: growing_season_length
-    long_name: >
-      ETCCDI Growing Season Length (Tmean > 10C)
-    units: days
-    cell_methods: >
-      time: mean within days time: sum over days (between start and end of
-      growing season)
-    function: xclim.indices.growing_season_length
-    default_parameters:
-      thresh: 10 degC
-      window: 6
-      mid_date: 07-01
-      op: '>='
-
+tasmin+tasmax+tas:
   etphs:
     standard_name: potential_evapotranspiration
     long_name: Potential Evapotranspiration
@@ -274,7 +276,7 @@ temperature:
       Potential Evapotranspiration based on Hargreaves and Samani, 1985
     function: pyku.clix.custom_indicators.potevap
 
-precipitation:
+pr:
   cddxd:
     standard_name: dry_spell_frequency
     long_name: >
@@ -428,11 +430,11 @@ precipitation:
     standard_name: wet_spell_frequency
     long_name: >
       Number of wet periods where the accumulated precipitation is more or equal
-      than {thresh} mm/day over a period of at least consecutive {window} days
+      than {thresh} mm over a period of at least consecutive {window} days
     units: '1'
     function: xclim.indices.wet_spell_frequency
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: max
       window: 3
 
@@ -442,11 +444,11 @@ precipitation:
     units: '1'
     description: >
       The number of wet periods where the accumulated precipitation is more or
-      equal than {thres} mm/day over periods between {window_min} and
+      equal than {thres} mm over periods between {window_min} and
       {window_max} days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: max
       window_min: 4
       window_max: 5
@@ -472,10 +474,10 @@ precipitation:
     cell_methods: 'time: count over spells'
     description: >
       The number of wet periods where the accumulated precipitation is greater
-      than or equal to 1 mm/day over periods between 12 and 13 days
+      than or equal to 1 mm over periods between 12 and 13 days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: min
       window_min: 12
       window_max: 13
@@ -488,10 +490,10 @@ precipitation:
     cell_methods: 'time: count over spells'
     description: >
       The number of wet periods where the accumulated precipitation is greater
-      than or equal to 1 mm/day over periods between 10 and 11 days
+      than or equal to 1 mm over periods between 10 and 11 days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: min
       window_min: 10
       window_max: 11
@@ -504,10 +506,10 @@ precipitation:
     cell_methods: 'time: count over spells'
     description: >
       The number of wet periods where the accumulated precipitation is greater
-      than or equal to 1 mm/day over periods between 8 and 9 days
+      than or equal to 1 mm over periods between 8 and 9 days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: min
       window_min: 8
       window_max: 9
@@ -520,10 +522,10 @@ precipitation:
     cell_methods: 'time: count over spells'
     description: >
       The number of wet periods where the accumulated precipitation is greater
-      than or equal to 1 mm/day over periods between 6 and 7 days
+      than or equal to 1 mm over periods between 6 and 7 days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: min
       window_min: 6
       window_max: 7
@@ -536,10 +538,10 @@ precipitation:
     cell_methods: 'time: count over spells'
     description: >
       The number of wet periods where the accumulated precipitation is greater
-      than or equal to 1 mm/day over periods between 4 and 5 days
+      than or equal to 1 mm over periods between 4 and 5 days
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_window
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
       op: min
       window_min: 4
       window_max: 5
@@ -556,7 +558,7 @@ precipitation:
       days'
     function: xclim.indices.wet_spell_max_length
     default_parameters:
-      thresh: 1 mm/day
+      thresh: 1 mm
 
   dd:
     standard_name: >
@@ -623,7 +625,7 @@ precipitation:
     cell_methods: 'time: sum within days'
     function: xclim.indices.wet_spell_frequency
     default_parameters:
-      thresh: 80 mm/day
+      thresh: 80 mm
       window: 1
       op: sum
 
@@ -635,7 +637,7 @@ precipitation:
     cell_methods: 'time: sum within days'
     function: xclim.indices.wet_spell_frequency
     default_parameters:
-      thresh: 90 mm/day
+      thresh: 90 mm
       window: 1
       op: sum
 
@@ -696,8 +698,8 @@ precipitation:
       {thresh_low} and max precipitation is below or equal {thresh_high}.
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_thresh
     default_parameters:
-      thresh_low: 30 mm  # Accumulated precipitation
-      thresh_high: 50 mm  # Accumulated precipitation
+      thresh_low: 30 mm
+      thresh_high: 50 mm
       window: 1
       op: sum
 
@@ -711,8 +713,8 @@ precipitation:
       {thresh_low} and max precipitation is below or equal {thresh_high}.
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_thresh
     default_parameters:
-      thresh_low: 40 mm  # Accumulated precipitation
-      thresh_high: 60 mm  # Accumulated precipitation
+      thresh_low: 40 mm
+      thresh_high: 60 mm
       window: 2
       op: sum
 
@@ -726,8 +728,8 @@ precipitation:
       {thresh_low} and max precipitation is below or equal {thresh_high}.
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_thresh
     default_parameters:
-      thresh_low: 50 mm  # Accumulated precipitation
-      thresh_high: 80 mm  # Accumulated precipitation
+      thresh_low: 50 mm
+      thresh_high: 80 mm
       window: 1
       op: sum
 
@@ -741,12 +743,12 @@ precipitation:
       {thresh_low} and max precipitation is below or equal {thresh_high}.
     function: pyku.clix.custom_indicators.wet_spell_frequency_bounded_thresh
     default_parameters:
-      thresh_low: 60 mm  # Accumulated precipitation
-      thresh_high: 90 mm  # Accumulated precipitation
+      thresh_low: 60 mm
+      thresh_high: 90 mm
       window: 2
       op: sum
 
-wind:
+sfcWind:
   sfcWindmean:
     standard_name: wind_speed
     long_name: Mean daily surface wind speed at 10m height
@@ -763,7 +765,7 @@ wind:
       98th percentile of the mean daily wind speed at 10 m above ground
     function: pyku.clix.custom_indicators.sfcWindp98
 
-radiation:
+rsds:
   rsdsmean:
     standard_name: surface_downwelling_shortwave_flux_in_air
     long_name: Mean of daily surface net shortwave radiation
@@ -771,25 +773,23 @@ radiation:
     description: Mean of daily surface net shortwave radiation
     function: pyku.clix.custom_indicators.rsds_mean
 
-precipitation+temperature:
-
+pr+tas:
   rge1mmtmle2:
     standard_name: number_of_potential_snow_days
     long_name: Potential snow days
     units: days
     description: >
       The number of potential snow days, where the min precipitation is
-      above or equal {thresh_pr} and mean temperature is below or equal
-      {thresh_tas}.
+      above or equal {thresh_pr} and mean temperature is below {thresh_tas}.
     cell_methods: 'time: sum (pr) or mean within days time: sum over days'
-    function: pyku.clix.custom_indicators.potsnowdays
+    function: pyku.clix.custom_indicators.potsnowday
     default_parameters:
-      thresh_pr: 1 mm/day
-      thresh_tas: 2 degC
+      pr_thresh: 1 mm/day
+      tas_thresh: 2 degC
       op_pr: '>='
-      op_tas: <=
-      var_reducer: all
+      op_tas: '<='
 
+pr+tasmax:
   rlt1mmtxge15txle30:
     standard_name: number_of_tourism_days
     long_name: Tourism days
@@ -805,9 +805,9 @@ precipitation+temperature:
     default_parameters:
       thresh_pr: 0.5 mm/day
       thresh_tasmax_lower: 15 degC
-      thresh_tasmax_upper: 30 degC
+      thresh_tasmax_higher: 30 degC
       op_pr: <
       op_tasmax_lower: '>='
-      op_tasmax_upper: <=
+      op_tasmax_higher: <=
     global_attrs:
-      input: 'data1: tasmax, data2: pr'
+      input: 'data1: pr, data2: tasmax'

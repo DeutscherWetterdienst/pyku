@@ -13,7 +13,9 @@ from typing import Optional
 
 import xarray as xr
 import xclim
-from xclim.core.units import check_units
+from xclim.core.units import check_units, units
+
+from pint import Quantity
 
 from pyku import logger
 from pyku.clix import indicator_data
@@ -756,6 +758,50 @@ def load_function(func_path):
         raise ValueError(f"The function {func_name} does not exist in the {module} library!")  # noqa
 
     return getattr(module, func_name)
+
+
+class QuantityStr(str):
+    """
+    String wrapper to make jsonargparse treat quantities as simple CLI inputs,
+    while conversion to pint.Quantity is handled separately.
+    """
+    pass
+
+
+def parse_quantity(val: str) -> Quantity:
+    try:
+        return units.Quantity(val)
+    except Exception as e:
+        raise ValueError(f"Invalid quantity '{val}': {e}")
+
+
+def fix_annotations(func):
+    """
+    Fix annotations for jsonargparse by resolving string type hints and
+    replacing xclim's unsupported `Quantified` type with a CLI-compatible type.
+    """
+
+    from typing import get_type_hints, Literal
+    from xclim.core import Quantified, DayOfYearStr
+
+    hints = get_type_hints(
+        func,
+        globalns={**func.__globals__,
+                  "Quantified": Quantified,
+                  "DayOfYearStr": DayOfYearStr,
+                  "xarray": xr,
+                  "xr": xr,
+                  "Literal": Literal,
+                  },
+        include_extras=True,
+    )
+
+    func.__annotations__ = {
+        k: (QuantityStr if v is Quantified else v)
+        for k, v in hints.items()
+    }
+
+    return func
 
 
 def update_default_args(parser, default_params):

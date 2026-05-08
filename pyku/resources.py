@@ -1838,15 +1838,19 @@ def _get_fake_cmip6_data():
     return ds
 
 
-def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
+def generate_fake_cmip6_data(variable='tas', ntime=1, nlat=180,
+                             nlon=360, freq='D', seed=42):
     """
     Generate fake cmip6 data for testing
 
     Arguments:
+        variable (str): Variable name (one of ["tas", "tasmax",
+            "tasmin", "pr", "sfcWind", "rsds"])
         ntime (int): Number of years
         nlat (int): Number of latitudes
         nlon (int): Number of longitudes
         freq (str): Frequency of the time dimension
+        seed (int): Random seed for reproducibility
 
     Returns:
         :class:`xarray.Dataset`: Fake CMIP6 dataset
@@ -1856,6 +1860,8 @@ def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
     import numpy as np
     import xarray as xr
     import pandas as pd
+
+    np.random.seed(seed)
 
     lat = np.linspace(-90, 90, nlat)
     lon = np.linspace(-180, 180, nlon)
@@ -1868,13 +1874,53 @@ def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
                          freq=freq)
     dayofyear = time.dayofyear.values
 
-    temperature = (
-        15
-        + 10 * np.sin(np.radians(lat[:, None, None]))
-             * np.cos(np.radians(lon[None, :, None]))
-        + 5 * np.sin(2 * np.pi * (dayofyear / 365.0))[None, None, :]
-        + np.random.randn(len(lat), len(lon), len(time)) * 2
+    # base spatial + seasonal signal
+    seasonal_cycle = np.sin(2 * np.pi * (dayofyear / 365.0))[None, None, :]
+    spatial_pattern = (
+        np.sin(np.radians(lat))[:, None, None]
+        * np.cos(np.radians(lon))[None, :, None]
     )
+
+    noise = np.random.randn(nlat, nlon, len(time))
+
+    if variable in ["tas", "tasmax", "tasmin"]:
+        # --- temperature base (Kelvin) ---
+        tas_base = 288 + 12 * spatial_pattern + 8 * seasonal_cycle
+        tas = tas_base + noise * 2
+
+        # ensure consistency
+        tasmin = tas - (3 + np.abs(np.random.randn(*tas.shape)))
+        tasmax = tas + (3 + np.abs(np.random.randn(*tas.shape)))
+
+        if variable == "tas":
+            data = tas
+            units = "K"
+
+        elif variable == "tasmin":
+            data = tasmin
+            units = "K"
+
+        elif variable == "tasmax":
+            data = tasmax
+            units = "K"
+
+    elif variable == "pr":
+        # precipitation flux (kg m-2 s-1)
+        base = 1e-5 * (spatial_pattern + 1.5)  # wetter tropics
+        variability = np.abs(noise) * 2e-5
+        data = base + variability
+        units = "kg m-2 s-1"
+
+    elif variable == "sfcWind":
+        data = 2 + 2 * spatial_pattern + np.abs(noise) * 2
+        units = "m s-1"
+
+    elif variable == "rsds":
+        data = 200 + 150 * seasonal_cycle + 50 * spatial_pattern + noise * 20
+        units = "W m-2"
+
+    else:
+        raise ValueError(f"Unsupported variable: {variable}")
 
     attrs = {
         'name': '/ccc/work/cont003/gencmip6/checagar/IGCM_OUT/IPSLCM6/PROD/'
@@ -1894,7 +1940,7 @@ def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
         'experiment': 'all-forcing simulation of the recent past',
         'external_variables': 'areacella',
         'forcing_index': np.int32(1),
-        'frequency': 'day',
+        # 'frequency': 'day',
         'further_info_url': 'https://furtherinfo.es-doc.org/CMIP6.IPSL.IPSL-'
                             'CM6A-LR-INCA.historical.none.r1i1p1f1',
         'grid': 'LMDZ grid',
@@ -1960,7 +2006,13 @@ def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
 
     ds = xr.Dataset(
         {
-            "tas": (["lat", "lon", "time"], temperature),
+            variable: (
+                ["lat", "lon", "time"],
+                data,
+                {
+                    "units": units,
+                }
+            )
         },
         coords={
             "lat": lat,
@@ -1969,6 +2021,10 @@ def generate_fake_cmip6_data(ntime=1, nlat=180, nlon=360, freq='D'):
         },
         attrs=attrs,
     )
+
+    ds = ds.pyku.to_cmor_units()
+    ds = ds.pyku.to_cmor_attrs()
+    ds = ds.pyku.reorder_dimensions_and_coordinates()
 
     return ds
 

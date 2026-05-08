@@ -10,8 +10,12 @@ from typing import Literal, Sequence
 
 import xarray as xr
 from xclim.core import Quantified
-from xclim.core.calendar import resample_doy
-from xclim.core.units import convert_units_to, declare_units
+from xclim.core.calendar import resample_doy, adjust_doy_calendar
+from xclim.core.units import (
+    convert_units_to,
+    declare_units,
+    to_agg_units
+)
 from xclim.indices.generic import compare, select_resample_op
 from xclim.indices import (
     dry_spell_frequency,
@@ -22,8 +26,8 @@ from xclim.indices import (
 
 @declare_units(
     pr="[precipitation]",
-    thresh_low="[precipitation]",
-    thresh_high="[temperature]",
+    thresh_low="[length]",
+    thresh_high="[length]",
 )
 def wet_spell_frequency_bounded_thresh(
     pr: xr.DataArray,
@@ -343,19 +347,16 @@ def prcpertot(
 
     import numpy as np
 
-    pr = convert_units_to(pr, "mm", context="hydro")
-    pr_per = convert_units_to(pr_per, "mm", context="hydro")
+    pr_per = convert_units_to(pr_per, pr, context="hydro")
 
     tp = pr_per
     if "dayofyear" in pr_per.coords:
         # Create time series out of doy values.
         tp = resample_doy(tp, pr)
 
-    constrain = (">", ">=")
-
     # Compute the days when precip is over the percentile threshold.
     over = (
-        pr.where(compare(pr, op, tp, constrain), np.nan)
+        pr.where(compare(pr, op, tp, constrain=(">", ">=")), np.nan)
         .resample(time=freq)
         .sum(dim="time")
     )
@@ -448,96 +449,84 @@ def potevap(
 @declare_units(
     pr="[precipitation]",
     tas="[temperature]",
-    thresh_pr="[precipitation]",
-    thresh_tas="[temperature]",
+    pr_thresh="[precipitation]",
+    tas_thresh="[temperature]",
 )
-def potsnowdays(
+def potsnowday(
     pr: xr.DataArray,
     tas: xr.DataArray,
-    thresh_pr: Quantified = "1.0 mm/day",
-    thresh_tas: Quantified = "2 degC",
+    pr_thresh: Quantified = "1 mm/d",
+    tas_thresh: Quantified = "2 degC",
+    op_pr: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = ">=",
+    op_tas: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = "<=",
     freq: str = "YS",
-    op_pr: Literal[">", "gt", ">=", "ge"] = ">=",
-    op_tas: Literal["<", "lt", "<=", "le"] = "<=",
-    var_reducer: Literal["all", "any"] = "all",
-    constrain_pr: Sequence[str] | None = None,
-    constrain_tas: Sequence[str] | None = None,
 ) -> xr.DataArray:
-    r"""
-    Potential Snow Days.
+    """
+    Number of days with precipitation above threshold and temperature
+    below threshold.
 
-    The number of potential snow days, where the min precipitation is
-    above or equal thresh_pr (default: 1mm/day) and mean
-    temperature is below or equal thresh_tas (default 2 degC)."
+    Number of days when precipitation is greater or equal to some threshold,
+    and temperatures are colder than some threshold. This can be used for
+    example to identify days with the potential for freezing rain or icing
+    conditions.
 
     Parameters
     ----------
-    pr : xr.DataArray
-        Minimum daily Temperature.
-    tas : xr.DataArray
-        Maximum daily Temperature.
-    thresh_pr : Quantified
-        Threshold for data pr.
-    thresh_tas : Quantified
-        Threshold for data tas.
+    pr : xarray.DataArray
+        Mean daily precipitation flux.
+    tas : xarray.DataArray
+        Daily mean, minimum or maximum temperature.
+    pr_thresh : Quantified
+        Precipitation threshold to exceed.
+    tas_thresh : Quantified
+        Temperature threshold not to exceed.
     freq : str
-        Resampling frequency defining the periods as defined in
-        :ref:`timeseries.resampling`.
-    op_pr : {">", "gt", ">=", "ge"}
-        Logical operator for data pr e.g. arr > thresh.
-    op_tas : {"<", "lt", "<=", "le"}
-        Logical operator for data tas e.g. arr > thresh.
-    var_reducer : {"all", "any"}
-        The condition must either be fulfilled on *all* or *any* variables
-        for the period to be considered an occurrence.
-    constrain_pr : sequence of str, optional
-        Optionally allowed comparison operators for pr.
-    constrain_tas : sequence of str, optional
-        Optionally allowed comparison operators for tas.
+        Resampling frequency.
 
     Returns
     -------
-    xr.DataArray
-        The DataArray of counted occurrences of potential snow days.
+    xarray.DataArray, [time]
+        Count of days with high precipitation and low temperatures.
+
+    Examples
+    --------
+    To compute the number of days with intense rainfall while minimum
+    temperatures dip below -0.2C:
+    >>> pr = xr.open_dataset(path_to_pr_file).pr
+    >>> tasmin = xr.open_dataset(path_to_tasmin_file).tasmin
+    >>> high_precip_low_temp(pr, tas=tasmin, pr_thresh="10 mm/d",
+    >>>                      tas_thresh="-0.2 degC")
     """
+    pr_thresh = convert_units_to(pr_thresh, pr, context="hydro")
+    tas_thresh = convert_units_to(tas_thresh, tas)
 
-    from xclim.indices.generic import bivariate_count_occurrences
-
-    # Convert units of DataArray and thresholds if necessary
-    pr = convert_units_to(pr, thresh_pr, context="hydro")
-    tas = convert_units_to(tas, thresh_tas)
-
-    return bivariate_count_occurrences(
-        data_var1=pr,
-        data_var2=tas,
-        freq=freq,
-        threshold_var1=thresh_pr,
-        threshold_var2=thresh_tas,
-        op_var1=op_pr,
-        op_var2=op_tas,
-        var_reducer=var_reducer,
-        constrain_var1=constrain_pr,
-        constrain_var2=constrain_tas,
+    constrain = (">", "<", ">=", "<=", "==", "!=")
+    cond = (
+        compare(pr, op_pr, pr_thresh, constrain) &
+        compare(tas, op_tas, tas_thresh, constrain)
     )
+
+    out = cond.resample(time=freq).sum(dim="time")
+    return to_agg_units(out, pr, "count", deffreq="D")
 
 
 @declare_units(
     pr="[precipitation]",
     tasmax="[temperature]",
     thresh_pr="[precipitation]",
-    thresh_tasmax_low="[temperature]",
-    thresh_tasmax_high="[temperature]",
+    thresh_tasmax_lower="[temperature]",
+    thresh_tasmax_higher="[temperature]",
 )
 def tourism_days(
     pr: xr.DataArray,
     tasmax: xr.DataArray,
     thresh_pr: Quantified = "0.5 mm/day",
-    thresh_tasmax_low: Quantified = "15 degC",
-    thresh_tasmax_high: Quantified = "30 degC",
+    thresh_tasmax_lower: Quantified = "15 degC",
+    thresh_tasmax_higher: Quantified = "30 degC",
     freq: str = "YS",
     op_pr: Literal["<", "lt", "<=", "le"] = "<",
-    op_tasmax_low: Literal[">", "gt", ">=", "ge"] = ">=",
-    op_tasmax_high: Literal["<", "lt", "<=", "le"] = "<=",
+    op_tasmax_lower: Literal[">", "gt", ">=", "ge"] = ">=",
+    op_tasmax_higher: Literal["<", "lt", "<=", "le"] = "<=",
 ) -> xr.DataArray:
     r"""
     Tourism day index.
@@ -550,24 +539,24 @@ def tourism_days(
 
     Parameters
     ----------
-    pr : xr.DataArray
+    pr: xr.DataArray
         Daily precipitation.
-    tasmax : xr.DataArray
+    tasmax: xr.DataArray
         Maximum daily Temperature.
-    thresh_pr : Quantified
+    thresh_pr: Quantified
         Threshold for data pr.
-    thresh_tasmax_low : Quantified
+    thresh_tasmax_lower: Quantified
         Lower threshold for data tasmax.
-    thresh_tasmax_high : Quantified
+    thresh_tasmax_higher: Quantified
         Higher threshhold for data tasmax
-    freq : str
+    freq: str
         Resampling frequency defining the periods as defined in
         :ref:`timeseries.resampling`.
-    op_pr : {"<", "lt", "<=", "le"}
+    op_pr: {"<", "lt", "<=", "le"}
         Logical operator for data pr e.g. arr < thresh_pr.
-    op_tasmax_low : {">", "gt", ">=", "ge"}
+    op_tasmax_lower: {">", "gt", ">=", "ge"}
         Logical operator for data tasmax e.g. arr > thresh_low.
-    op_tasmax_high : {"<", "lt", "<=", "le"}
+    op_tasmax_higher: {"<", "lt", "<=", "le"}
         Logical operator for data tasmax e.g. arr < thresh_high.
 
     Returns
@@ -581,16 +570,18 @@ def tourism_days(
 
     # Convert units of DataArray and thresholds if necessary
     thresh_pr = convert_units_to(thresh_pr, pr, context="hydro")
-    thresh_tasmax_low = convert_units_to(thresh_tasmax_low, tasmax)
-    thresh_tasmax_high = convert_units_to(thresh_tasmax_high, tasmax)
+    thresh_tasmax_lower = convert_units_to(thresh_tasmax_lower, tasmax)
+    thresh_tasmax_higher = convert_units_to(thresh_tasmax_higher, tasmax)
 
     constrain_low = (">", ">=")
     constrain_high = ("<", "<=")
 
     cond = (
-        compare(pr, op_pr, thresh_pr, constrain_high)
-        & compare(tasmax, op_tasmax_low, thresh_tasmax_low, constrain_low)
-        & compare(tasmax, op_tasmax_high, thresh_tasmax_high, constrain_high)
+        compare(pr, op_pr, thresh_pr, constrain_high) &
+        compare(tasmax, op_tasmax_lower,
+                thresh_tasmax_lower, constrain_low) &
+        compare(tasmax, op_tasmax_higher,
+                thresh_tasmax_higher, constrain_high)
     )
 
     out = cond.resample(time=freq).sum()
@@ -598,7 +589,7 @@ def tourism_days(
     return to_agg_units(out, pr, "count", dim="time")
 
 
-@declare_units(sfcWind="[wind]")
+@declare_units(sfcWind="[speed]")
 def sfcWindp98(
     sfcWind: xr.DataArray,
     sfcWind_percentile: float = 98,
@@ -681,7 +672,8 @@ def percentile_grouped(
         FREQ_GROUP_MAP = {
             "MS": lambda t: t.dt.month.rename("month"),
             "YS": lambda t: xr.ones_like(t, dtype=int).rename("all"),
-            "QS-DEC": lambda t: t.dt.quarter.rename("quarter"),
+            "QS-DEC": lambda t: (((t.dt.month % 12) // 3) + 1).rename(
+                "season"),
         }
         try:
             return FREQ_GROUP_MAP[freq](time)
@@ -689,17 +681,6 @@ def percentile_grouped(
             raise ValueError(
                 f"Unsupported climatology grouping frequency: {freq}"
             )  # noqa
-
-        # FREQ_TO_FUNC = {
-        #     "MS": assign_month,
-        #     "YS": assign_year,
-        #     "QS-DEC": assign_quarter,
-        # }
-
-        # try:
-        #     return FREQ_TO_FUNC[freq](time)
-        # except KeyError:
-        #     raise ValueError(f"Unsupported frequency for period assignment: {freq}")  # noqa
 
     if climatology:
         # Use grouping key like "month" or "season" based on group_freq
@@ -724,7 +705,7 @@ def percentile_grouped(
 
 
 def expand_percentiles_to_daily(
-    daily: xr.DataArray, per: xr.DataArray, freq: str
+        daily: xr.DataArray, per: xr.DataArray, freq: str
 ) -> xr.DataArray:
     """
     Expand a grouped percentile array (e.g., monthly) to match a daily
@@ -748,29 +729,44 @@ def expand_percentiles_to_daily(
 
     import xarray as xr
 
-    # Get group labels for each day based on the frequency
-    def get_group_labels(time, freq):
-        if freq == "MS":
-            return xr.DataArray(
-                time.dt.month, coords={"time": time}, dims="time"
-            )
-        elif freq == "QS-DEC":
-            return xr.DataArray(
-                time.dt.quarter, coords={"time": time}, dims="time"
-            )
-        elif freq == "YS":
-            return xr.DataArray(
-                [1] * time.size, coords={"time": time}, dims="time"
-            )
-        else:
-            raise ValueError(f"Unsupported frequency: {freq}")
+    if freq == "MS":
+        labels = daily.time.dt.month
+    elif freq == "QS-DEC":
+        # Compact mapping to climatological seasons
+        # (DJF=1, MAM=2, JJA=3, SON=4)
+        labels = ((daily.time.dt.month % 12) // 3) + 1
+    elif freq == "YS":
+        labels = xr.DataArray(
+            [1] * daily.time.size,
+            coords={"time": daily.time},
+            dims="time"
+        )
+    else:
+        raise ValueError
 
-    group_labels = get_group_labels(daily.time, freq)
+    doy = daily.time.dt.dayofyear
 
-    # Map daily values to corresponding percentile
-    per_expanded = per.sel(time=group_labels)
+    # Map percentiles to each day
+    tmp = per.sel(time=labels)
+    attrs = tmp.attrs
 
-    # Ensure time coordinate is set
-    per_expanded["time"] = daily["time"]
+    # Build new DataArray with DOY as dimension directly
+    per_doy = xr.DataArray(
+        tmp.data,
+        dims=("time",) + tmp.dims[1:],
+        coords={**tmp.coords, "dayofyear": ("time", doy.values)},
+        attrs=attrs
+    )
 
-    return per_expanded
+    # Now collapse to unique DOY axis
+    per_doy = per_doy.swap_dims({"time": "dayofyear"})
+    per_doy = per_doy.groupby("dayofyear").first()
+    per_doy.attrs = attrs
+
+    # Use adjust_doy_calendar (as in xclim)
+    if per_doy.dayofyear.max() == 366:
+        per_doy = adjust_doy_calendar(
+            per_doy.sel(dayofyear=(per_doy.dayofyear < 366)), daily
+        )
+
+    return per_doy

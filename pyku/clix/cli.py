@@ -10,17 +10,17 @@ from datetime import datetime
 from jsonargparse import ArgumentParser
 from jsonargparse.typing import register_type
 from pandas.tseries.frequencies import to_offset
-from pint import Quantity
 from rapidfuzz import process
-from xclim.core import Quantified  # register new type
-from xclim.core.units import units
 
 from pyku.clix import indicator_data
 from pyku.clix.manager import (
     get_indicator_description,
     load_function,
+    fix_annotations,
     replace_description_with_values,
     update_default_args,
+    QuantityStr,
+    parse_quantity,
 )
 
 
@@ -174,14 +174,7 @@ def percent_0_to_100(val: str) -> float:
     return val
 
 
-def parse_quantity(val: str) -> Quantity:
-    try:
-        return units.Quantity(val)
-    except Exception as e:
-        raise ValueError(f"Invalid quantity '{val}': {e}")
-
-
-register_type(Quantified, str, parse_quantity)
+register_type(QuantityStr, str, parse_quantity)
 
 
 def build_parser():
@@ -192,8 +185,7 @@ def build_parser():
         env_prefix='CLIX'
     )
 
-    # Create a mandatory group (mg) for input arguments
-    # mg = parser.add_argument_group(
+    # Create a mandatory input group (ig) for input arguments
     ig = parser.add_argument_group(
         'Mandatory input arguments',
     )
@@ -304,15 +296,15 @@ def build_parser():
         required=True)
 
     for indicator, params in indicator_data.items():
-
         # Subparser for indicators
         indp = ArgumentParser()
-        fn = load_function(params['function'])
+        func = load_function(params['function'])
+        func = fix_annotations(func)
 
         # Add arguments based on the specified function
         # Skips required arguments that represent input DataArrays
         indp.add_function_arguments(
-            fn,
+            func,
             skip=['tas', 'pr', 'tasmax', 'tasmin', 'sfcWind', 'rsds',
                   'tas_per', 'pr_per', 'tasmax_perc', 'tasmin_per',
                   'data1', 'data2', 'data_var1', 'data_var2', 'freq'],
@@ -328,6 +320,7 @@ def build_parser():
         desc = get_indicator_description(indicator)
         desc = replace_description_with_values(indp, desc)
         indp.description = desc
+
         subs.add_subcommand(indicator, indp, help=desc)
 
     return parser
