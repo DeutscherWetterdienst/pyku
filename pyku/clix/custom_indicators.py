@@ -421,29 +421,84 @@ def potevap(
     Potential evapotranspiration.
 
     The potential for water evaporation from soil and transpiration by
-    plants if the water supply is sufficient, according to a given method.
+    plants if the water supply is sufficient, according to Hargreaves and
+    Samani (1985).
 
-    Parameters
-    ----------
-    tasmin : xr.DataArray
-        Minimum daily Temperature.
-    tasmax : xr.DataArray
-        Maximum daily Temperature.
-    tas : xr.DataArray
-        Mean daily Temperature.
-    freq : str
-        Resampling frequency.
+    Args:
+        tasmin (xr.DataArray):
+            Minimum daily temperature.
+        tasmax (xr.DataArray):
+            Maximum daily temperature.
+        tas (xr.DataArray):
+            Mean daily temperature.
+        freq (str):
+            Resampling frequency. If `freq` does not match the frequency of
+            the data, the mean will be used for resampling.
 
-    Returns
-    -------
-    xr.DataArray
-        Potential Evapotranspiration.
-
+    Returns:
+        xr.DataArray:
+            Potential evapotranspiration.
     """
 
-    return potential_evapotranspiration(
+    evspsblpot = potential_evapotranspiration(
         tasmin=tasmin, tasmax=tasmax, tas=tas, method="HG85"
     )
+    if not xr.infer_freq(evspsblpot["time"]) == freq:
+        evspsblpot.resample(time=freq).mean()
+
+    return evspsblpot
+
+
+@declare_units(
+    tasmin="[temperature]",
+    tasmax="[temperature]",
+    tas="[temperature]",
+    pr="[precipitation]"
+)
+def waterbalance(
+    tasmin: xr.DataArray,
+    tasmax: xr.DataArray,
+    tas: xr.DataArray,
+    pr: xr.DataArray,
+    freq: str = "YS",
+) -> xr.DataArray:
+    r"""
+    Climatic water balance.
+
+    The difference between precipitation and potential water evaporation
+    from soil and transpiration by plants if the water supply is sufficient,
+    according to Hargreaves and Samani (1985).
+
+    Args:
+        tasmin (xr.DataArray):
+            Minimum daily temperature.
+        tasmax (xr.DataArray):
+            Maximum daily temperature.
+        tas (xr.DataArray):
+            Mean daily temperature.
+        pr (xr.DataArray):
+            Precipitation.
+        freq (str):
+            Resampling frequency. If `freq` does not match the frequency of
+            the data, the mean will be used for resampling.
+
+    Returns:
+        xr.DataArray:
+            Climatic water balance.
+    """
+
+    evspsblpot = potential_evapotranspiration(
+        tasmin=tasmin, tasmax=tasmax, tas=tas, method="HG85"
+    )
+    # Make sure `pr` and `evspsblpot` are aligned. This will cause an error if
+    # they are not instead of silently causing sketchy results.
+    xr.align(pr, evspsblpot, join="exact")
+    waterbalance = pr - evspsblpot
+
+    if not xr.infer_freq(waterbalance["time"]) == freq:
+        waterbalance.resample(time=freq).mean()
+
+    return waterbalance
 
 
 @declare_units(

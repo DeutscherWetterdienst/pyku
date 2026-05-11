@@ -271,10 +271,21 @@ tasmin+tasmax+tas:
   etphs:
     standard_name: potential_evapotranspiration
     long_name: Potential Evapotranspiration
-    units: mm
+    units: kg m-2 s-1
     description: >
       Potential Evapotranspiration based on Hargreaves and Samani, 1985
     function: pyku.clix.custom_indicators.potevap
+
+
+tasmin+tasmax+tas+pr:
+  waterbal:
+    standard_name: climate_waterbalance
+    long_name: Climatic waterbalance
+    units: kg m-2 s-1
+    description: >
+      Climatic waterbalance as difference between precipitation and
+      evapotranspiration based on Hargreaves and Samani, 1985
+    function: pyku.clix.custom_indicators.waterbalance
 
 pr:
   cddxd:
