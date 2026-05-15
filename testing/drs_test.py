@@ -2,6 +2,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+
 class TestDrsMethods(unittest.TestCase):
 
     import glob
@@ -27,7 +28,7 @@ class TestDrsMethods(unittest.TestCase):
 
         ds = (
             self.resources.generate_fake_cmip6_data()
-            .rename({'tas': 'dummy_name'}).dummy_name
+            .rename({'tas': 'dummy_name'})
         )
 
         self.assertEqual(
@@ -38,7 +39,7 @@ class TestDrsMethods(unittest.TestCase):
         # Test if CMOR variable name can be inferredf from mapping
         # --------------------------------------------------------
 
-        ds = self.resources.generate_fake_cmip6_data.rename({'tas': 'T_2M'})
+        ds = self.resources.generate_fake_cmip6_data().rename({'tas': 'T_2M'})
         ds.T_2M.attrs = {}
 
         self.assertEqual(
