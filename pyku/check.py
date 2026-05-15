@@ -1463,15 +1463,23 @@ def _check_variables_cmor_standard_name(ds):
     Check variable CMOR standard_name.
 
     Arguments:
-        ds (:class:`xarray.Dataset`): Input dataset
+        ds (:class:`xarray.Dataset`): Input dataset.
 
     Returns:
-        :class:`pandas.DataFrame`: Dataframe containing checks and issues
+        :class:`pandas.DataFrame`: Dataframe containing checks and issues.
     """
 
     import pandas as pd
 
     from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1505,21 +1513,16 @@ def _check_variables_cmor_standard_name(ds):
             the_issue = "Variable has no attribute standard_name"
 
         else:
-            expected_std_name = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'standard_name'
-            )
-
+            expected_std_name = pyku_variables[cmor_varname]['standard_name']
             read_std_name = ds[varname].attrs.get('standard_name')
-
-            the_result = \
-                True if read_std_name in [expected_std_name] else False
-
-            the_issue = None if read_std_name in [expected_std_name] \
-                else f"{varname} standard_name is {read_std_name} but the \
-expected standard_name is {expected_std_name}"
+            the_result = read_std_name == expected_std_name
+            the_issue = (
+                None if read_std_name == expected_std_name
+                else (
+                    f"{varname} standard_name is {read_std_name} but the "
+                    "expected standard_name is {expected_std_name}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 
@@ -1546,6 +1549,14 @@ def _check_variables_cmor_long_name(ds):
     import pandas as pd
 
     from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1579,20 +1590,16 @@ def _check_variables_cmor_long_name(ds):
             the_issue = "Variable has no attribute long_name"
 
         else:
-            expected_long_name = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'standard_name'
-            )
+            expected_long_name = pyku_variables[cmor_varname]['standard_name']
             read_long_name = ds[varname].attrs.get('long_name')
-
-            the_result = \
-                True if read_long_name in [expected_long_name] else False
-
-            the_issue = None if read_long_name in [expected_long_name] \
-                else f"{varname} long_name is {read_long_name} but the \
-expected standard_name is {expected_long_name}"
+            the_result = read_long_name == expected_long_name
+            the_issue = (
+                None if read_long_name == expected_long_name
+                else (
+                    f"{varname} long_name is {read_long_name} but the "
+                    "expected standard_name is {expected_long_name}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 
@@ -1619,6 +1626,14 @@ def _check_variables_cmor_units(ds):
     import pandas as pd
 
     from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1652,21 +1667,16 @@ def _check_variables_cmor_units(ds):
             the_issue = "Variable has no attribute units"
 
         else:
-            expected_units = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'cmor_units'
-            )
-
+            expected_units = pyku_variables[cmor_varname]['cmor_units']
             read_units = ds[varname].attrs.get('units')
-
-            the_result = \
-                True if read_units in [expected_units] else False
-
-            the_issue = None if read_units in [expected_units] \
-                else f"{varname} unit is {read_units} but the expected units \
-is {expected_units}"
+            the_result = read_units == expected_units
+            the_issue = (
+                None if read_units == expected_units
+                else (
+                    f"{varname} unit is {read_units} but the expected units "
+                    "is {expected_units}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 

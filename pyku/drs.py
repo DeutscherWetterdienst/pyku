@@ -824,6 +824,14 @@ def _to_precipitations_cmor_units(ds, var=None):
 
     assert var is not None, "Parameter 'var' is mandatory"
 
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
+
     # Keep variables attributes
     # -------------------------
 
@@ -885,12 +893,7 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Set the CMOR precipitation units
     # --------------------------------
 
-    da.attrs['units'] = PYKU_RESOURCES.get_value(
-        'drs',
-        'variables',
-        'pr',
-        'cmor_units'
-    )
+    da.attrs['units'] = pyku_variables['pr']['cmor_units']
 
     # Set CMOR attributes
     # -------------------
