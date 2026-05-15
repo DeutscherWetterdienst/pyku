@@ -900,11 +900,11 @@ def _to_precipitations_cmor_units(ds, var=None):
     # standard_name and long_name, that this is set here.
 
     da.attrs['standard_name'] = (
-        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'standard_name')
+        PYKU_RESOURCES.get_value('cmor', 'pr', 'standard_name')
     )
 
     da.attrs['long_name'] = (
-        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'long_name')
+        PYKU_RESOURCES.get_value('cmor', 'pr', 'long_name')
     )
 
     # Overwrite DataArray into Dataset and return
@@ -970,26 +970,34 @@ def to_cmor_units(ds):
 
         cmor_varname = get_cmor_varname(ds_out[var])
 
-        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
+        # Check if variable is a CMOR or CMOR-like variable
+        # -------------------------------------------------
+
+        is_cmor = cmor_varname in PYKU_RESOURCES.load_resource('cmor')
+        is_cmor_like = cmor_varname in PYKU_RESOURCES.load_resource('cmor-like')
+
+        if (is_cmor or is_cmor_like):
 
             # Deal with units of precipitations, which can be creative
             # --------------------------------------------------------
 
             if _is_precipitations(ds_out, var=var):
-
                 ds_out[var] = _to_precipitations_cmor_units(ds_out, var)[var]
 
             else:
 
-                # Get CMOR unit for variable
-                # --------------------------
+                # Get unit from CMOR or CMOR-like variable
+                # ----------------------------------------
 
-                units = (
-                    PYKU_RESOURCES.get_value('drs',
-                                             'variables',
-                                             cmor_varname,
-                                             'units')
-                )
+                if is_cmor:
+                    units = PYKU_RESOURCES.get_value(
+                        'cmor', cmor_varname, 'units'
+                    )
+
+                if is_cmor_like:
+                    units = PYKU_RESOURCES.get_value(
+                        'cmor-like', cmor_varname, 'units'
+                    )
 
                 # Quantify
                 # --------
@@ -1006,15 +1014,18 @@ def to_cmor_units(ds):
 
                 da = da.metpy.dequantify()
 
-                # Set unit attribute
-                # ------------------
+                # Set unit attribute in the CMOR standard
+                # ---------------------------------------
 
-                da.attrs['units'] = (
-                    PYKU_RESOURCES.get_value('drs',
-                                             'variables',
-                                             cmor_varname,
-                                             'cmor_units')
-                )
+                if is_cmor:
+                    units = PYKU_RESOURCES.get_value(
+                        'cmor', cmor_varname, 'cmor_units'
+                    )
+
+                if is_cmor_like:
+                    units = PYKU_RESOURCES.get_value(
+                        'cmor-like', cmor_varname, 'cmor_units'
+                    )
 
                 ds_out[var] = da
 
@@ -1073,6 +1084,7 @@ def get_cmor_varname_aliases(cmor_varname):
     aliases = list(set(aliases))
 
     return aliases
+
 
 def get_cmor_varname(da):
     """

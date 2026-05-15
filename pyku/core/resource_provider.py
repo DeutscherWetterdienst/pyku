@@ -48,11 +48,6 @@ class PykuResourceProvider:
         if resource_name in self._resource_cache:
             return self._resource_cache[resource_name]
 
-        if resource_name == 'variables':
-            resource = self._initialize_variables_metadata()
-            self._resource_cache[resource_name] = resource
-            return resource
-
         # Recursive search for the filename
         # ---------------------------------
 
