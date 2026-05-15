@@ -1074,7 +1074,8 @@ def get_cmor_varname_aliases(cmor_varname):
 def get_cmor_varname(da):
     """
     The inference strategy checks the DataArray name against direct CMOR rules,
-    matches the `long_name` attribute, and finally scans for registered aliases.
+    matches the `long_name` attribute, and finally scans for registered
+    aliases.
 
     Arguments:
         da (xarray.DataArray): The input data array.
@@ -1126,7 +1127,7 @@ def get_cmor_varname(da):
     # -----------------------------------------
 
     for var in pyku_variables:
-        if da.name in  get_cmor_varname_aliases(var):
+        if da.name in get_cmor_varname_aliases(var):
             return var
 
     # We have reached the end and could not find the variable
@@ -1158,8 +1159,8 @@ def to_cmor_varnames(ds):
     # -------------------------------------
 
     # If the file contains more than one variable, the field ``variable_id``
-    # should not be present at the Dataset level. The field is therefore removed
-    # by default.
+    # should not be present at the Dataset level. The field is therefore
+    # removed by default.
 
     if "variable_id" in ds.attrs and \
        len(meta.get_geodata_varnames(ds)) > 1:
@@ -1578,7 +1579,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
 
     # Files are identified by checking if there is a suffix
 
-    has_file = Path(filename).suffix !=''
+    has_file = Path(filename).suffix != ''
 
     # Get directory
     # -------------
