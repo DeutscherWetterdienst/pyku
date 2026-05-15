@@ -1225,7 +1225,7 @@ def _to_cmor_attrs_var(ds):
         # dedicated conversion functions should be written. This is thus
         # exploratory.
 
-        if ds[var].attrs.get('GRIB_stepType', None) != 'instant':
+        if ds[var].attrs.get('GRIB_stepType', None) == 'instant':
 
             if (
                 ds[var].attrs.get('cell_methods', None) is not None and

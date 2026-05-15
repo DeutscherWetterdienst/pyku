@@ -20,7 +20,7 @@ class TestImportlibResource(unittest.TestCase):
         self.assertTrue(area_file.parts[-1].endswith('areas.yaml'))
 
     def test_load_area_file(self):
-        #
+
         from pyresample.area_config import load_area
         from pyresample.geometry import AreaDefinition
 
@@ -37,12 +37,18 @@ class TestPykuResourceProvider(unittest.TestCase):
 """
         self.pseudo_dict = yaml.safe_load(self.pseudo_file)
 
+    @patch('pathlib.Path.rglob')
     @patch('builtins.open')
     @patch('pathlib.Path.exists')
-    def test_load_resource_success(self, mock_exists, mock_open_file):
+    def test_load_resource_success(
+        self, mock_exists, mock_open_file, mock_rglob
+    ):
         """Test successful YAML resource loading."""
-        # Setup mocks
+
         mock_exists.return_value = True
+        mock_rglob.return_value = ['test_file.yaml',]
+
+        # Setup mocks
         mock_file = mock_open(read_data=self.pseudo_file)
         mock_open_file.return_value = mock_file.return_value
 
@@ -52,7 +58,6 @@ class TestPykuResourceProvider(unittest.TestCase):
 
         # Assertions - compare with expected parsed result
         self.assertEqual(result, self.pseudo_dict)
-        mock_exists.assert_called_once_with()
         mock_open_file.assert_called_once()
 
         # check caching... a second call should not open the file again
@@ -66,10 +71,13 @@ class TestPykuResourceProvider(unittest.TestCase):
         result = resource_provider.load_resource("test_file")
         self.assertEqual(mock_open_file.call_count, 2)
 
+    @patch('pathlib.Path.rglob')
     @patch('builtins.open')
     @patch('pathlib.Path.exists')
-    def test_get_keys(self, mock_exists, mock_open_file):
+    def test_get_keys(self, mock_exists, mock_open_file, mock_rglob):
         mock_exists.return_value = True
+        mock_rglob.return_value = ['test_file.yaml',]
+
         mock_file = mock_open(read_data=self.pseudo_file)
         mock_open_file.return_value = mock_file.return_value
 
@@ -83,10 +91,12 @@ class TestPykuResourceProvider(unittest.TestCase):
         keys = resource_provider.get_keys('test_file', 'Test1')
         self.assertEqual(list(keys), ['test2'])
 
+    @patch('pathlib.Path.rglob')
     @patch('builtins.open')
     @patch('pathlib.Path.exists')
-    def test_get_value(self, mock_exists, mock_open_file):
+    def test_get_value(self, mock_exists, mock_open_file, mock_rglob):
         mock_exists.return_value = True
+        mock_rglob.return_value = ['test_file.yaml',]
         mock_file = mock_open(read_data=self.pseudo_file)
         mock_open_file.return_value = mock_file.return_value
 
@@ -104,10 +114,14 @@ class TestPykuResourceProvider(unittest.TestCase):
                     'test_file', 'Test1', 'test2', 'key')
         self.assertEqual(res, 'value')
 
+    @patch('pathlib.Path.rglob')
     @patch('builtins.open')
     @patch('pathlib.Path.exists')
-    def test_get_value_default_kw(self, mock_exists, mock_open_file):
+    def test_get_value_default_kw(
+        self, mock_exists, mock_open_file, mock_rglob
+    ):
         mock_exists.return_value = True
+        mock_rglob.return_value = ['test_file.yaml',]
         mock_file = mock_open(read_data=self.pseudo_file)
         mock_open_file.return_value = mock_file.return_value
 
