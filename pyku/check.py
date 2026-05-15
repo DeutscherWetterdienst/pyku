@@ -707,10 +707,10 @@ def check_valid_bounds(ds, bounds=None):
               ...: )
     """
 
-    import pandas as pd
     import dask
-    import pyku.meta as meta
-    import pyku.drs as drs
+    import pandas as pd
+
+    from pyku import drs, meta
 
     # Copy array to run operations out-of-place
     # -----------------------------------------
@@ -720,24 +720,13 @@ def check_valid_bounds(ds, bounds=None):
 
     ds_copy = ds.copy()
 
-    # Automatically chunk the Dataset
-    # -------------------------------
+    # Get pyku variable resources
+    # ---------------------------
 
-    # This avoid a large computation graph when looking for values
-    # below and above the threshold. For the computations at hand, the exact
-    # chunking should be quite unimportant.
-
-    # Marker. This is turned off by default now and should be dealt with when
-    # reading the data I think. The problem is that when using one of the weird
-    # cftime calendars with the time bounds sets and using
-    # ds[['time_bnds']].chunk(chunks='auto'), xarray/dask is not able to deal
-    # with the chunking automatically and this must be done manually with
-    # ds[['time_bnds']].chunk({'time': 10})
-
-    # The command is kept commented out for now, but indeed should most likely
-    # be left commented out and the user should take care of the chunking.
-
-    # ds_copy = ds_copy.chunk(chunks='auto')
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     if bounds:
         bounds_dict = {'variables': bounds}
@@ -766,7 +755,7 @@ def check_valid_bounds(ds, bounds=None):
 
             return issues
 
-        bounds_dict = PYKU_RESOURCES.get_value('drs')
+        bounds_dict = pyku_variables
         ds_varnames = meta.get_geodata_varnames(ds_copy)
 
     data = []
@@ -797,7 +786,7 @@ def check_valid_bounds(ds, bounds=None):
         data.append((
             f"{var} above {upper_threshold}",
             f"{count_above_threshold} values above threshold",
-            f"Shape {above_threshold.data.shape} First 50 indices: " +
+            f"Shape {above_threshold.data.shape} First 50 indices: "
             f"{where_above_threshold[0:50]}"
             if count_above_threshold > 1 else None
         ))
@@ -814,7 +803,7 @@ def check_valid_bounds(ds, bounds=None):
         data.append((
             f"{var} below {lower_threshold}",
             f"{count_below_threshold} values below threshold",
-            f"Shape {below_threshold.data.shape} First 50 indices: " +
+            f"Shape {below_threshold.data.shape} First 50 indices: "
             "{where_below_threshold[0:50]}"
             if count_below_threshold > 1 else None
         ))

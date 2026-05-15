@@ -604,7 +604,6 @@ def to_drs_netcdfs(
         has_time_dim = True
 
         if has_cmor_time_labels(ds, var=data_variables[0]) is False:
-
             logger.warning(
                 "Time labels are not CMOR-compliant. By design, pyku does not "
                 "enforce this part of the CMOR convention. If you need the "
@@ -1714,7 +1713,7 @@ def cmorize(ds, global_metadata=None):
             variable.
     """
 
-    from pyku import geo, meta, timekit
+    from pyku import meta, timekit
 
     # Set global metadata to an empty dictionary if not passed
     # --------------------------------------------------------
@@ -1797,12 +1796,6 @@ def cmorize(ds, global_metadata=None):
     # ----------------------
 
     dsvar = dsvar.assign_attrs(global_metadata)
-
-    # Resample geographic projection
-    # ------------------------------
-
-    if area_def is not None:
-        dsvar = geo.project(dsvar, area_def)
 
     if meta.get_crs_varname(ds) is None:
         logger.warning("No CF-conform CRS in dataset")
