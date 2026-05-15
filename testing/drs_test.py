@@ -8,7 +8,7 @@ class TestDrsMethods(unittest.TestCase):
     import os
 
     import pyku
-    from pyku import drs
+    from pyku import drs, resources
 
     hostrada = pyku.resources.get_test_data('hostrada')
     cordex = pyku.resources.get_test_data('model_data')
@@ -25,17 +25,20 @@ class TestDrsMethods(unittest.TestCase):
         # Test if the cmor varname can be inferred from long_name
         # -------------------------------------------------------
 
+        ds = (
+            self.resources.generate_fake_cmip6_data()
+            .rename({'tas': 'dummy_name'}).dummy_name
+        )
+
         self.assertEqual(
-           self.drs.get_cmor_varname(
-                self.hyras.rename({'hyras': 'dummy_name'}).dummy_name
-            ),
+            self.drs.get_cmor_varname(ds.dummy_name),
             'tas'
         )
 
         # Test if CMOR variable name can be inferredf from mapping
         # --------------------------------------------------------
 
-        ds = self.hyras.rename({'tas': 'T_2M'}).copy()
+        ds = self.resources.generate_fake_cmip6_data.rename({'tas': 'T_2M'})
         ds.T_2M.attrs = {}
 
         self.assertEqual(
