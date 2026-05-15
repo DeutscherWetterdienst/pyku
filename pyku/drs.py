@@ -23,13 +23,11 @@ In contrast, newer standards like obs4mips explicitly include the variable name
 in global attributes with the key 'variable_id'.
 """
 
+from pyku import PYKU_RESOURCES, logger
+
 __all__ = [
-            'list_drs_standards'
-            ]
-
-import xarray as xr
-
-from pyku import logger, PYKU_RESOURCES
+    'list_drs_standards'
+]
 
 
 def _check_available_standards(standard):
@@ -169,10 +167,12 @@ def drs_stem(ds, varname=None, standard=None):
     """
 
     import re
-    from dateutil import parser
+
     import numpy as np
-    import pyku.meta as meta
+    from dateutil import parser
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # Sanity check
     # ------------
@@ -375,9 +375,10 @@ def drs_parent(ds, varname=None, standard=None, version=None):
               ...: ds.pyku.drs_parent(standard='cordex')
     """
 
-    import re
     import os
-    import pyku.meta as meta
+    import re
+
+    from pyku import meta
 
     if varname is not None:
         raise Exception("Parameter 'varname' is deprecated")
@@ -559,21 +560,22 @@ def to_drs_netcdfs(
 
     """
 
-    import os
-    import uuid
-    import itertools
-    import pathlib
     import calendar
+    import itertools
+    import os
+    import pathlib
+    import uuid
+
     import numpy as np
-    import pyku.meta as meta
-    import pyku.magic as magic
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import magic, meta
 
     # Sanity check if any of the attributes exist but is None
     # -------------------------------------------------------
 
     for key, value in ds.attrs.items():
-        assert value is not None, "Dataset key {} is None".format(key)
+        assert value is not None, f"Dataset key {key} is None"
 
     logger.debug(f"{ds.pyku.get_dataset_size()=}")
 
@@ -602,7 +604,6 @@ def to_drs_netcdfs(
         has_time_dim = True
 
         if has_cmor_time_labels(ds, var=data_variables[0]) is False:
-
             logger.warning(
                 "Time labels are not CMOR-compliant. By design, pyku does not "
                 "enforce this part of the CMOR convention. If you need the "
@@ -652,7 +653,9 @@ def to_drs_netcdfs(
 
         if interval_type == 'month':
             # year + month
-            times, _ = zip(*ds.groupby(['time.year', 'time.month']))
+            times, _ = zip(
+                *ds.groupby(['time.year', 'time.month']), strict=False
+            )
             times = list(times)
 
             # index for year-month-combination
@@ -667,7 +670,7 @@ def to_drs_netcdfs(
             ], dtype=object)
 
         else:
-            times, _ = zip(*ds.groupby(f'time.{interval_type}'))
+            times, _ = zip(*ds.groupby(f'time.{interval_type}'), strict=False)
 
             groups = np.array([
                 list(g) for k, g
@@ -782,14 +785,18 @@ def _is_precipitations(ds, var=None):
     long_name = ds[var].attrs.get('long_name', 'na').lower().strip()
 
     is_precipitation = (
-        get_cmor_varname(ds[var]) in ['pr']
-        or standard_name in ['precipitation_amount']
-        or standard_name in ["thickness_of_rainfall_amount"]
-        or long_name in ['total precipitation amount']
-        or long_name in ["precipitation heigth"]
-        or long_name in ["daily precipitation sum"]
-        or long_name in ["hourly rainfall"]
-        or long_name in ["daily rainfall"]
+        get_cmor_varname(ds[var]) == 'pr'
+        or standard_name in [
+            "precipitation_amount",
+            "thickness_of_rainfall_amount"
+        ]
+        or long_name in [
+            "total precipitation amount",
+            "precipitation heigth",
+            "daily precipitation sum",
+            "hourly rainfall",
+            "daily rainfall",
+        ]
     )
 
     return is_precipitation
@@ -808,12 +815,21 @@ def _to_precipitations_cmor_units(ds, var=None):
         precipitations
     """
 
+    import xarray as xr
     from pyku import meta
 
     # Sanity check
     # ------------
 
     assert var is not None, "Parameter 'var' is mandatory"
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Keep variables attributes
     # -------------------------
@@ -876,10 +892,7 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Set the CMOR precipitation units
     # --------------------------------
 
-    da.attrs['units'] = PYKU_RESOURCES.get_value('drs',
-                                                 'variables',
-                                                 'pr',
-                                                 'cmor_units')
+    da.attrs['units'] = pyku_variables['pr']['cmor_units']
 
     # Set CMOR attributes
     # -------------------
@@ -889,11 +902,11 @@ def _to_precipitations_cmor_units(ds, var=None):
     # standard_name and long_name, that this is set here.
 
     da.attrs['standard_name'] = (
-        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'standard_name')
+        PYKU_RESOURCES.get_value('cmor', 'pr', 'standard_name')
     )
 
     da.attrs['long_name'] = (
-        PYKU_RESOURCES.get_value('drs', 'variables', 'pr', 'long_name')
+        PYKU_RESOURCES.get_value('cmor', 'pr', 'long_name')
     )
 
     # Overwrite DataArray into Dataset and return
@@ -924,6 +937,8 @@ def to_cmor_units(ds):
 
     import metpy  # noqa: F401
 
+    import xarray as xr
+
     # Notes
     # -----
 
@@ -931,6 +946,11 @@ def to_cmor_units(ds):
     #     - Check if the variable has a CMOR standard:
     #         - If special case of precipitation, convert precipitation units
     #         - Otherwise convert units
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Keep variables attributes
     # -------------------------
@@ -956,26 +976,20 @@ def to_cmor_units(ds):
 
         cmor_varname = get_cmor_varname(ds_out[var])
 
-        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
+        if (cmor_varname in pyku_variables):
 
             # Deal with units of precipitations, which can be creative
             # --------------------------------------------------------
 
             if _is_precipitations(ds_out, var=var):
-
                 ds_out[var] = _to_precipitations_cmor_units(ds_out, var)[var]
 
             else:
 
-                # Get CMOR unit for variable
-                # --------------------------
+                # Get unit from CMOR or CMOR-like variable
+                # ----------------------------------------
 
-                units = (
-                    PYKU_RESOURCES.get_value('drs',
-                                             'variables',
-                                             cmor_varname,
-                                             'units')
-                )
+                units = pyku_variables[cmor_varname]['units']
 
                 # Quantify
                 # --------
@@ -992,30 +1006,86 @@ def to_cmor_units(ds):
 
                 da = da.metpy.dequantify()
 
-                # Set unit attribute
-                # ------------------
+                # Set unit attribute in the CMOR standard
+                # ---------------------------------------
 
-                da.attrs['units'] = (
-                    PYKU_RESOURCES.get_value('drs',
-                                             'variables',
-                                             cmor_varname,
-                                             'cmor_units')
-                )
+                units = pyku_variables[cmor_varname]['cmor_units']
 
                 ds_out[var] = da
 
     return ds_out
 
 
-def get_cmor_varname(da):
+def get_cmor_varname_aliases(cmor_varname):
     """
-    Infer CMOR variable name
+    Infer CMOR variable name aliases
 
     Arguments:
-        da (:class:`xarray.DataArray`): The input data array.
+        cmor_varname (str): The CMOR or CMOR-like variable name
 
     Returns:
         str: CMOR-conform variable name infered from the data
+    """
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
+
+    if cmor_varname not in pyku_variables:
+        logger.warning(f"{cmor_varname} not implemented in pyku")
+        return []
+
+    mappings = [r for r in PYKU_RESOURCES.list_resources() if "mapping" in r]
+    aliases = []
+
+    for mapping in mappings:
+
+        if cmor_varname in PYKU_RESOURCES.get_value(mapping):
+
+            # The mapping data contain either a single alias under 'name',
+            # or a list of aliases under 'names'.
+
+            if (
+                cmor_varname in PYKU_RESOURCES.get_value(mapping)
+                and 'name' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
+            ):
+                aliases.append(
+                    PYKU_RESOURCES.get_value(mapping, cmor_varname, 'name')
+                )
+
+            if (
+                cmor_varname in PYKU_RESOURCES.get_value(mapping)
+                and 'names' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
+            ):
+                alias_list = PYKU_RESOURCES.get_value(
+                    mapping, cmor_varname, 'names'
+                )
+                aliases.extend(alias_list)
+
+    # Remove duplicate values
+    # -----------------------
+
+    aliases = list(set(aliases))
+
+    return aliases
+
+
+def get_cmor_varname(da):
+    """
+    The inference strategy checks the DataArray name against direct CMOR rules,
+    matches the `long_name` attribute, and finally scans for registered
+    aliases.
+
+    Arguments:
+        da (xarray.DataArray): The input data array.
+
+    Returns:
+        str or None: The CMOR-compliant variable name if matched,
+            otherwise None.
+
+    Raises:
+        TypeError: If the input `da` is not an xarray DataArray instance.
     """
 
     import xarray as xr
@@ -1026,53 +1096,38 @@ def get_cmor_varname(da):
             f"not {type(da)} with value {da}"
         )
 
-    # Case where the name of the variable is already CMOR-conform
-    # -----------------------------------------------------------
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
-    if da.name in PYKU_RESOURCES.get_keys('drs', 'variables'):
+    # Variable name already CMOR-conform
+    # ----------------------------------
+
+    if da.name in pyku_variables:
         return da.name
 
-    # Try identifying the variable with `other_names`
-    # -----------------------------------------------
-
-    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
-        if da.name in PYKU_RESOURCES.get_value('drs',
-                                               'variables',
-                                               var,
-                                               'other_names'):
-            return var
-
-    # Try identifying the variable with `standard_name`
-    # -------------------------------------------------
-
-    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
-
-        if (
-            da.attrs.get('standard_name') is not None and
-            da.attrs.get('standard_name') in (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         var,
-                                         'standard_name')
-                )
-        ):
-
-            return var
-
     # Try identifying the variable with `long_name`
-    # ---------------------------------------------
+    # --------------------------------------------
 
-    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
+    # We do not try to identify variables by `short_name` because it is
+    # not guaranteed to be unique across different variables.
+
+    for var, var_data in pyku_variables.items():
+
+        long_name = da.attrs.get('long_name')
+
         if (
-            da.attrs.get('long_name') is not None and
-            da.attrs.get('long_name') in (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         var,
-                                         'long_name')
-            )
+            long_name is not None and
+            long_name == var_data.get('long_name')
         ):
+            return var
 
+    # Try identifying the variable from aliases
+    # -----------------------------------------
+
+    for var in pyku_variables:
+        if da.name in get_cmor_varname_aliases(var):
             return var
 
     # We have reached the end and could not find the variable
@@ -1093,19 +1148,19 @@ def to_cmor_varnames(ds):
     """
 
     import xarray as xr
-    import pyku.meta as meta
+    from pyku import meta
 
     # Keep variables attributes
     # -------------------------
 
     xr.set_options(keep_attrs=True)
 
-    # Remove variable_id field if present
-    # -----------------------------------
+    # Remove `variable_id` field if present
+    # -------------------------------------
 
-    # If the file contains more than one variable, the field variable_id should
-    # not be present at the Dataset level. The field is therefore removed by
-    # default.
+    # If the file contains more than one variable, the field ``variable_id``
+    # should not be present at the Dataset level. The field is therefore
+    # removed by default.
 
     if "variable_id" in ds.attrs and \
        len(meta.get_geodata_varnames(ds)) > 1:
@@ -1127,8 +1182,7 @@ def to_cmor_varnames(ds):
         # If the variable name is not CMOR-conform, rename
         # ------------------------------------------------
 
-        if var not in [cmor_varname]:
-
+        if var != cmor_varname:
             ds = ds.rename({var: cmor_varname})
 
     return ds
@@ -1146,7 +1200,12 @@ def _to_cmor_attrs_var(ds):
     """
 
     import xarray as xr
-    import pyku.meta as meta
+    from pyku import meta
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Keep variables attributes
     # -------------------------
@@ -1166,11 +1225,11 @@ def _to_cmor_attrs_var(ds):
         # dedicated conversion functions should be written. This is thus
         # exploratory.
 
-        if ds[var].attrs.get('GRIB_stepType', None) in ['instant']:
+        if ds[var].attrs.get('GRIB_stepType', None) == 'instant':
 
             if (
                 ds[var].attrs.get('cell_methods', None) is not None and
-                ds[var].attrs.get('cell_methods', None) not in ['time: point']
+                ds[var].attrs.get('cell_methods', None) != 'time: point'
             ):
                 raise Exception(
                     "GRIB_stepType is instant, but the CF-conform are not "
@@ -1186,7 +1245,10 @@ def _to_cmor_attrs_var(ds):
 
         cmor_varname = get_cmor_varname(ds[var])
 
-        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
+        # Check if variable is CMOR or CMOR-like
+        # --------------------------------------
+
+        if cmor_varname in pyku_variables:
 
             # Send a warning if rotated wind components are found
             # ---------------------------------------------------
@@ -1205,30 +1267,20 @@ def _to_cmor_attrs_var(ds):
                     "Alternatively, you can use the pyku derotate function."
                 )
 
-            # Set CMOR attributes
-            # -------------------
+            # Get CMOR or CMOR-like attributes
+            # --------------------------------
 
-            ds[var].attrs['standard_name'] = (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         cmor_varname,
-                                         'standard_name')
+            ds[var].attrs['standard_name'] = \
+                pyku_variables[cmor_varname]['standard_name']
+
+            ds[var].attrs['long_name'] = \
+                pyku_variables[cmor_varname]['long_name']
+
+        elif var in meta.get_geodata_varnames(ds):
+            logger.warning(
+                f"No CMOR attributes were found for {var} in the pyku "
+                "configuration file. Continuing without setting them."
             )
-
-            ds[var].attrs['long_name'] = (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         cmor_varname,
-                                         'long_name')
-            )
-
-        else:
-
-            if var in meta.get_geodata_varnames(ds):
-                logger.warning(
-                    f"No CMOR attributes were found for {var} in the pyku "
-                    "configuration file. Continuing without setting them."
-                )
 
     return ds
 
@@ -1247,17 +1299,14 @@ def _get_cmor_coordinate_name(coordinate_name):
     # Case where the name of the coordinate is already CMOR-conform
     # -------------------------------------------------------------
 
-    if coordinate_name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
+    if coordinate_name in PYKU_RESOURCES.get_keys('coordinates'):
         return coordinate_name
 
     # Try identifying the variable with aliases
     # -----------------------------------------
 
-    for name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
-        if name in PYKU_RESOURCES.get_value('drs',
-                                            'coordinates',
-                                            name,
-                                            'aliases'):
+    for name in PYKU_RESOURCES.get_keys('coordinates'):
+        if name in PYKU_RESOURCES.get_value('coordinates', name, 'aliases'):
             return name
 
     # We have reached the end and could not find the variable
@@ -1293,15 +1342,12 @@ def _to_cmor_attrs_coords(ds):
         if _get_cmor_coordinate_name(coordinate) is not None:
 
             ds[coordinate].attrs = \
-                PYKU_RESOURCES.get_value('drs',
-                                         'coordinates',
-                                         coordinate,
-                                         'attrs')
+                PYKU_RESOURCES.get_value('coordinates', coordinate, 'attrs')
 
         else:
-            message = \
+            logger.info(
                 f"No CMOR coordinate attributes for {coordinate} available"
-            logger.info(message)
+            )
 
     return ds
 
@@ -1317,9 +1363,11 @@ def _to_cmor_attrs_frequency(ds):
         :class:`xarray.Dataset`: Dataset with CMOR-conform frequency attribute
     """
 
-    import xarray as xr
-    import pyku.meta as meta
     from pandas.tseries.frequencies import to_offset
+
+    import xarray as xr
+
+    from pyku import meta
 
     # Keep variables attributes
     # -------------------------
@@ -1402,10 +1450,9 @@ def has_cmor_time_labels(ds, var=None):
               ...: ds.pyku.has_cmor_time_labels(var='tas')
     """
 
-    import warnings
     import numpy as np
-    import pyku.meta as meta
-    import pyku.timekit as timekit
+
+    from pyku import meta, timekit
 
     # Sanity checks
     # -------------
@@ -1422,7 +1469,7 @@ def has_cmor_time_labels(ds, var=None):
     # ----------------------------------------------------------------
 
     if var_ds[var].attrs.get('cell_methods', None) is None:
-        warnings.warn("Variable has no 'cell_methods' attribute!")
+        logger.warn("Variable has no 'cell_methods' attribute!")
         return False
 
     # Initialize to True
@@ -1505,6 +1552,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     """
 
     from pathlib import Path
+
     import parse
 
     # Get stem pattern from standard
@@ -1531,7 +1579,7 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
 
     # Files are identified by checking if there is a suffix
 
-    has_file = Path(filename).suffix not in ['']
+    has_file = Path(filename).suffix != ''
 
     # Get directory
     # -------------
@@ -1622,6 +1670,7 @@ def get_facets_from_file_stem(filename, standard):
     """
 
     from pathlib import Path
+
     import parse
 
     # Get stem pattern from standard
@@ -1646,34 +1695,32 @@ def get_facets_from_file_stem(filename, standard):
         return None
 
 
-def cmorize(ds, global_metadata={}, area_def=None):
+def cmorize(ds, global_metadata=None):
     """
-    CMORize dataset. The variable shall contain only one variable.
+    CMORize an xarray dataset.
+
+    The dataset must contain exactly one climate variable.
 
     Arguments:
         ds (:class:`xarray.Dataset`): The input dataset.
-        metadata (dict): The dictionary of global metadata.
-        area_def(:class:`pyresample.geometry.AreaDefinition`, str):
-            (Deprecated) Output area definition.
+        metadata (dict, optional): The dictionary of global metadata to assign.
+            Defaults to None.
 
     Returns:
-        :class:`xarray.Dataset`: CMORized dataset.
+        :class:`xarray.Dataset`: The CMORized dataset.
 
     Raises:
-        ValueError: If the file contains no climate variable.
-        ValueError: If the file contains more than one climate variable.
+        ValueError: If the dataset contains zero or more than one climate
+            variable.
     """
 
-    import pyku.timekit as timekit
-    import pyku.meta as meta
-    import pyku.geo as geo
+    from pyku import meta, timekit
 
-    if area_def is not None:
-        raise DeprecationWarning(
-            "The parameter for area definition 'area_def' is deprecated and "
-            "geographic operations should be done before or after this "
-            "function by using `pyku.geo.project()`."
-        )
+    # Set global metadata to an empty dictionary if not passed
+    # --------------------------------------------------------
+
+    if global_metadata is None:
+        global_metadata = {}
 
     # Get geodata variable names in dataset
     # -------------------------------------
@@ -1750,12 +1797,6 @@ def cmorize(ds, global_metadata={}, area_def=None):
     # ----------------------
 
     dsvar = dsvar.assign_attrs(global_metadata)
-
-    # Resample geographic projection
-    # ------------------------------
-
-    if area_def is not None:
-        dsvar = geo.project(dsvar, area_def)
 
     if meta.get_crs_varname(ds) is None:
         logger.warning("No CF-conform CRS in dataset")

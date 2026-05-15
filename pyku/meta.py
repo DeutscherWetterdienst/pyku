@@ -60,7 +60,7 @@ For more detailed information on each function, refer to their respective
 docstrings.
 """
 
-from pyku import logger, PYKU_RESOURCES
+from pyku import PYKU_RESOURCES, logger
 
 
 def find_match(searched_words, words, excluded_words=None):

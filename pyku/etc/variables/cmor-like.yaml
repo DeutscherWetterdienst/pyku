@@ -1,0 +1,47 @@
+# Manually-edited configuration for custom CMOR-like variables, which are not
+# part of the CORDEX standard.
+
+cclm-td-2m:
+  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
+  long_name: 2m Dew Point Temperature
+  standard_name: dew_point_temperature
+  units: kelvins
+  cmor_units: 'K'
+  valid_bounds: [50, 500]
+mixr:
+  comment: >
+      humrs is not defined in the CMOR standard see GRIB2 - TABLE 4.2-0-1
+      number 02 Humidity mixing ratio of a parcel of moist air is the
+      ratio of the mass of water vapor to the mass of dry air.
+  long_name: Near-Surface Water Vapor Mixing Ratio
+  standard_name: humidity_mixing_ratio
+  units: dimensionless
+  cmor_units: '1'
+  valid_bounds: [0, 1]
+cclm-clct:
+  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
+  comment: COSMO-CLM variable
+  long_name: Total Cloud Cover
+  standard_name: cloud_area_fraction
+  units: percent
+  cmor_units: '%'
+  valid_bounds: [0, 100]
+cclm-athb-s:
+  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
+  long_name: Averaged Surface Net Downward Longwave Radiation
+  standard_name: surface_net_downward_longwave_flux
+  units: W m^-2
+  cmor_units: 'W m-2'
+  valid_bounds: [-3000, 3000]
+sfcWind_direction:
+  comment: Variable without CORDEX standard
+  long_name: Near-Surface Wind Direction
+  standard_name: wind_direction
+  units: degree
+  cmor_units: 'degree'
+uhi:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  long_name: Canopy Urban Heat Island Intensity
+  standard_name: canopy_urban_heat_island_intensity
+  units: kelvins
+  cmor_units: 'K'

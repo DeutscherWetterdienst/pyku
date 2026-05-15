@@ -1,0 +1,72 @@
+tos:
+  comment: GRIB ID 34
+  name: sst
+ta:
+  comment: GRIB ID 130
+  name: t
+tas:
+  comment: GRIB ID 167
+  name: t2m
+tasmax:
+  comment: GRIB ID 201
+  name: mx2t
+tasmin:
+  comment: GRIB ID 202
+  name: mn2t
+tdps:
+  comment: GRIB ID 168
+  name: d2m
+hur:
+  comment: GRIB ID 157
+  name: r
+pr:
+  comment: GRIB ID 228
+  name: tp
+rsds:
+  comment: GRIB ID 169
+  name: ssrd
+psl:
+  comment: GRIB ID 151
+  name: msl
+ps:
+  comment: GRIB ID 134
+  name: sp
+clt:
+  comment: GRIB ID 164
+  name: tcc
+ssr:
+  comment: GRIB ID 176
+  name: ssr
+rlut:
+  comment: GRIB ID 179
+  name: ttr
+rlds:
+  comment: GRIB ID 175
+  name: strd
+sd:
+  comment: GRIB ID 141
+  name: sd
+va:
+  comment: GRIB ID 132
+  name: v
+vas:
+  comment: GRIB ID 166
+  name: v10
+ua:
+  comment: GRIB ID 131
+  name: u
+uas:
+  comment: GRIB ID 165
+  name: u10
+zg:
+  comment: GRIB ID 129
+  name: z
+pevpr:
+  comment: GRIB ID 70
+  name: mper
+evspsbl:
+  comment: GRIB ID 182
+  name: e
+sic:
+  comment: GRIB ID 31
+  name: ci

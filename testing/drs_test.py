@@ -1,18 +1,51 @@
+
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 class TestDrsMethods(unittest.TestCase):
 
-    import pyku.drs as drs
-    import pyku
-    import os
     import glob
+    import os
+
+    import pyku
+    from pyku import drs, resources
 
     hostrada = pyku.resources.get_test_data('hostrada')
     cordex = pyku.resources.get_test_data('model_data')
     hyras = pyku.resources.get_test_data('hyras')
     cmip6 = pyku.resources.get_test_data('fake_cmip6_data')
+
+    def test_get_cmor_varname_aliases(self):
+        expected = {'T_2M', 't2m', '2m_temperature'}
+        result = set(self.drs.get_cmor_varname_aliases('tas'))
+        self.assertTrue(expected.issubset(result))
+
+    def test_get_cmor_varname(self):
+
+        # Test if the cmor varname can be inferred from long_name
+        # -------------------------------------------------------
+
+        ds = (
+            self.resources.generate_fake_cmip6_data()
+            .rename({'tas': 'dummy_name'})
+        )
+
+        self.assertEqual(
+            self.drs.get_cmor_varname(ds.dummy_name),
+            'tas'
+        )
+
+        # Test if CMOR variable name can be inferredf from mapping
+        # --------------------------------------------------------
+
+        ds = self.resources.generate_fake_cmip6_data().rename({'tas': 'T_2M'})
+        ds.T_2M.attrs = {}
+
+        self.assertEqual(
+            self.drs.get_cmor_varname(ds.T_2M),
+            'tas'
+        )
 
     def test_drs_filename(self):
 
@@ -78,8 +111,10 @@ class TestDrsMethods(unittest.TestCase):
     def test_resolve_template(self):
         from pyku.drs import _resolve_template
         with self.subTest('Testing _resolve_template with all placeholders provided'):
-            filename_pattern = '{variable}_{frequency}_{model}_{experiment}_' \
-                            '{member}_{grid}_{start_time}-{end_time}'
+            filename_pattern = (
+                '{variable}_{frequency}_{model}_{experiment}_'
+                '{member}_{grid}_{start_time}-{end_time}'
+            )
             namespace = {
                 'variable': 'tas',
                 'frequency': '1hr',
@@ -105,7 +140,7 @@ class TestDrsMethods(unittest.TestCase):
             expected_filename = 'tas_1hr_HOSTRADA-v1-0_historical'
             with self.assertRaises(KeyError):
                 filename = _resolve_template(filename_pattern, namespace)
-    
+
     @patch('pyku.meta.get_frequency')
     def test_to_cmor_attrs_frequency(self, mock_get_frequency):
         from pyku.drs import _to_cmor_attrs_frequency

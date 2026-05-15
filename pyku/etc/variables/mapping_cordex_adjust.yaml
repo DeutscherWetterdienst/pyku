@@ -1,0 +1,33 @@
+tas:
+  comment: null
+  name: tasAdjust
+tasmax:
+  comment: null
+  name: tasmaxAdjust
+tasmin:
+  comment: null
+  name: tasminAdjust
+tdew:
+  comment: null
+  name: tdewAdjust
+hurs:
+  comment: null
+  name: hursAdjust
+pr:
+  comment: null
+  name: prAdjust
+rsds:
+  comment: null
+  name: rsdsAdjust
+sfcWind:
+  comment: null
+  name: sfcWindAdjust
+psl:
+  comment: null
+  name: pslAdjust
+ps:
+  comment: null
+  name: psAdjust
+huss:
+  name: hussAdjust
+

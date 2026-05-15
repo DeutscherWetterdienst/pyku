@@ -3,11 +3,13 @@ import unittest
 
 class TestTimekitMethods(unittest.TestCase):
 
-    import pyku.timekit as timekit
-    import pyku
-    import os
     import glob
+    import os
+
     import cftime
+
+    import pyku
+    from pyku import timekit
 
     model = pyku.resources.get_test_data('model_data')
 
@@ -18,8 +20,8 @@ class TestTimekitMethods(unittest.TestCase):
 
     def test_resample_datetimes(self):
 
-        import numpy as np
         import cftime
+        import numpy as np
 
         self.assertEqual(
 

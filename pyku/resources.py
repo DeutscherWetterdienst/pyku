@@ -1857,9 +1857,11 @@ def generate_fake_cmip6_data(variable='tas', ntime=1, nlat=180,
     """
 
     import datetime
+
     import numpy as np
-    import xarray as xr
     import pandas as pd
+
+    import xarray as xr
 
     np.random.seed(seed)
 
