@@ -216,8 +216,9 @@ def check_datetimes(ds):
     import cftime
     import numpy as np
     import pandas as pd
-    import pyku.meta as meta
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # We will gather issues in this list
     # ----------------------------------
@@ -729,8 +730,8 @@ def check_valid_bounds(ds, bounds=None):
     }
 
     if bounds:
-        bounds_dict = {'variables': bounds}
-        ds_varnames = list(bounds_dict.get('variables').keys())
+        bounds_dict = bounds
+        ds_varnames = list(bounds_dict.keys())
 
     else:
         try:
@@ -765,10 +766,10 @@ def check_valid_bounds(ds, bounds=None):
         da = ds_copy[var]
 
         lower_threshold = \
-            float(bounds_dict.get('variables').get(var).get('valid_bounds')[0])
+            float(bounds_dict[var].get('valid_bounds')[0])
 
         upper_threshold = \
-            float(bounds_dict.get('variables').get(var).get('valid_bounds')[1])
+            float(bounds_dict[var].get('valid_bounds')[1])
 
         logger.debug(f"{var=}")
         logger.debug(f"{lower_threshold=}")
