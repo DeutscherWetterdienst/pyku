@@ -937,7 +937,6 @@ def to_cmor_units(ds):
 
     import xarray as xr
 
-
     # Notes
     # -----
 
@@ -945,6 +944,11 @@ def to_cmor_units(ds):
     #     - Check if the variable has a CMOR standard:
     #         - If special case of precipitation, convert precipitation units
     #         - Otherwise convert units
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Keep variables attributes
     # -------------------------
@@ -970,13 +974,7 @@ def to_cmor_units(ds):
 
         cmor_varname = get_cmor_varname(ds_out[var])
 
-        # Check if variable is a CMOR or CMOR-like variable
-        # -------------------------------------------------
-
-        is_cmor = cmor_varname in PYKU_RESOURCES.load_resource('cmor')
-        is_cmor_like = cmor_varname in PYKU_RESOURCES.load_resource('cmor-like')
-
-        if (is_cmor or is_cmor_like):
+        if (cmor_varname in pyku_variables):
 
             # Deal with units of precipitations, which can be creative
             # --------------------------------------------------------
@@ -989,15 +987,7 @@ def to_cmor_units(ds):
                 # Get unit from CMOR or CMOR-like variable
                 # ----------------------------------------
 
-                if is_cmor:
-                    units = PYKU_RESOURCES.get_value(
-                        'cmor', cmor_varname, 'units'
-                    )
-
-                if is_cmor_like:
-                    units = PYKU_RESOURCES.get_value(
-                        'cmor-like', cmor_varname, 'units'
-                    )
+                units = pyku_variables[cmor_varname]['units']
 
                 # Quantify
                 # --------
@@ -1017,15 +1007,7 @@ def to_cmor_units(ds):
                 # Set unit attribute in the CMOR standard
                 # ---------------------------------------
 
-                if is_cmor:
-                    units = PYKU_RESOURCES.get_value(
-                        'cmor', cmor_varname, 'cmor_units'
-                    )
-
-                if is_cmor_like:
-                    units = PYKU_RESOURCES.get_value(
-                        'cmor-like', cmor_varname, 'cmor_units'
-                    )
+                units = pyku_variables[cmor_varname]['cmor_units']
 
                 ds_out[var] = da
 
@@ -1043,11 +1025,12 @@ def get_cmor_varname_aliases(cmor_varname):
         str: CMOR-conform variable name infered from the data
     """
 
-    is_cmor_variable = cmor_varname in PYKU_RESOURCES.load_resource('cmor')
-    is_cmor_like_variable = \
-        cmor_varname in PYKU_RESOURCES.load_resource('cmor-like')
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
-    if not is_cmor_variable and not is_cmor_like_variable:
+    if cmor_varname not in pyku_variables:
         logger.warning(f"{cmor_varname} not implemented in pyku")
         return []
 
@@ -1102,8 +1085,6 @@ def get_cmor_varname(da):
         TypeError: If the input `da` is not an xarray DataArray instance.
     """
 
-    import itertools
-
     import xarray as xr
 
     if not isinstance(da, xr.DataArray):
@@ -1112,13 +1093,15 @@ def get_cmor_varname(da):
             f"not {type(da)} with value {da}"
         )
 
-    is_cmor = da.name in PYKU_RESOURCES.load_resource('cmor')
-    is_cmor_like = da.name in PYKU_RESOURCES.load_resource('cmor-like')
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Variable name already CMOR-conform
     # ----------------------------------
 
-    if is_cmor or is_cmor_like:
+    if da.name not in pyku_variables:
         return da.name
 
     # Try identifying the variable with `long_name`
@@ -1127,10 +1110,7 @@ def get_cmor_varname(da):
     # We do not try to identify variables by `short_name` because it is
     # not guaranteed to be unique across different variables.
 
-    for var, var_data in itertools.chain(
-        PYKU_RESOURCES.load_resource('cmor').items(),
-        PYKU_RESOURCES.load_resource('cmor-like').items()
-    ):
+    for var, var_data in pyku_variables.items():
 
         long_name = da.attrs.get('long_name')
 
@@ -1143,10 +1123,7 @@ def get_cmor_varname(da):
     # Try identifying the variable from aliases
     # -----------------------------------------
 
-    for var in itertools.chain(
-        PYKU_RESOURCES.load_resource('cmor'),
-        PYKU_RESOURCES.load_resource('cmor-like')
-    ):
+    for var in pyku_variables:
         if da.name in  get_cmor_varname_aliases(var):
             return var
 
@@ -1222,6 +1199,11 @@ def _to_cmor_attrs_var(ds):
     import xarray as xr
     from pyku import meta
 
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
+
     # Keep variables attributes
     # -------------------------
 
@@ -1260,7 +1242,10 @@ def _to_cmor_attrs_var(ds):
 
         cmor_varname = get_cmor_varname(ds[var])
 
-        if cmor_varname in PYKU_RESOURCES.get_keys('drs', 'variables'):
+        # Check if variable is CMOR or CMOR-like
+        # --------------------------------------
+
+        if cmor_varname in pyku_variables:
 
             # Send a warning if rotated wind components are found
             # ---------------------------------------------------
@@ -1279,22 +1264,14 @@ def _to_cmor_attrs_var(ds):
                     "Alternatively, you can use the pyku derotate function."
                 )
 
-            # Set CMOR attributes
-            # -------------------
+            # Get CMOR or CMOR-like attributes
+            # --------------------------------
 
-            ds[var].attrs['standard_name'] = (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         cmor_varname,
-                                         'standard_name')
-            )
+            ds[var].attrs['standard_name'] = \
+                pyku_variables[cmor_varname]['standard_name']
 
-            ds[var].attrs['long_name'] = (
-                PYKU_RESOURCES.get_value('drs',
-                                         'variables',
-                                         cmor_varname,
-                                         'long_name')
-            )
+            ds[var].attrs['long_name'] = \
+                pyku_variables[cmor_varname]['long_name']
 
         elif var in meta.get_geodata_varnames(ds):
             logger.warning(

@@ -10,7 +10,7 @@ See also:
     * ``./pyku/etc/metadata.yaml``
 """
 
-from pyku import logger, PYKU_RESOURCES
+from pyku import PYKU_RESOURCES, logger
 
 
 def check(ds, standard=None, completeness_period=None, all_nan_slices=False):
@@ -1435,10 +1435,16 @@ def check_cmor_varnames(ds):
     """
 
     import pandas as pd
-    import pyku.meta as meta
+
+    from pyku import meta
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     data = [
-        (var, var, None) if var in PYKU_RESOURCES.get_keys('drs', 'variables')
+        (var, var, None) if var in pyku_variables
         else ('variable name', var, 'Variable not CMOR-conform')
         for var in meta.get_geodata_varnames(ds)
     ]
@@ -1464,8 +1470,8 @@ def _check_variables_cmor_standard_name(ds):
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1489,8 +1495,10 @@ def _check_variables_cmor_standard_name(ds):
 
         if cmor_varname is None:
             the_result = False
-            the_issue = "Could not get CMOR standard variable name and hence \
-could not check if standard_name is CMOR-conform"
+            the_issue = (
+                "Could not get CMOR standard variable name and hence"
+                "could not check if standard_name is CMOR-conform"
+            )
 
         elif ds[varname].attrs.get('standard_name') is None:
             the_result = False
@@ -1536,8 +1544,8 @@ def _check_variables_cmor_long_name(ds):
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1609,8 +1617,8 @@ def _check_variables_cmor_units(ds):
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
 
     # Get geodata varnames in dataset
     # -------------------------------
