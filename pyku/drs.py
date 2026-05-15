@@ -1101,7 +1101,7 @@ def get_cmor_varname(da):
     # Variable name already CMOR-conform
     # ----------------------------------
 
-    if da.name not in pyku_variables:
+    if da.name in pyku_variables:
         return da.name
 
     # Try identifying the variable with `long_name`
@@ -1296,17 +1296,14 @@ def _get_cmor_coordinate_name(coordinate_name):
     # Case where the name of the coordinate is already CMOR-conform
     # -------------------------------------------------------------
 
-    if coordinate_name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
+    if coordinate_name in PYKU_RESOURCES.get_keys('coordinates'):
         return coordinate_name
 
     # Try identifying the variable with aliases
     # -----------------------------------------
 
-    for name in PYKU_RESOURCES.get_keys('drs', 'coordinates'):
-        if name in PYKU_RESOURCES.get_value('drs',
-                                            'coordinates',
-                                            name,
-                                            'aliases'):
+    for name in PYKU_RESOURCES.get_keys('coordinates'):
+        if name in PYKU_RESOURCES.get_value('coordinates', name, 'aliases'):
             return name
 
     # We have reached the end and could not find the variable
@@ -1342,15 +1339,12 @@ def _to_cmor_attrs_coords(ds):
         if _get_cmor_coordinate_name(coordinate) is not None:
 
             ds[coordinate].attrs = \
-                PYKU_RESOURCES.get_value('drs',
-                                         'coordinates',
-                                         coordinate,
-                                         'attrs')
+                PYKU_RESOURCES.get_value('coordinates', coordinate, 'attrs')
 
         else:
-            message = \
+            logger.info(
                 f"No CMOR coordinate attributes for {coordinate} available"
-            logger.info(message)
+            )
 
     return ds
 
