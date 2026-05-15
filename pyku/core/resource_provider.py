@@ -31,17 +31,27 @@ class PykuResourceProvider:
         # --------------------------------------------------------------------
 
         matches = [
-            f.name
+            f.stem
             for f in self._resource_dir.rglob("*")
-            if f.is_file() and f.suffix not in {".py", ".pyc"}
+            if f.is_file() and f.suffix not in {".py", ".pyc", "*.zip"}
         ]
+
+        matches.append('variables')
 
         return matches
 
     def load_resource(self, resource_name: str):
-        """ On the fly resource loading and caching """
+        """
+        Load resource on the fly and cache.
+        """
+
         if resource_name in self._resource_cache:
             return self._resource_cache[resource_name]
+
+        if resource_name == 'variables':
+            resource = self._initialize_variables_metadata()
+            self._resource_cache[resource_name] = resource
+            return resource
 
         # Recursive search for the filename
         # ---------------------------------
@@ -54,8 +64,8 @@ class PykuResourceProvider:
                 f"{self._resource_dir}"
             )
 
-        # Use the only match found. Not the ','
-        # -------------------------------------
+        # Use the only match found and crash otherwise. The ',' is not a typo
+        # -------------------------------------------------------------------
 
         resource_path, = matches
 

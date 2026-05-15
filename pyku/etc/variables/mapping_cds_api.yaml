@@ -9,10 +9,10 @@ tas:
   name: 2m_temperature
 tasmax:
   comment: null
-  name: maximum_2m_temperature_since_previous_post_processing
+  name: maximum_2m_temperature
 tasmin:
   comment: null
-  name: minimum_2m_temperature_since_previous_post_processing
+  name: minimum_2m_temperature
 tdps:
   comment: null
   name: 2m_dewpoint_temperature

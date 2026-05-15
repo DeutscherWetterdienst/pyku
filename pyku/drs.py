@@ -1021,16 +1021,76 @@ def to_cmor_units(ds):
     return ds_out
 
 
-def get_cmor_varname(da):
+def get_cmor_varname_aliases(cmor_varname):
     """
-    Infer CMOR variable name
+    Infer CMOR variable name aliases
 
     Arguments:
-        da (:class:`xarray.DataArray`): The input data array.
+        cmor_varname (str): The CMOR or CMOR-like variable name
 
     Returns:
         str: CMOR-conform variable name infered from the data
     """
+
+    is_cmor_variable = cmor_varname in PYKU_RESOURCES.load_resource('cmor')
+    is_cmor_like_variable = \
+        cmor_varname in PYKU_RESOURCES.load_resource('cmor-like')
+
+    if not is_cmor_variable and not is_cmor_like_variable:
+        logger.warning(f"{cmor_varname} not implemented in pyku")
+        return []
+
+    mappings = [r for r in PYKU_RESOURCES.list_resources() if "mapping" in r]
+    aliases = []
+
+    for mapping in mappings:
+
+        if cmor_varname in PYKU_RESOURCES.get_value(mapping):
+
+            # The mapping data contain either a single alias under 'name',
+            # or a list of aliases under 'names'.
+
+            if (
+                cmor_varname in PYKU_RESOURCES.get_value(mapping)
+                and 'name' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
+            ):
+                aliases.append(
+                    PYKU_RESOURCES.get_value(mapping, cmor_varname, 'name')
+                )
+
+            if (
+                cmor_varname in PYKU_RESOURCES.get_value(mapping)
+                and 'names' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
+            ):
+                alias_list = PYKU_RESOURCES.get_value(
+                    mapping, cmor_varname, 'names'
+                )
+                aliases.extend(alias_list)
+
+    # Remove duplicate values
+    # -----------------------
+
+    aliases = list(set(aliases))
+
+    return aliases
+
+def get_cmor_varname(da):
+    """
+    The inference strategy checks the DataArray name against direct CMOR rules,
+    matches the `long_name` attribute, and finally scans for registered aliases.
+
+    Arguments:
+        da (xarray.DataArray): The input data array.
+
+    Returns:
+        str or None: The CMOR-compliant variable name if matched,
+            otherwise None.
+
+    Raises:
+        TypeError: If the input `da` is not an xarray DataArray instance.
+    """
+
+    import itertools
 
     import xarray as xr
 
@@ -1040,45 +1100,43 @@ def get_cmor_varname(da):
             f"not {type(da)} with value {da}"
         )
 
+    is_cmor = da.name in PYKU_RESOURCES.load_resource('cmor')
+    is_cmor_like = da.name in PYKU_RESOURCES.load_resource('cmor-like')
+
     # Variable name already CMOR-conform
     # ----------------------------------
 
-    if da.name in PYKU_RESOURCES.get_keys('drs', 'variables'):
+    if is_cmor or is_cmor_like:
         return da.name
 
     # Try identifying the variable with `long_name`
     # --------------------------------------------
 
-    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
+    # We do not try to identify variables by `short_name` because it is
+    # not guaranteed to be unique across different variables.
+
+    for var, var_data in itertools.chain(
+        PYKU_RESOURCES.load_resource('cmor').items(),
+        PYKU_RESOURCES.load_resource('cmor-like').items()
+    ):
+
+        long_name = da.attrs.get('long_name')
 
         if (
-            da.attrs.get('long_name') is not None and
-            da.attrs.get('long_name') in (
-                PYKU_RESOURCES.get_value(
-                    'drs',
-                    'variables',
-                    var,
-                    'standard_name'
-                )
-            )
+            long_name is not None and
+            long_name == var_data.get('long_name')
         ):
             return var
 
-    # We do not try to identify the variables with `short_name` because
-    # it resulted in conflicts.
+    # Try identifying the variable from aliases
+    # -----------------------------------------
 
-    # Try identifying the variable with `other_names`
-    # -----------------------------------------------
-
-    for var in PYKU_RESOURCES.get_keys('drs', 'variables'):
-        if da.name in PYKU_RESOURCES.get_value(
-            'drs',
-            'variables',
-             var,
-            'other_names'
-        ):
+    for var in itertools.chain(
+        PYKU_RESOURCES.load_resource('cmor'),
+        PYKU_RESOURCES.load_resource('cmor-like')
+    ):
+        if da.name in  get_cmor_varname_aliases(var):
             return var
-
 
     # We have reached the end and could not find the variable
     # -------------------------------------------------------
@@ -1105,12 +1163,12 @@ def to_cmor_varnames(ds):
 
     xr.set_options(keep_attrs=True)
 
-    # Remove variable_id field if present
-    # -----------------------------------
+    # Remove `variable_id` field if present
+    # -------------------------------------
 
-    # If the file contains more than one variable, the field variable_id should
-    # not be present at the Dataset level. The field is therefore removed by
-    # default.
+    # If the file contains more than one variable, the field ``variable_id``
+    # should not be present at the Dataset level. The field is therefore removed
+    # by default.
 
     if "variable_id" in ds.attrs and \
        len(meta.get_geodata_varnames(ds)) > 1:
@@ -1651,32 +1709,32 @@ def get_facets_from_file_stem(filename, standard):
         return None
 
 
-def cmorize(ds, global_metadata={}, area_def=None):
+def cmorize(ds, global_metadata=None):
     """
-    CMORize dataset. The variable shall contain only one variable.
+    CMORize an xarray dataset.
+
+    The dataset must contain exactly one climate variable.
 
     Arguments:
         ds (:class:`xarray.Dataset`): The input dataset.
-        metadata (dict): The dictionary of global metadata.
-        area_def(:class:`pyresample.geometry.AreaDefinition`, str):
-            (Deprecated) Output area definition.
+        metadata (dict, optional): The dictionary of global metadata to assign.
+            Defaults to None.
 
     Returns:
-        :class:`xarray.Dataset`: CMORized dataset.
+        :class:`xarray.Dataset`: The CMORized dataset.
 
     Raises:
-        ValueError: If the file contains no climate variable.
-        ValueError: If the file contains more than one climate variable.
+        ValueError: If the dataset contains zero or more than one climate
+            variable.
     """
 
     from pyku import geo, meta, timekit
 
-    if area_def is not None:
-        raise DeprecationWarning(
-            "The parameter for area definition 'area_def' is deprecated and "
-            "geographic operations should be done before or after this "
-            "function by using `pyku.geo.project()`."
-        )
+    # Set global metadata to an empty dictionary if not passed
+    # --------------------------------------------------------
+
+    if global_metadata is None:
+        global_metadata = {}
 
     # Get geodata variable names in dataset
     # -------------------------------------
