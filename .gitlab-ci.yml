@@ -81,7 +81,7 @@ verify_style_guideline:
     - echo "Activate python environment and install flake8"
     - source $PYKU_ENVIRONMENT/venv/bin/activate
     - uv pip install flake8 || exit 1
-    - echo "Verify style guidlines are enforced"
+    - echo "Verify style guidelines are enforced"
     - flake8 pyku/
   allow_failure: false
   rules:

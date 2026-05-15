@@ -40,70 +40,68 @@ generic `xclim` function embedded as a Python wrapper, which is then linked
 within the YAML configuration file.
 
 .. code-block:: python
+    @declare_units(
+        pr="[precipitation]",
+	tas="[temperature]",
+	pr_thresh="[precipitation]",
+	tas_thresh="[temperature]",
+    )
+    def potsnowday(
+        pr: xr.DataArray,
+	tas: xr.DataArray,
+	pr_thresh: Quantified = "1 mm/d",
+	tas_thresh: Quantified = "2 degC",
+	op_pr: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = ">=",
+	op_tas: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = "<=",
+	freq: str = "YS",
+    ) -> xr.DataArray:
+    """
+    Number of days with precipitation above threshold and temperature
+    below threshold.
 
-   @declare_units(pr="[precipitation]", tas="[temperature]")
-   def potsnowdays(
-           pr: xr.DataArray,
-           tas: xr.DataArray,
-           thresh_pr: Quantified = "1.0 mm/day",
-           thresh_tas: Quantified = "2 degC",
-           freq: str = "YS",
-           op_pr: Literal[">", "gt", ">=", "ge"] = ">=",
-           op_tas: Literal["<", "lt", "<=", "le"] = "<=",
-           var_reducer: Literal["all", "any"] = "all",
-           constrain_pr: Sequence[str] | None = None,
-           constrain_tas: Sequence[str] | None = None,
-   ) -> xr.DataArray:
-       r"""
-       Potential Snow Days.
+    Number of days when precipitation is greater or equal to some threshold,
+    and temperatures are colder than some threshold. This can be used for
+    example to identify days with the potential for freezing rain or icing
+    conditions.
 
-       The number of potential snow days, where daily precipitation is
-       above or equal to ``thresh_pr`` (default: 1 mm/day) and daily mean
-       temperature is below or equal to ``thresh_tas`` (default: 2 degC).
+    Parameters
+    ----------
+    pr : xarray.DataArray
+        Mean daily precipitation flux.
+    tas : xarray.DataArray
+        Daily mean, minimum or maximum temperature.
+    pr_thresh : Quantified
+        Precipitation threshold to exceed.
+    tas_thresh : Quantified
+        Temperature threshold not to exceed.
+    freq : str
 
-       Parameters
-       ----------
-       pr : xarray.DataArray
-           Daily precipitation amount.
-       tas : xarray.DataArray
-           Daily mean temperature.
-       thresh_pr : Quantified
-           Precipitation threshold.
-       thresh_tas : Quantified
-           Temperature threshold.
-       freq : str
-           Resampling frequency defining the periods as defined in :ref:`timeseries.resampling`.
-       op_pr : {">", "gt", ">=", "ge"}
-           Logical operator for precipitation comparison (e.g., ``arr > thresh``).
-       op_tas : {"<", "lt", "<=", "le"}
-           Logical operator for temperature comparison (e.g., ``arr < thresh``).
-       var_reducer : {"all", "any"}
-           The condition must be fulfilled on *all* or *any* variables
-           for the period to be considered an occurrence.
-       constrain_pr : sequence of str, optional
-           Optionally allowed comparison operators for precipitation (`pr`).
-       constrain_tas : sequence of str, optional
-           Optionally allowed comparison operators for temperature (`tas`).
+    Returns
+    -------
+    xarray.DataArray, [time]
+        Count of days with high precipitation and low temperatures.
 
-       Returns
-       -------
-       xr.DataArray
-           The DataArray of counted occurrences of potential snow days.
-       """
+    Examples
+    --------
+    To compute the number of days with intense rainfall while minimum
+    temperatures dip below -0.2C:
+    >>> pr = xr.open_dataset(path_to_pr_file).pr
+    >>> tasmin = xr.open_dataset(path_to_tasmin_file).tasmin
+    >>> high_precip_low_temp(pr, tas=tasmin, pr_thresh="10 mm/d",
+    >>>                      tas_thresh="-0.2 degC")
+    """
+    pr_thresh = convert_units_to(pr_thresh, pr, context="hydro")
+    tas_thresh = convert_units_to(tas_thresh, tas)
 
-       from xclim.indices.generic import bivariate_count_occurrences
-       from xclim.core.units import convert_units_to # Assuming this is the correct import path
+    constrain = (">", "<", ">=", "<=", "==", "!=")
+    cond = (
+        compare(pr, op_pr, pr_thresh, constrain) &
+        compare(tas, op_tas, tas_thresh, constrain)
+    )
 
-       # Convert units of DataArray and thresholds if necessary
-       pr = convert_units_to(pr, thresh_pr, context="hydro")
-       tas = convert_units_to(tas, thresh_tas)
+    out = cond.resample(time=freq).sum(dim="time")
+    return to_agg_units(out, pr, "count", deffreq="D")
 
-       return bivariate_count_occurrences(
-           data_var1=pr, data_var2=tas, freq=freq,
-           threshold_var1=thresh_pr, threshold_var2=thresh_tas,
-           op_var1=op_pr, op_var2=op_tas, var_reducer=var_reducer,
-           constrain_var1=constrain_pr, constrain_var2=constrain_tas,
-       )
 
 .. code-block:: yaml
 
@@ -113,12 +111,10 @@ within the YAML configuration file.
      units: days
      description: "The number of potential snow days, where daily precipitation is above or equal {thresh_pr} and daily mean temperature is below or equal {thresh_tas}."
      cell_methods: 'time: mean within days time: sum over days'
-     xclim_function: pyku.indices.clix_custom_indicators.potsnowdays
+     function: pyku.indices.clix_custom_indicators.potsnowdays
      default_parameters:
        thresh_pr: 1 mm/day
        thresh_tas: 2 degC
        op_pr: '>='
        op_tas: '<='
-       var_reducer: 'all'
-
 
