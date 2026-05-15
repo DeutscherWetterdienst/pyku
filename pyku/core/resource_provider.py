@@ -33,7 +33,7 @@ class PykuResourceProvider:
         matches = [
             f.stem
             for f in self._resource_dir.rglob("*")
-            if f.is_file() and f.suffix not in {".py", ".pyc", "*.zip"}
+            if f.is_file() and f.suffix not in {".py", ".pyc", ".zip"}
         ]
 
         matches.append('variables')
