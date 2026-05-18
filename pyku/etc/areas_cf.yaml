@@ -150,7 +150,7 @@ HYR-LAEA-1:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -164,10 +164,11 @@ HYR-LAEA-1:
         epsg_code: 'EPSG:3035'
         long_name: 'DWD HYRAS ETRS89 LAEA grid with 1290 columns and 1100 rows'
 
+HYR-LAEA-2:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -185,7 +186,7 @@ HYR-LAEA-3:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -203,7 +204,7 @@ HYR-LAEA-5:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -221,7 +222,7 @@ HYR-LAEA-12.5:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -239,7 +240,7 @@ HYR-LAEA-50:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -257,7 +258,7 @@ HYR-LAEA-100:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -275,7 +276,7 @@ HYR-GER-LAEA-1:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -293,7 +294,7 @@ HYR-GER-LAEA-2:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -311,7 +312,7 @@ HYR-GER-LAEA-3:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -329,7 +330,7 @@ HYR-GER-LAEA-5:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -347,7 +348,7 @@ HYR-GER-LAEA-12.5:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -365,7 +366,7 @@ HYR-GER-LAEA-50:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
@@ -383,7 +384,7 @@ HYR-GER-LAEA-100:
     crs_name: crs
     crs_data:
         grid_mapping_name: 'lambert_azimuthal_equal_area'
-        longitude_of_central_meridian: 10.0
+        longitude_of_projection_origin: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
         semi_minor_axis: 6356752.31414036
