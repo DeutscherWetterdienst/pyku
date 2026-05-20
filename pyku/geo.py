@@ -2108,14 +2108,14 @@ def select_neighborhood(
 
     y_name, x_name = meta.get_projection_yx_varnames(ds)
     coords = list(zip(xs, ys))
-    coords = pd.DataFrame(coords, columns=["x", "y"])
+    coords = pd.DataFrame(coords, columns=[x_name, y_name])
 
     # Generate a mask for all elements selected
     # -----------------------------------------
 
     flag = (
         coords.assign(flag=1)
-        .set_index(["x", "y"])
+        .set_index([x_name, y_name])
         .flag
         .to_xarray()
         .fillna(0)
@@ -2125,7 +2125,7 @@ def select_neighborhood(
     # --------------------------------------------------------------------
 
     # The following options may be usefull method="nearest", tolerance=1e-9
-    flag = flag.reindex(x=ds[x_name], y=ds[y_name], fill_value=0)
+    flag = flag.reindex({x_name: ds[x_name], y_name: ds[y_name]}, fill_value=0)
 
     # Copy dataset and mask all climate variables
     # -------------------------------------------
