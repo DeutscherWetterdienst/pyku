@@ -36,8 +36,6 @@ class PykuResourceProvider:
             if f.is_file() and f.suffix not in {".py", ".pyc", ".zip"}
         ]
 
-        matches.append('variables')
-
         return matches
 
     def load_resource(self, resource_name: str):
