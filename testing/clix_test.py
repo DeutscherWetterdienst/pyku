@@ -34,8 +34,7 @@ class TestClixMethods(unittest.TestCase):
         else:
             req_args = data
 
-        clind.required_args = req_args
-        result = clind()
+        result = clind(**req_args)
 
         return result
 

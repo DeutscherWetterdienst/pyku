@@ -694,15 +694,12 @@ def percentile_grouped(
         Resulting percentiles with dimensions ('time', 'percentiles', ...)
     """
 
-    from xclim.core.utils import uses_dask, calc_perc
+    from xclim.core.utils import calc_perc
     import xarray as xr
     import numpy as np
 
     if np.isscalar(per):
         per = [per]
-
-    if uses_dask(arr):
-        arr = arr.chunk({"time": -1})
 
     def apply_perc(group: xr.DataArray) -> xr.DataArray:
         result = xr.apply_ufunc(
