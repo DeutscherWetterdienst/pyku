@@ -39,8 +39,9 @@ DWD_RADOLAN_900x900:
     crs_data:
         grid_mapping_name: polar_stereographic
         long_name: RADOLAN Grid
-        standard_parallel: 60
-        straight_vertical_longitude_from_pole: 10.0
+        latitude_of_projection_origin: 90.0
+        longitude_of_projection_origin: 10.0
+        standard_parallel: 60.0
         earth_radius: 6370040.0
         false_easting: 0.0
         false_northing: 0.0
@@ -55,8 +56,9 @@ DWD_RADOLAN_1100x900:
     crs_data:
         grid_mapping_name: polar_stereographic
         long_name: RADOLAN Grid
-        standard_parallel: 60
-        straight_vertical_longitude_from_pole: 10.0
+        latitude_of_projection_origin: 90.0
+        longitude_of_projection_origin: 10.0
+        standard_parallel: 60.0
         earth_radius: 6370040.0
         false_easting: 0.0
         false_northing: 0.0
@@ -72,6 +74,7 @@ HYR-LCC-1:
         grid_mapping_name: lambert_conformal_conic
         long_name: DWD HYRAS ETRS89 LCC grid with 1200 columns and 100 rows
         standard_parallel: [35.0, 65.0]
+        latitude_of_projection_origin: 90.0
         longitude_of_central_meridian: 10.0
         latitude_of_projection_origin: 52.0
         semi_major_axis: 6378137.0
