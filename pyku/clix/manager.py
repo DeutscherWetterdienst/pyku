@@ -9,7 +9,8 @@ import importlib
 import inspect
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Literal
+import pandas as pd
 
 import xarray as xr
 import xclim
@@ -19,6 +20,18 @@ from pint import Quantity
 
 from pyku import logger
 from pyku.clix import indicator_data
+
+
+@dataclass(frozen=True)
+class Period:
+    """
+    Represents a temporal analysis period.
+    """
+    start: pd.Timestamp | None
+    end: pd.Timestamp | None
+    # role: 'climatology' could be added if we calculate
+    #       rolling climatologies in the future?
+    role: Literal["target", "reference"] = "target"
 
 
 @dataclass
@@ -238,9 +251,9 @@ class ClimateIndicator:
                     if "window" in k}
         return duration
 
-    def __call__(self):
+    def __call__(self, **required_args):
         """Call the function with validated arguments."""
-        kwargs = {**self.required_args, **self.optional_args}
+        kwargs = {**required_args, **self.optional_args}
         return self.func(**kwargs)
 
 
@@ -830,7 +843,11 @@ def validate_and_get_files_from_yaml_content(config_yaml):
     from pyku.find import get_files_by_drs
     from pyku.find import get_file_dataframe
 
-    with open(config_yaml) as f:
+    if len(config_yaml) != 1:
+        raise ValueError("Expected exactly one YAML file")
+
+    yaml_file = next(iter(config_yaml))
+    with open(yaml_file) as f:
         cfg = yaml.safe_load(f)
 
     if 'standard' not in cfg.keys():

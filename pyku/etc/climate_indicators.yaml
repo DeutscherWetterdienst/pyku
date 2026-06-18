@@ -817,8 +817,8 @@ pr+tasmax:
       thresh_pr: 0.5 mm/day
       thresh_tasmax_lower: 15 degC
       thresh_tasmax_higher: 30 degC
-      op_pr: <
+      op_pr: '<'
       op_tasmax_lower: '>='
-      op_tasmax_higher: <=
+      op_tasmax_higher: '<='
     global_attrs:
       input: 'data1: pr, data2: tasmax'

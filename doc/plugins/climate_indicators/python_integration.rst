@@ -5,7 +5,8 @@ To integrate CLIX climate indicators into your own Python routines, there are
 **two main approaches**:
 
 1. **Using the Python API** via the
-   :py:class:`pyku.clix.manager.ClimateIndicator` class  
+   :py:class:`pyku.clix.manager.ClimateIndicator` class and the
+   :py:func: `pyku.clix.core.run_tool_from_dataset`  
 2. **Calling the CLIX command-line interface (CLI)** directly from within a
    Python script
 
@@ -16,7 +17,7 @@ invocation.
 1. Using the Python API
 -----------------------
 
-To use the :py:class:`~pyku.indices.clix_manager.ClimateIndicator` class, set
+To use the :py:func:`~pyku.indices.core.run_tool_from_dataset` function, set
 up the input data and optional parameters as shown below.
 
 Here is an example demonstrating how to use the
@@ -29,6 +30,7 @@ Here is an example demonstrating how to use the
    from pathlib import Path
 
    from pyku.clix.manager import ClimateIndicator
+   from pyku.clix.core import run_tool_from_datasets
 
    # Define input file(s) and load them
    base_dir = Path('/path/to/hyras/output/tasmax/v6-1/05/')
@@ -36,7 +38,9 @@ Here is an example demonstrating how to use the
    tasmax_file_path = base_dir / tasmax_file_name
 
    ds = xr.open_dataset(tasmax_file_path)
-   da = ds['tasmax']
+
+   # create list of datasets for the run_tool_from_datasets() function
+   ds_list = [ds]
 
    # Define indicator name (e.g., 'txge25' for summer days)
    indicator_name = 'txge25'
@@ -50,27 +54,26 @@ Here is an example demonstrating how to use the
    # Example of using modified parameters/thresholds (uncomment to test)
    # params = {'thresh': '25.6 degC', 'op': '>'}
 
-   # Initialize ClimateIndicator
+   # retrieve required args from ClimateIndicator
    clind = ClimateIndicator(indicator_name, frequency, params)
-
-   # Assign required input DataArray(s)
-   # xclim indices often expect specific variable names for their arguments.
-   # For 'txge25' (summer days), it typically expects a 'tasmax' variable.
-   clind.required_args['tasmax'] = da
-   print("Required arguments (assigned):", clind.required_args)
-
-   # Show optional arguments (thresholds, operators, etc.)
-   print("Optional arguments:", clind.optional_args)
-
+   
    # Show function name that is used to compute the indicator
    print("Xclim function name:", clind.xclim_func_name)
 
-   # Calculate Indicator
-   txge25_result = clind()
+   # calculate indicator
+   result = run_tool_from_datasets(
+            ds_list,
+            clindicator=clind,
+            )
 
    # Save as NetCDF
-   output_filename = Path('summer_days.nc')
-   txge25_result.to_netcdf(output_filename)
+   # retrieve dataset from result dict
+   # key of dataset can be used to create filename: 
+   for period, ds_out in results.items():
+        sd, ed = period
+        output_filename = Path(f"summer_days_{sd:%Y%m%d}-{ed:%Y%m%d}.nc")
+        ds_out.to_netcdf(output_filename)
+
    print(f"Indicator calculated and saved to {output_filename}")
 
 2. Using the CLI within Python code
@@ -111,7 +114,8 @@ Summary: When to Use Which Approach
 
 * Ideal for fine-grained control over input datasets, variable assignment, and
   parameters.
-* Supports direct use of in-memory :py:class:`xarray.DataArray` objects.
+* Full functionality from command-line tool, all arguments can be passed to 
+  `run_tool_from_datasets`
 
 **CLI Invocation (`clix.main`)**
 
