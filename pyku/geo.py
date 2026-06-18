@@ -305,7 +305,7 @@ def get_ny(ds):
 
     from pyku import meta
 
-    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    y_name, _x_name = meta.get_projection_yx_varnames(ds)
 
     ys = ds.coords[y_name].to_numpy()
 
@@ -337,9 +337,9 @@ def get_nx(ds):
               ...: ds.pyku.get_nx()
     """
 
-    import pyku.meta as meta
+    from pyku import meta
 
-    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    _y_name, x_name = meta.get_projection_yx_varnames(ds)
 
     # ys = ds.coords[y_name].to_numpy()
     xs = ds.coords[x_name].to_numpy()
@@ -369,9 +369,10 @@ def _set_georeferencing_attrs(ds, area_def=None):
         :class:`xarray.Dataset`: The dataset with georeferencing attributes.
     """
 
-    import pyresample
-    import xarray as xr
     import numpy as np
+    import pyresample
+
+    import xarray as xr
 
     # Sanity checks
     # -------------
@@ -2116,14 +2117,14 @@ def select_neighborhood(
 
     y_name, x_name = meta.get_projection_yx_varnames(ds)
     coords = list(zip(xs, ys))
-    coords = pd.DataFrame(coords, columns=["x", "y"])
+    coords = pd.DataFrame(coords, columns=[x_name, y_name])
 
     # Generate a mask for all elements selected
     # -----------------------------------------
 
     flag = (
         coords.assign(flag=1)
-        .set_index(["x", "y"])
+        .set_index([x_name, y_name])
         .flag
         .to_xarray()
         .fillna(0)
@@ -2133,7 +2134,7 @@ def select_neighborhood(
     # --------------------------------------------------------------------
 
     # The following options may be usefull method="nearest", tolerance=1e-9
-    flag = flag.reindex(x=ds[x_name], y=ds[y_name], fill_value=0)
+    flag = flag.reindex({x_name: ds[x_name], y_name: ds[y_name]}, fill_value=0)
 
     # Copy dataset and mask all climate variables
     # -------------------------------------------
@@ -2244,19 +2245,21 @@ def _resampling_nearest_from_swath_to_grid(
 
 def _resampling_idw_from_swath_to_swath(
     in_arr, source_swath, target_swath, roi, chunks, use_dask=True,
-    power_parameter=None
+    power_parameter=None, neighbours=None
 ):
     """
     Block resampling
 
     Arguments:
-       in_arr (:class:`dask.Array`): Array to be resampled
-       source_swath (:class:`pyresample.geometry.SwathDefinition`):
+        in_arr (:class:`dask.Array`): Array to be resampled
+        source_swath (:class:`pyresample.geometry.SwathDefinition`):
             Source swath definition
-       target_swath (:class:`pyresample.geometry.SwathDefinition`):
+        target_swath (:class:`pyresample.geometry.SwathDefinition`):
             Target swath definition
-       roi (float): Radius of influence.
-       chunks (dict): Chunks
+        roi (float): Radius of influence.
+        neighbours (int): The number of neigbours to consider for each grid
+            point. Default value is dependent on the interpolation method.
+        chunks (dict): Chunks
 
     Returns:
         :class:`dask.Array`: Resampled dask array
@@ -2265,6 +2268,12 @@ def _resampling_idw_from_swath_to_swath(
     import dask
     import numpy as np
     from pyresample import kd_tree
+
+    # Fall back to kd_tree.resample_custom if neighbours is None
+    # ----------------------------------------------------------
+
+    if neighbours is None:
+        neighbours = 8
 
     def block_resampling(arr):
 
@@ -2292,7 +2301,8 @@ def _resampling_idw_from_swath_to_swath(
             arr,
             target_swath,
             radius_of_influence=roi,
-            weight_funcs=wfs
+            weight_funcs=wfs,
+            neighbours=neighbours
         )
 
         # Reshape back to (other_dimensions x y x x)
@@ -2318,7 +2328,8 @@ def _resampling_idw_from_swath_to_swath(
 
 
 def _resampling_nearest_from_swath_to_swath(
-    in_arr, source_swath, target_swath, roi, chunks, use_dask=True
+        in_arr, source_swath, target_swath, roi,
+        chunks, use_dask=True
 ):
     """
     Block resampling
@@ -2528,7 +2539,7 @@ def _resampling_bilinear_from_swath_to_swath_legacy(
 
 
 def _resampling_bilinear_from_swath_to_grid(
-        in_da, source_swath, target_grid, roi
+    in_da, source_swath, target_grid, roi, neighbours=None
 ):
     """
     xarray bilinear resampling
@@ -2538,6 +2549,8 @@ def _resampling_bilinear_from_swath_to_grid(
        source_swath (:class:`pyresample.SwathDefinition`): Source swath.
        target_grid (:class:`pyresample.AreaDefinition`): Target grid.
        roi (float): Radius of influence.
+       neighbours (int): The number of neigbours to consider for each grid
+           point using Inverse Distance Weighting (IDW). Defaults to 32.
 
     Returns:
         :class:`dask.Array`: Resampled dask array
@@ -2550,6 +2563,12 @@ def _resampling_bilinear_from_swath_to_grid(
     from pyresample.bilinear import XArrayBilinearResampler
 
     from pyku import meta
+
+    # Fall back to XArrayBilinearResampler if neighbours is None
+    # ----------------------------------------------------------
+
+    if neighbours is None:
+        neighbours = 32
 
     # The function XArrayBilinearResampler only needs y and x projection
     # coordinates dimension name but these shall be named 'y' and 'x'
@@ -2571,6 +2590,7 @@ def _resampling_bilinear_from_swath_to_grid(
         source_swath,
         target_grid,
         roi,
+        neighbours=neighbours,
         reduce_data=False
     )
 
@@ -2640,7 +2660,7 @@ def _resampling_bilinear_from_swath_to_grid_legacy(
 
 def project(
     ds, area_def=None, roi=1E6, method='nearest_neighbor', use_dask=True,
-    area_file=None, keep_mask=False, power_parameter=None
+    area_file=None, keep_mask=False, power_parameter=None, neighbours=None,
 ):
     """
     Project dataset to target projection.
@@ -2707,6 +2727,9 @@ def project(
         power_parameter (float): Power parameter for Inverse Distance Weighting
             (IDW). Defaults to 2.5. For other interpolation methods, this
             parameter is ignored.
+
+        neighbours (int): The number of neigbours to consider for each grid
+            point. Default value is dependent on the interpolation method.
 
     Returns:
         :class:`xarray.Dataset`: Dataset in target projection.
@@ -2912,13 +2935,13 @@ def project(
             "ds.pyku.get_area_def() to extract the area definition instead"
         )
 
-    if method == 'idw' and power_parameter is None:
+    if method == 'pyresample_idw' and power_parameter is None:
         raise AssertionError(
             "`power_parameter` must be passed for IDW resampling"
         )
 
     if (
-        method == 'bilinear' and
+        method == 'pyresample_bilinear' and
         out_area_def.proj_dict.get('proj') == 'ob_tran'
     ):
         raise Exception(
@@ -2935,6 +2958,18 @@ def project(
             "time, other dimensions, y projection coordinate, and x "
             "projection coordinate. You can reorder them using "
             "ds.pyku.reorder_dimensions_and_coordinates()."
+        )
+
+    if (
+        method not in [
+            'pyresample_bilinear',
+            'pyresample_bilinear_swath_to_grid',
+            'pyresample_idw'
+        ] and
+        neighbours is not None
+    ):
+        raise Exception(
+            f"Parameter neighbours is not implemented for method {method}"
         )
 
     # Determine target geographic and projection coordinates
@@ -3090,6 +3125,7 @@ def project(
                 source_swath=swath_in,
                 target_grid=out_area_def,
                 roi=roi,
+                neighbours=neighbours,
             )
 
             out_arr = out_da.data
@@ -3114,7 +3150,8 @@ def project(
                 roi=roi,
                 chunks=(in_arr.chunks[0], (out_ny,), (out_nx,)),
                 use_dask=use_dask,
-                power_parameter=power_parameter
+                power_parameter=power_parameter,
+                neighbours=neighbours
             )
 
         elif method in [
@@ -3149,14 +3186,7 @@ def project(
                     "xesmf and esmpy for conservative resampling are not "
                     "installed by default. ESMF binaries must first be "
                     "compiled and installed first! For installation "
-                    "instructions, see the Pyku documentation. With the DWD "
-                    "module system, you can load it using:\n"
-                    "    module load esmf/8.8.0\n\n"
-                    "If you are using ESMF binaries in version 8.8.0 as "
-                    "above, you can install esmpy with:\n"
-                    "    pip install git+https://github.com/esmf-org/esmf.git@v8.8.0#subdirectory=src/addon/esmpy\n\n"  # noqa
-                    "Then, install xesmf:\n"
-                    "    pip install xesmf"
+                    "instructions, see the pyku documentation. "
                 )
 
             # Generate Dataset with projection lat/lon information
@@ -3435,8 +3465,8 @@ def project(
         # ---------------------------------------------------
 
         out_ds = out_ds.assign_attrs({
-            'CORDEX_domain': areas_cf_definitions.get(out_area_id).get(
-                'CORDEX_domain', 'undefined'
+            'domain_id': areas_cf_definitions.get(out_area_id).get(
+                'domain_id', 'undefined'
             )
         })
 

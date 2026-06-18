@@ -5,8 +5,9 @@ Handles parsing via jsonargparse, validation, and returns parsed args.
 """
 
 import glob
-from datetime import datetime
 
+# from datetime import datetime
+import pandas as pd
 from jsonargparse import ArgumentParser
 from jsonargparse.typing import register_type
 from pandas.tseries.frequencies import to_offset
@@ -14,13 +15,13 @@ from rapidfuzz import process
 
 from pyku.clix import indicator_data
 from pyku.clix.manager import (
+    QuantityStr,
+    fix_annotations,
     get_indicator_description,
     load_function,
-    fix_annotations,
+    parse_quantity,
     replace_description_with_values,
     update_default_args,
-    QuantityStr,
-    parse_quantity,
 )
 
 
@@ -68,6 +69,7 @@ def check_input(path_str: str) -> str:
     """
 
     from pathlib import Path
+
     from braceexpand import braceexpand
 
     expanded_paths = [Path(p) for p in braceexpand(path_str)]
@@ -104,6 +106,7 @@ def classify_input(path_str: str) -> dict:
     """
 
     from pathlib import Path
+
     from braceexpand import braceexpand
 
     unbraced_paths = [p for part in path_str for p in braceexpand(part)]
@@ -113,15 +116,15 @@ def classify_input(path_str: str) -> dict:
         raise TypeError(f"Input path does not exist: {path_str}")
 
     if all(p.is_dir() for p in expanded_paths):
-        return {p: "folder" for p in path_str}
+        return dict.fromkeys(path_str, "folder")
 
     if all(p.is_file() for p in expanded_paths):
         if all(p.suffix.lower() in {".yaml", ".yml"} for p in expanded_paths):
-            return {p: "yaml" for p in path_str}
+            return dict.fromkeys(path_str, "yaml")
         elif all(p.suffix.lower() in {".csv", ".txt"} for p in expanded_paths):
-            return {p: "text" for p in path_str}
+            return dict.fromkeys(path_str, "text")
         else:
-            return {p: "file" for p in path_str}
+            return dict.fromkeys(path_str, "file")
 
     raise TypeError(f"Input path is not a file or folder: {path_str}")
 
@@ -131,15 +134,16 @@ def validate_and_sort_date_ranges(date_ranges):
         return []
     parsed, seen = [], set()
     for start, end in date_ranges:
-        sd = datetime.strptime(start, "%Y%m%d")
-        ed = datetime.strptime(end, "%Y%m%d")
+        sd = pd.Timestamp(start)
+        ed = pd.Timestamp(end)
+
         if sd >= ed:
             raise ValueError(f"{start} must be before {end}")
-        key = (start, end)
+        key = (sd, ed)
         if key not in seen:
             seen.add(key)
-            parsed.append((start, end))
-    parsed.sort()
+            parsed.append((sd, ed))
+    parsed.sort(key=lambda x: x[0])
     return parsed
 
 
@@ -161,10 +165,11 @@ def valid_freq(value: str) -> str:
     try:
         to_offset(value)  # Validate if it's a valid frequency string
         return value
-    except ValueError:
+    except (ValueError, TypeError) as e:
         raise ArgumentTypeError(
-            f"Invalid frequency string '{value}'. Must be something like 'MS', 'YS', 'QS-DEC', or '5D'."  # noqa
-        )  # noqa
+            f"Invalid frequency string '{value}'."
+            "Must be something like 'MS', 'YS', 'QS-DEC', or '5D'."
+            ) from e
 
 
 def percent_0_to_100(val: str) -> float:
@@ -197,7 +202,7 @@ def build_parser():
                     help="Select input files, folders or yaml configuration.")
     ig.add_argument(
         '-f', '--frequency',
-        help='Resampling frequency year/month/season.',  # noqa
+        help='Resampling frequency year/month/season.',
         type=str, required=True
     )
 
@@ -210,7 +215,8 @@ def build_parser():
     cg.add_argument(
         '--ref_date_range', action='append', nargs=2,
         metavar=('START', 'END'),
-        help='Provide one or more reference date ranges as YYYYMMDD YYYYMMDD for anomaly calculation.'  # noqa
+        help='Provide one or more reference date ranges as YYYYMMDD YYYYMMDD '
+             'for anomaly calculation.'
     )
 
     # Create optional group (optional group)
@@ -251,24 +257,27 @@ def build_parser():
 
     ig.add_argument(
         '--input_perc', nargs='*', type=check_input,
-        help="Select input files, folders or yaml configuration for percentiles.",  # noqa
+        help="Select input files, folders or yaml configuration "
+             "for percentiles.",
     )
     pg.add_argument(
         '--percentile', type=percent_0_to_100,
-        help='Set percentile value between 0 to 100. If not set, assumes percentiles are precomputed.',  # noqa
+        help='Set percentile value between 0 to 100. '
+             'If not set, assumes percentiles are precomputed.',
     )
     pg.add_argument(
         '--percentile_freq', type=valid_freq, default='5D',
         help=(
             "Specify the grouping for percentile calculation. "
-            "Accepts a frequency string (e.g., 'MS' for monthly, 'YS' for yearly, 'QS-DEC' for seasonal) "  # noqa
+            "Accepts a frequency string (e.g., 'MS' for monthly, "
+            "'YS' for yearly, 'QS-DEC' for seasonal) "
             "or a number of days (e.g., '5D' for a 5-day window)."
-        )  # noqa
+        )
     )
     pg.add_argument(
         '--perc_date_range', action='append', nargs=2,
         metavar=('START', 'END'),
-        help='Set period to compute percentiles as YYYYMMDD YYYYMMDD.',  # noqa
+        help='Set period to compute percentiles as YYYYMMDD YYYYMMDD.',
     )
 
     # Create percentile group (percentile group)
@@ -292,7 +301,8 @@ def build_parser():
     # Dynamic subcommands for climate indicators
     subs = parser.add_subcommands(
         title="Climate Indicators",
-        description='For more details on each Climate Indicator, add it as an argument followed by --help.',  # noqa
+        description='For more details on each Climate Indicator, '
+                    'add it as an argument followed by --help.',
         required=True)
 
     for indicator, params in indicator_data.items():
@@ -340,7 +350,9 @@ def parse_cli(cli_args=None):
         args.date_range.append((None, None))
 
     if args.anomaly:
-        args.ref_date_range = validate_and_sort_date_ranges(args.ref_date_range)[0]  # noqa
+        args.ref_date_range = validate_and_sort_date_ranges(
+                              args.ref_date_range
+                              )[0]
     else:
         args.ref_date_range = []
 
