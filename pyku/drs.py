@@ -413,7 +413,7 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # The variable name is used when evaluating the filename pattern
     # --------------------------------------------------------------
 
-    variable_name = variable_names[0]  # noqa
+    variable_name = variable_names[0]
 
     # Get file pattern from json file
     # -------------------------------
@@ -551,13 +551,6 @@ def to_drs_netcdfs(
 
         overwrite (bool): Optional. Whether exiting files should be overwritten
         if they already exist. Defaults to False
-
-..        **kwargs: Additional keyword arguments.
-..            output_frequency (str, optional): Specifies the frequency type of
-..            the output (e.g., "year", "month").
-..            interval_range (int, optional): Specifies the time interval of
-..            the output.
-
     """
 
     import calendar

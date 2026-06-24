@@ -173,14 +173,14 @@ def _computable_varnames(available_varnames, wanted_varnames):
         computable_varnames.add('hurs')
         available_varnames.add('hurs')
 
-    if 'tdew' in wanted_varnames and 'tdew' not in available_varnames and \
+    if 'tdps' in wanted_varnames and 'tdps' not in available_varnames and \
        {'tas', 'hurs'}.issubset(available_varnames):
 
-        computable_varnames.add('tdew')
-        available_varnames.add('tdew')
+        computable_varnames.add('tdps')
+        available_varnames.add('tdps')
 
     if 'huss' in wanted_varnames and 'huss' not in available_varnames and \
-       {'ps', 'tdew'}.issubset(available_varnames):
+       {'ps', 'tdps'}.issubset(available_varnames):
 
         computable_varnames.add('huss')
         available_varnames.add('huss')
@@ -191,7 +191,7 @@ def _computable_varnames(available_varnames, wanted_varnames):
 def calc(ds):
 
     """
-    Add 'huss', 'hurs' and 'tdew' to dataset if possible
+    Add 'huss', 'hurs' and 'tdps' to dataset if possible
 
     Arguments:
         ds (:class:`xarray.Dataset`): The input dataset.
@@ -213,7 +213,7 @@ def calc(ds):
               ...: ds = pyku.resources.get_test_data('tas_hurs')
               ...: ds = ds.isel(time=[0,1,2])
               ...:
-              ...: # Calculate tdew and show data variables
+              ...: # Calculate tdps and show data variables
               ...: # --------------------------------------
               ...:
               ...: ds = ds.pyku.calc()
@@ -226,7 +226,7 @@ def calc(ds):
     import pyku.meta as meta
 
     available_varnames = meta.get_geodata_varnames(ds)
-    wanted_varnames = ['hurs', 'tdew', 'huss']
+    wanted_varnames = ['hurs', 'tdps', 'huss']
     tobecomputed_varnames = _computable_varnames(
         available_varnames, wanted_varnames
     )
@@ -235,8 +235,8 @@ def calc(ds):
 
         if varname in ['hurs'] and varname in tobecomputed_varnames:
             ds = calc_hurs(ds)
-        if varname in ['tdew'] and varname in tobecomputed_varnames:
-            ds = calc_tdew(ds)
+        if varname in ['tdps'] and varname in tobecomputed_varnames:
+            ds = calc_tdps(ds)
         if varname in ['huss'] and varname in tobecomputed_varnames:
             ds = calc_huss(ds)
 
@@ -323,6 +323,19 @@ def calc_windspeed(ds):
 
 
 def calc_tdew(ds):
+    """
+    Deprecated function kept for backward compatibility
+    """
+
+    logger.warning(
+        "Function calc_tdew is deprecated and only kept for backward "
+        "compatibility"
+    )
+
+    return calc_tdps(ds)
+
+
+def calc_tdps(ds):
 
     """
     Add dew point temperature to dataset, calculated from 'tas' and 'hurs'
@@ -332,7 +345,7 @@ def calc_tdew(ds):
             'hurs'.
 
     Returns:
-        :class:`xarray.Dataset`: The data with tdew included.
+        :class:`xarray.Dataset`: The data with tdps included.
 
     Examples:
 
@@ -347,10 +360,10 @@ def calc_tdew(ds):
               ...: ds = pyku.resources.get_test_data('tas_hurs')
               ...: ds = ds.isel(time=[0,1,2])
               ...:
-              ...: # Calculate tdew and show data variables
-              ...: # --------------------------------------
+              ...: # Calculate dew point temperature and show data variables
+              ...: # -------------------------------------------------------
               ...:
-              ...: ds = ds.pyku.calc_tdew()
+              ...: ds = ds.pyku.calc_tdps()
               ...: ds.data_vars
 
     """
@@ -365,14 +378,14 @@ def calc_tdew(ds):
     # Check if variables are in the dataset
     # -------------------------------------
 
-    if 'tdew' in ds.data_vars:
-        raise Exception("Variable tdew is already in the dataset")
+    if 'tdps' in ds.data_vars:
+        raise Exception("Variable tdps is already in the dataset")
 
     if 'tas' not in ds.data_vars or 'hurs' not in ds.data_vars:
 
         message = textwrap.dedent(
             f"""
-            During preprocessing and while trying to calculate 'tdew',
+            During preprocessing and while trying to calculate 'tdps',
             either 'tas' or 'hurs' is missing. Available variables are
             {ds.data_vars}.
             """
@@ -380,22 +393,22 @@ def calc_tdew(ds):
 
         raise Exception(message)
 
-    tdew = metpy.calc.dewpoint_from_relative_humidity(
+    tdps = metpy.calc.dewpoint_from_relative_humidity(
         ds['tas'],
         ds['hurs']
-    ).rename('tdew')
+    ).rename('tdps')
 
     # Dequantify and set attributes
     # -----------------------------
 
-    tdew = tdew.metpy.dequantify()
+    tdps = tdps.metpy.dequantify()
 
     # Set units
     # ---------
 
     # The function to_cmor_units only accept xarray.Dataset
 
-    tdew = drs.to_cmor_units(tdew.to_dataset())['tdew']
+    tdps = drs.to_cmor_units(tdps.to_dataset())['tdps']
 
     # Set name of crs variable
     # ------------------------
@@ -403,7 +416,7 @@ def calc_tdew(ds):
     crs_varname = meta.get_crs_varname(ds)
 
     if crs_varname is not None:
-        tdew.attrs['grid_mapping'] = crs_varname
+        tdps.attrs['grid_mapping'] = crs_varname
 
     # Set cell_method
     # ---------------
@@ -412,7 +425,7 @@ def calc_tdew(ds):
     hurs_cm = ds.hurs.attrs.get('cell_methods', None)
 
     if tas_cm and hurs_cm and (tas_cm == hurs_cm):
-        tdew.attrs['cell_methods'] = tas_cm
+        tdps.attrs['cell_methods'] = tas_cm
     else:
         logger.warning(
             "cell_methods not set: attributes either differ or are missing "
@@ -420,15 +433,9 @@ def calc_tdew(ds):
         )
 
     # Set attributes
-    # --------------
+    tdps = tdps.to_cmor_attrs()
 
-    tdew = tdew.assign_attrs({
-        'standard_name': 'dew_point',
-        'long_name': 'Dew Point Temperature',
-        'comment': 'Calculated with pyku',
-    })
-
-    ds = xr.merge([ds, tdew])
+    ds = xr.merge([ds, tdps])
 
     # Return
     # ------
@@ -446,7 +453,8 @@ def calc_hurs(ds):
             'huss'.
 
     Returns:
-        :class:`xarray.Dataset`: The dataset including tdew.
+        :class:`xarray.Dataset`: The dataset including tdps (Dew point
+            temperature).
 
     Examples:
 
@@ -552,14 +560,14 @@ def calc_hurs(ds):
 def calc_huss(ds):
 
     """
-    Calculate 'huss' from 'ps' and 'tdew'
+    Calculate 'huss' from 'ps' and 'tdps' (Surface dew point temperature)
 
     Arguments:
         ds (:class:`xarray.Dataset`): The Input data containing 'ps' and
-            'tdew'.
+            'tdps' (Dew point temperature).
 
     Returns:
-        :class:`xarray.Dataset`: The dataset including tdew.
+        :class:`xarray.Dataset`: The dataset including huss.
     """
 
     import textwrap
@@ -576,17 +584,17 @@ def calc_huss(ds):
 
         raise Exception("Variable hurs is already in the dataset")
 
-    if 'ps' not in ds.data_vars or 'tdew' not in ds.data_vars:
+    if 'ps' not in ds.data_vars or 'tdps' not in ds.data_vars:
 
         message = textwrap.dedent(
             f"""
-            While trying to calculate 'huss', either 'ps' or 'tdew' is missing.
+            While trying to calculate 'huss', either 'ps' or 'tdps' is missing.
             Available variables are {ds.data_vars}.
             """)
         raise Exception(message)
 
     huss = metpy.calc.specific_humidity_from_dewpoint(
-            ds['ps'], ds['tdew']
+            ds['ps'], ds['tdps']
     ).rename('huss')
 
     # Dequantify and set attributes
@@ -611,9 +619,9 @@ def calc_huss(ds):
     # ---------------
 
     ps_cm = ds.ps.attrs.get('cell_methods', None)
-    tdew_cm = ds.tdew.attrs.get('cell_methods', None)
+    tdps_cm = ds.tdps.attrs.get('cell_methods', None)
 
-    if ps_cm and tdew_cm and (ps_cm == tdew_cm):
+    if ps_cm and tdps_cm and (ps_cm == tdps_cm):
         huss.attrs['cell_methods'] = ps_cm
     else:
         logger.warning(

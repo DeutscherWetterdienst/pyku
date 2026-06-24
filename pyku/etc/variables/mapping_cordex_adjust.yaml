@@ -7,9 +7,9 @@ tasmax:
 tasmin:
   comment: null
   name: tasminAdjust
-tdew:
+tdps:
   comment: null
-  name: tdewAdjust
+  name: tdpsAdjust
 hurs:
   comment: null
   name: hursAdjust

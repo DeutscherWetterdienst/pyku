@@ -1,13 +1,13 @@
 # Manually-edited configuration for custom CMOR-like variables, which are not
 # part of the CORDEX standard.
 
-cclm-td-2m:
-  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
-  long_name: 2m Dew Point Temperature
+tdps:
+  comment: Custom non-standard CORDEX/CMOR-like variable.
+  long_name: Near-Surface Dew Point Temperature
   standard_name: dew_point_temperature
   units: kelvins
   cmor_units: 'K'
-  valid_bounds: [50, 500]
+  valid_bounds: [150, 400]
 mixr:
   comment: >
       humrs is not defined in the CMOR standard see GRIB2 - TABLE 4.2-0-1

@@ -7,9 +7,9 @@ tasmax:
 tasmin:
   comment: null
   name: tasminAdjustInterp
-tdew:
+tdps:
   comment: null
-  name: tdewAdjustInterp
+  name: tdpsAdjustInterp
 hurs:
   comment: null
   name: hursAdjustInterp
