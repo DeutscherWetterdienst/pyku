@@ -1845,7 +1845,8 @@ def generate_fake_cmip6_data(variable='tas', ntime=1, nlat=180,
 
     Arguments:
         variable (str): Variable name (one of ["tas", "tasmax",
-            "tasmin", "pr", "sfcWind", "rsds"])
+            "tasmin", "pr", "sfcWind", "rsds", "ps", "psl",
+            "hurs"])
         ntime (int): Number of years
         nlat (int): Number of latitudes
         nlon (int): Number of longitudes
@@ -1918,6 +1919,20 @@ def generate_fake_cmip6_data(variable='tas', ntime=1, nlat=180,
     elif variable == "rsds":
         data = 200 + 150 * seasonal_cycle + 50 * spatial_pattern + noise * 20
         units = "W m-2"
+    elif variable == "hurs":
+        # Base around 70%, slightly influenced by spatial patterns,
+        # seasonal cycles, and random weather noise.
+        hurs_base = 70 - 10 * spatial_pattern + 5 * seasonal_cycle + noise * 8
+
+        # Clip values to ensure they stay within physical boundaries [0%, 100%]
+        data = np.clip(hurs_base, 0, 100)
+        units = "%"
+
+    elif variable in ["ps", "psl"]:
+        # Standard atmospheric pressure baseline (~101325 Pa)
+        pressure_base = 101325 - 1500 * spatial_pattern - 500 * seasonal_cycle
+        data = pressure_base + noise * 300
+        units = "Pa"
 
     else:
         raise ValueError(f"Unsupported variable: {variable}")

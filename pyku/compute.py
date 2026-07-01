@@ -167,9 +167,14 @@ def _computable_varnames(available_varnames, wanted_varnames):
     wanted_varnames = set(wanted_varnames)
     computable_varnames = set()
 
-    if 'hurs' in wanted_varnames and 'hurs' not in available_varnames and \
-       {'ps', 'tas', 'huss'}.issubset(available_varnames):
-
+    if (
+        'hurs' in wanted_varnames
+        and 'hurs' not in available_varnames
+        and (
+            {'ps', 'tas', 'huss'}.issubset(available_varnames)
+            or {'tas', 'tdew'}.issubset(available_varnames)
+        )
+    ):
         computable_varnames.add('hurs')
         available_varnames.add('hurs')
 
@@ -436,17 +441,22 @@ def calc_tdew(ds):
     return ds
 
 
-def calc_hurs(ds):
+def calc_hurs(ds, phase='auto'):
 
     """
-    Calculate 'hurs' from 'ps', 'tas' and 'huss'
+    Calculate 'hurs' from 'ps', 'tas' and 'huss' or from 'tas' and 'tdew'
 
     Arguments:
         ds (:class:`xarray.Dataset`): The Input data containing 'ps', 'tas' and
-            'huss'.
+            'huss' or 'tas' and 'tdew'.
+        phase (str): {'liquid', 'solid', 'auto'}
+            Where applicable, adjust assumptions and constants to make
+            calculation valid in ``'liquid'`` water (default) or ``'solid'``
+            ice regimes. ``'auto'`` will change regime based on determination
+            of phase boundaries, eg `temperature` relative to freezing.
 
     Returns:
-        :class:`xarray.Dataset`: The dataset including tdew.
+        :class:`xarray.Dataset`: The dataset including hurs.
 
     Examples:
 
@@ -481,22 +491,38 @@ def calc_hurs(ds):
 
         raise Exception("Variable hurs is already in the dataset")
 
-    if 'ps' not in ds.data_vars or \
-       'tas' not in ds.data_vars or \
-       'huss' not in ds.data_vars:
+    # Define the two acceptable combinations of variables
+    combo_1 = {'ps', 'huss', 'tas'}
+    combo_2 = {'tas', 'tdew'}
+
+    # Get all available variables as a set for quick comparison
+    available_vars = set(ds.data_vars)
+
+    # Check if NEITHER combination is fully present
+    if not (combo_1.issubset(available_vars) or
+            combo_2.issubset(available_vars)):
 
         message = textwrap.dedent(
             f"""
             During preprocessing and while trying to calculate 'hurs',
-            either 'ps', 'tas' or 'huss' is missing. Available variables
-            are {ds.data_vars}.
+            the required variable combinations are missing.
+            You need either {list(combo_1)} OR {list(combo_2)}.
+            Available variables are: {list(ds.data_vars)}.
             """)
 
         raise Exception(message)
 
-    hurs = metpy.calc.relative_humidity_from_specific_humidity(
-        ds['ps'], ds['tas'], ds['huss']
-    ).rename('hurs')
+    if combo_1.issubset(available_vars):
+
+        hurs = metpy.calc.relative_humidity_from_specific_humidity(
+            ds['ps'], ds['tas'], ds['huss'], phase=phase
+        ).rename('hurs')
+
+    elif combo_2.issubset(available_vars):
+
+        hurs = metpy.calc.relative_humidity_from_dewpoint(
+            ds['tas'], ds['tdew'], phase=phase
+        ).rename('hurs')
 
     # Dequantify and set attributes
     # -----------------------------
@@ -520,16 +546,22 @@ def calc_hurs(ds):
     # Set cell_method
     # ---------------
 
-    ps_cm = ds.ps.attrs.get('cell_methods', None)
-    tas_cm = ds.tas.attrs.get('cell_methods', None)
-    huss_cm = ds.huss.attrs.get('cell_methods', None)
+    # Identify which combination is present in the dataset
+    if combo_1.issubset(available_vars):
+        active_vars = combo_1
+    elif combo_2.issubset(available_vars):
+        active_vars = combo_2
 
-    if ps_cm and tas_cm and huss_cm and (ps_cm == tas_cm == huss_cm):
-        hurs.attrs['cell_methods'] = ps_cm
+    # Extract cell_methods for the active variables
+    cms = [ds[v].attrs.get('cell_methods') for v in active_vars]
+
+    # Verify all attributes exist and are completely identical
+    if cms and all(cm is not None for cm in cms) and len(set(cms)) == 1:
+        hurs.attrs['cell_methods'] = cms[0]
     else:
         logger.warning(
-            "cell_methods not set: attributes either differ or are missing "
-            "from input data"
+            "cell_methods not set: attributes either differ, are missing, "
+            "or input variables could not be determined."
         )
 
     # Set attributes
