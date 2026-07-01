@@ -2272,7 +2272,8 @@ def _resampling_idw_from_swath_to_swath(
         # ------------------------------------------------
 
         def wf(r):
-            return 1 / r ** power_parameter
+            # Avoid division by zero by setting a mask
+            return np.where(r < 1e-15, 1e+15, 1.0 / (r ** power_parameter))
 
         # A function is needed for each other_dimensions (i.e. time)
         # ----------------------------------------------------------
@@ -3458,8 +3459,8 @@ def project(
         # ---------------------------------------------------
 
         out_ds = out_ds.assign_attrs({
-            'domain_id': areas_cf_definitions.get(out_area_id).get(
-                'domain_id', 'undefined'
+            'CORDEX_domain': areas_cf_definitions.get(out_area_id).get(
+                'CORDEX_domain', 'undefined'
             )
         })
 
