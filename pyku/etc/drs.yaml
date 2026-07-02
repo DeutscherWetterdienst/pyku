@@ -297,6 +297,40 @@ standards:
              {frequency}/{modeling_realm}/{variable_name}/\
              {ensemble_member_id}/"
 
+    climate_predictions:
+
+        # This file pattern is for climate projections
+
+        metadata:
+            - institute_id  # DWD
+            - process_id  # postprocessed_problems
+            - experiment_id  # sfc05-2026
+            - model_id  # GCFS22--epi2022--5
+            - product  # seasonalfc
+            - numerics  # regional
+            - modeling_realm  # atmos
+            - frequency  # day
+            - ensemble_member  # r1i1p1
+            - variable_id  # tas
+
+        # Exemplary file
+        # --------------
+
+        # tas_day_GCFS22--epi2022--5_sfc05-2026_r1i1p1_20260501-20261130.nc
+
+        stem_pattern: "{variable_id}_{frequency}_{model_id}_{experiment_id}_\
+                       {ensemble_member}_{start_time}-{end_time}"
+
+        # Exemplary directory
+        # -------------------
+
+        # /path/to/project/data/regional/seasonalfc/postprocessed_problems/\
+        # DWD/GCFS22--epi2022--5/sfc05-2026/day/atmos/tas/r1i1p1/
+
+        parent_pattern: "{numerics}/{product}/{process_id}/{institute_id}/\
+                         {model_id}/{experiment_id}/{frequency}/\
+                         {modeling_realm}/{variable_id}/{ensemble_member}"
+
     cosmo-rea6:
 
         metadata: []

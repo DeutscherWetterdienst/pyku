@@ -103,8 +103,9 @@ def load_area_def(projection_name, area_file=None):
               ...: geo.load_area_def('HYR-LAEA-5')
     """
 
-    import warnings
     import importlib
+    import warnings
+
     from pyresample.area_config import load_area
 
     warnings.filterwarnings(
@@ -142,8 +143,9 @@ def align_georeferencing(ds, ref, tolerance=None):
         reference dataset.
     """
 
-    import pyku.meta as meta
     import numpy as np
+
+    from pyku import meta
 
     # Get projection x/y and geographic lat/lon names
     # -----------------------------------------------
@@ -196,8 +198,8 @@ def align_georeferencing(ds, ref, tolerance=None):
     is_meter = (
         x_name_units_ref is not None
         and y_name_units_ref is not None
-        and x_name_units_ref.lower() in ['m']
-        and y_name_units_ref.lower() in ['m']
+        and x_name_units_ref.lower() == 'm'
+        and y_name_units_ref.lower() == 'm'
     )
 
     # Set tolerance to defaults depending on unit
@@ -301,9 +303,9 @@ def get_ny(ds):
               ...: ds.pyku.get_ny()
     """
 
-    import pyku.meta as meta
+    from pyku import meta
 
-    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    y_name, _x_name = meta.get_projection_yx_varnames(ds)
 
     ys = ds.coords[y_name].to_numpy()
 
@@ -335,9 +337,9 @@ def get_nx(ds):
               ...: ds.pyku.get_nx()
     """
 
-    import pyku.meta as meta
+    from pyku import meta
 
-    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    _y_name, x_name = meta.get_projection_yx_varnames(ds)
 
     # ys = ds.coords[y_name].to_numpy()
     xs = ds.coords[x_name].to_numpy()
@@ -367,9 +369,10 @@ def _set_georeferencing_attrs(ds, area_def=None):
         :class:`xarray.Dataset`: The dataset with georeferencing attributes.
     """
 
-    import pyresample
-    import xarray as xr
     import numpy as np
+    import pyresample
+
+    import xarray as xr
 
     # Sanity checks
     # -------------
@@ -650,9 +653,10 @@ def get_yx(ds, dtype='ndarray'):
             coordinates are found in the dataset, ``None`` is returned.
     """
 
-    import xarray as xr
     import numpy as np
-    import pyku.meta as meta
+
+    import xarray as xr
+    from pyku import meta
 
     # Get geographic latlon names
     # ---------------------------
@@ -671,13 +675,13 @@ def get_yx(ds, dtype='ndarray'):
     # Return tuple of numpy ndarrays
     # ------------------------------
 
-    if dtype in ['ndarray']:
+    if dtype == 'ndarray':
         return ys2d, xs2d
 
     # Return xarray Dataset
     # ---------------------
 
-    elif dtype in ['xr.Dataset']:
+    elif dtype == 'xr.Dataset':
 
         # Create DataArrays containing lons and lats
         # ------------------------------------------
@@ -727,8 +731,9 @@ def get_yx_area_extent(ds):
         tuple: (lower_left_x, lower_left_y, upper_right_x, upper_right_y)
     """
 
-    import pyku.meta as meta
     import pyresample.utils
+
+    from pyku import meta
 
     # Get y and x projection coordinate variable names
     y_varname, x_varname = meta.get_projection_yx_varnames(ds)
@@ -776,17 +781,16 @@ def get_lonlats(ds, dtype='ndarray'):
               ...: ds.pyku.get_lonlats()
     """
 
-    import xarray as xr
     import numpy as np
-    import pyku.meta as meta
+
+    import xarray as xr
+    from pyku import meta
 
     # Sanity check
     # ------------
 
-    is_dataset_or_dataarray = (
-        isinstance(ds, xr.Dataset)
-        or isinstance(ds, xr.DataArray)
-    )
+    is_dataset_or_dataarray = isinstance(ds, (xr.Dataset, xr.DataArray))
+
     if not is_dataset_or_dataarray:
         raise TypeError(f"Not a Dataset or DataArray {type(ds)}")
 
@@ -816,11 +820,11 @@ def get_lonlats(ds, dtype='ndarray'):
     lons = ds.coords[lon_name].to_numpy()
     lats = ds.coords[lat_name].to_numpy()
 
-    if ds[lon_name].attrs.get('units') in ['radian']:
+    if ds[lon_name].attrs.get('units') == 'radian':
         logger.warning('longitude unit conversion from radians to degrees')
         lons = np.degrees(lons)
 
-    if ds[lat_name].attrs.get('units') in ['radian']:
+    if ds[lat_name].attrs.get('units') == 'radian':
         logger.warning('latitude unit conversion from radians to degrees')
         lats = np.degrees(lats)
 
@@ -866,13 +870,13 @@ def get_lonlats(ds, dtype='ndarray'):
     # Return tuple of numpy ndarrays
     # ------------------------------
 
-    if dtype in ['ndarray']:
+    if dtype == 'ndarray':
         return lons, lats
 
     # Return xarray Dataset
     # ---------------------
 
-    elif dtype in ['xr.Dataset']:
+    elif dtype == 'xr.Dataset':
 
         # Create DataArrays containing lons and lats
         # ------------------------------------------
@@ -932,7 +936,8 @@ def set_latlon_bounds(ds):
     """
 
     import cf_xarray  # noqa, this library defines the cf namespace
-    import pyku.meta as meta
+
+    from pyku import meta
 
     ds_out = ds.copy()
 
@@ -979,8 +984,9 @@ def get_area_at_true_scale(ds):
 
     import numpy as np
     import pyproj
-    import pyku.meta as meta
     from pyproj import Geod
+
+    from pyku import meta
 
     # Initialize the Geod object with WGS84 ellipsoid
     # -----------------------------------------------
@@ -1090,8 +1096,8 @@ def get_area_at_true_scale(ds):
     is_meter = (
         x_name_units_ref is not None
         and y_name_units_ref is not None
-        and x_name_units_ref.lower() in ['m']
-        and y_name_units_ref.lower() in ['m']
+        and x_name_units_ref.lower() == 'm'
+        and y_name_units_ref.lower() == 'm'
     )
 
     # Set tolerance to defaults depending on unit
@@ -1233,10 +1239,11 @@ def set_spatial_weights(ds, how='area'):
     #   Since the true scale can be located outside the map, a 'virtual' grid
     #   cell is constructed at true scale and its area calculated.
 
-    import xarray as xr
     import numpy as np
-    import pyku.meta as meta
     from pyproj import Geod
+
+    import xarray as xr
+    from pyku import meta
 
     out_ds = ds.copy()
 
@@ -1420,8 +1427,9 @@ def are_longitudes_wrapped(ds):
               ...: ds.pyku.are_longitudes_wrapped()
     """
 
-    import pyku.meta as meta
     import numpy as np
+
+    from pyku import meta
 
     lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
 
@@ -1463,8 +1471,8 @@ def wrap_longitudes(ds):
               ...: ds.pyku.wrap_longitudes()
     """
 
-    import pyku.meta as meta
     import xarray as xr
+    from pyku import meta
 
     if (
         not meta.has_geographic_coordinates(ds) or
@@ -1537,7 +1545,7 @@ def is_georeferencing_sorted(ds):
               ...: ds.pyku.is_georeferencing_sorted()
     """
 
-    import pyku.meta as meta
+    from pyku import meta
 
     if not meta.has_projection_coordinates(ds):
         raise AssertionError("Dataset must have projection coordinates!")
@@ -1579,7 +1587,7 @@ def are_yx_projection_coordinates_strictly_monotonic(ds):
               ...: ds.pyku.are_yx_projection_coordinates_strictly_monotonic()
     """
 
-    import pyku.meta as meta
+    from pyku import meta
 
     # For unstructured geographic coordinates (e.g., ICON grid), monotonicity
     # is not applicable; returning True by default.
@@ -1670,7 +1678,7 @@ def sort_georeferencing(ds):
     """
 
     import xarray as xr
-    import pyku.meta as meta
+    from pyku import meta
 
     # Keep attributes during operations
     # ---------------------------------
@@ -1729,8 +1737,9 @@ def _get_area_def_from_global_attrs(ds):
         :class:`pyresample.geometry.AreaDefinition`: The area definition.
     """
 
-    import pyku.meta as meta
     from pyresample.geometry import AreaDefinition
+
+    from pyku import meta
 
     # Read the projection parameters from the global attributes
     # ---------------------------------------------------------
@@ -1778,7 +1787,7 @@ def _get_area_def_from_crs_proj_str(ds):
         :class:`pyresample.geometry.AreaDefinition`: The area definition.
     """
 
-    import pyku.meta as meta
+    from pyku import meta
     from pyresample.geometry import AreaDefinition
 
     try:
@@ -2046,8 +2055,9 @@ def select_neighborhood(
 
     import numpy as np
     import pandas as pd
-    import pyku.meta as meta
     from pyresample import geometry, kd_tree
+
+    from pyku import meta
 
     # Get the source area definition
     # ------------------------------
@@ -2158,8 +2168,8 @@ def _resampling_nearest_from_swath_to_grid(
         :class:`dask.Array`: Resampled dask array
     """
 
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample import kd_tree
 
     logger.warning('Experimental function')
@@ -2255,8 +2265,8 @@ def _resampling_idw_from_swath_to_swath(
         :class:`dask.Array`: Resampled dask array
     """
 
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample import kd_tree
 
     # Fall back to kd_tree.resample_custom if neighbours is None
@@ -2271,7 +2281,8 @@ def _resampling_idw_from_swath_to_swath(
         # ------------------------------------------------
 
         def wf(r):
-            return 1 / r ** power_parameter
+            # Avoid division by zero by setting a mask
+            return np.where(r < 1e-15, 1e+15, 1.0 / (r ** power_parameter))
 
         # A function is needed for each other_dimensions (i.e. time)
         # ----------------------------------------------------------
@@ -2338,8 +2349,8 @@ def _resampling_nearest_from_swath_to_swath(
         :class:`dask.Array`: Resampled dask array
     """
 
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample import kd_tree
 
     # source_swath.lons=np.pad(source_swath.lons, 1, mode='edge')
@@ -2406,8 +2417,8 @@ def _resampling_nearest_from_swath_to_swath_legacy(
         :class:`dask.Array`: Resampled dask array
     """
 
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample.image import ImageContainerNearest
     from pyresample.utils import generate_nearest_neighbour_linesample_arrays
 
@@ -2474,13 +2485,12 @@ def _resampling_bilinear_from_swath_to_swath_legacy(
         :class:`dask.Array`: Resampled dask array
     """
 
-    import warnings
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample.image import ImageContainerBilinear
     from pyresample.utils import generate_nearest_neighbour_linesample_arrays
 
-    warnings.warn("Using legacy bilinear resampling from swath to swath")
+    logger.warning("Using legacy bilinear resampling from swath to swath")
 
     row_indices, col_indices = generate_nearest_neighbour_linesample_arrays(
         source_swath,
@@ -2551,8 +2561,9 @@ def _resampling_bilinear_from_swath_to_grid(
         since it already implements block resampling in pyresample.
     """
 
-    import pyku.meta as meta
     from pyresample.bilinear import XArrayBilinearResampler
+
+    from pyku import meta
 
     # Fall back to XArrayBilinearResampler if neighbours is None
     # ----------------------------------------------------------
@@ -2612,8 +2623,8 @@ def _resampling_bilinear_from_swath_to_grid_legacy(
         dask.Array: Resampled dask array.
     """
 
-    import numpy as np
     import dask
+    import numpy as np
     from pyresample.image import ImageContainerBilinear
 
     def block_resampling(arr):
@@ -2808,17 +2819,15 @@ def project(
     # complexity but is being kept at the moment.
 
     import copy
-    import pyku.meta as meta
-    import pyku.drs as drs
-    import pyku.features as features
-    import pyku.mask as mask
-    import xarray as xr
+
+    import dask.array as dk
     import numpy as np
     import pyresample
-    from pyresample import geometry
-    import pyku.geo as geo
-    import dask.array as dk
     from pyproj import CRS, Transformer
+    from pyresample import geometry
+
+    import xarray as xr
+    from pyku import drs, features, mask, meta
 
     # Shallow copy the input and rename for clarity
     # ---------------------------------------------
@@ -2849,13 +2858,13 @@ def project(
         'conservative'
     ]
 
-    if method in ['nearest_neighbor']:
+    if method == 'nearest_neighbor':
         method = 'pyresample_nearest_neighbor'
-    if method in ['bilinear']:
+    if method == 'bilinear':
         method = 'pyresample_bilinear'
-    if method in ['idw']:
+    if method == 'idw':
         method = 'pyresample_idw'
-    if method in ['conservative']:
+    if method == 'conservative':
         method = 'esmf_conservative'
 
     # Get target area definition
@@ -2927,14 +2936,14 @@ def project(
             "ds.pyku.get_area_def() to extract the area definition instead"
         )
 
-    if method in ['pyresample_idw'] and power_parameter is None:
+    if method == 'pyresample_idw' and power_parameter is None:
         raise AssertionError(
             "`power_parameter` must be passed for IDW resampling"
         )
 
     if (
-        method in ['pyresample_bilinear'] and
-        out_area_def.proj_dict.get('proj') in ['ob_tran']
+        method == 'pyresample_bilinear' and
+        out_area_def.proj_dict.get('proj') == 'ob_tran'
     ):
         raise Exception(
             "Rotated lat/lon is not supported for the default "
@@ -3001,7 +3010,7 @@ def project(
     # Get source geographic lat/lon coordinates
     # -----------------------------------------
 
-    in_lons, in_lats = geo.get_lonlats(in_ds)
+    in_lons, in_lats = get_lonlats(in_ds)
 
     # Get source y/x projection and lat/lon geographic coordinate names
     # -----------------------------------------------------------------
@@ -3122,7 +3131,7 @@ def project(
 
             out_arr = out_da.data
 
-        elif method in ['pyresample_nearest_neighbor']:
+        elif method == 'pyresample_nearest_neighbor':
 
             out_arr = _resampling_nearest_from_swath_to_swath(
                 in_arr,
@@ -3133,7 +3142,7 @@ def project(
                 use_dask=use_dask,
             )
 
-        elif method in ['pyresample_idw']:
+        elif method == 'pyresample_idw':
 
             out_arr = _resampling_idw_from_swath_to_swath(
                 in_arr,
@@ -3155,17 +3164,17 @@ def project(
             'esmf_nearest_d2s',
         ]:
 
-            if method in ['esmf_bilinear']:
+            if method == 'esmf_bilinear':
                 method = 'bilinear'
-            if method in ['esmf_conservative']:
+            if method == 'esmf_conservative':
                 method = 'conservative'
-            if method in ['esmf_conservative_normed']:
+            if method == 'esmf_conservative_normed':
                 method = 'conservative_normed'
-            if method in ['esmf_patch']:
+            if method == 'esmf_patch':
                 method = 'patch'
-            if method in ['esmf_nearest_s2d']:
+            if method == 'esmf_nearest_s2d':
                 method = 'nearest_s2d'
-            if method in ['esmf_nearest_d2s']:
+            if method == 'esmf_nearest_d2s':
                 method = 'nearest_d2s'
 
             # Raise exception if xesmf is not installed
@@ -3225,7 +3234,7 @@ def project(
 
             out_arr = out_da.data
 
-        elif method in ['pyresample_bilinear_swath_to_grid']:
+        elif method == 'pyresample_bilinear_swath_to_grid':
 
             out_da = _resampling_bilinear_from_swath_to_grid(
                 in_da,
@@ -3242,7 +3251,7 @@ def project(
 
             out_arr = out_da.data
 
-        elif method in ['pyresample_bilinear_swath_to_grid_legacy']:
+        elif method == 'pyresample_bilinear_swath_to_grid_legacy':
 
             out_arr = _resampling_bilinear_from_swath_to_grid_legacy(
                 in_arr,
@@ -3253,7 +3262,7 @@ def project(
                 use_dask=use_dask,
             )
 
-        elif method in ['pyresample_bilinear_swath_to_swath_legacy']:
+        elif method == 'pyresample_bilinear_swath_to_swath_legacy':
 
             out_arr = _resampling_bilinear_from_swath_to_swath_legacy(
                 in_arr,
@@ -3264,7 +3273,7 @@ def project(
                 use_dask=use_dask,
             )
 
-        elif method in ['pyresample_nearest_neighbor_legacy']:
+        elif method == 'pyresample_nearest_neighbor_legacy':
 
             out_arr = _resampling_nearest_from_swath_to_swath_legacy(
                 in_arr,
@@ -3435,7 +3444,7 @@ def project(
         # Rename x and y coordinates if necessary
         # ---------------------------------------
 
-        if x_name not in ['x'] and y_name not in ['y']:
+        if x_name != 'x' and y_name != 'y':
             out_ds = out_ds.rename({'x': x_name, 'y': y_name})
 
         # Set CMOR-conform coordinate attributes
@@ -3457,8 +3466,8 @@ def project(
         # ---------------------------------------------------
 
         out_ds = out_ds.assign_attrs({
-            'domain_id': areas_cf_definitions.get(out_area_id).get(
-                'domain_id', 'undefined'
+            'CORDEX_domain': areas_cf_definitions.get(out_area_id).get(
+                'CORDEX_domain', 'undefined'
             )
         })
 

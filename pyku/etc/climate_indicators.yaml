@@ -776,6 +776,17 @@ sfcWind:
       98th percentile of the mean daily wind speed at 10 m above ground
     function: pyku.clix.custom_indicators.sfcWindp98
 
+  calmdays:
+    standard_name: calm_days
+    long_name: Number of calm days
+    units: '1'
+    cell_methods: 'time: mean within days time: sum over days'
+    description: >
+      The number of days with average near-surface wind speed below threshold
+    function: xclim.indices.calm_days
+    default_parameters:
+      thresh: 1 m s-1
+
 rsds:
   rsdsmean:
     standard_name: surface_downwelling_shortwave_flux_in_air
@@ -783,6 +794,30 @@ rsds:
     units: W m-2
     description: Mean of daily surface net shortwave radiation
     function: pyku.clix.custom_indicators.rsds_mean
+
+hurs:
+  hursmean:
+    standard_name: relative_humidity
+    long_name: Near-Surface Relative Humidity
+    units: percent
+    description: Mean of daily near-surface relative humidity
+    function: pyku.clix.custom_indicators.hurs_mean
+
+ps:
+  psmean:
+    standard_name: surface_air_pressure
+    long_name: Surface Air Pressure
+    units: Pa
+    description: Mean of daily surface air pressure
+    function: pyku.clix.custom_indicators.ps_mean
+
+psl:
+  pslmean:
+    standard_name: air_pressure_at_sea_level
+    long_name: Sea Level Pressure
+    units: Pa
+    description: Mean of daily air pressure at sea level
+    function: pyku.clix.custom_indicators.psl_mean
 
 pr+tas:
   rge1mmtmle2:

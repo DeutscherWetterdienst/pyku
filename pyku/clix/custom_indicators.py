@@ -367,45 +367,98 @@ def prcpertot(
 @declare_units(rsds="[radiation]")
 def rsds_mean(rsds: xr.DataArray, freq: str = "YS") -> xr.DataArray:
     r"""
-    Mean of daily average temperature.
+    Mean of daily surface net shortwave radiation.
 
-    Resample the original daily mean temperature series by taking the
-    mean over each period.
+    Resample the original daily mean net shortwave radiation series by
+    taking the mean over each period.
 
     Parameters
     ----------
-    tas : xr.DataArray
-        Mean daily temperature.
+    rsds : xr.DataArray
+        Mean daily net shortwave radiation.
     freq : str
         Resampling frequency.
 
     Returns
     -------
-    xr.DataArray, [same units as tas]
-        The mean daily temperature at the given time frequency.
-
-    Notes
-    -----
-    Let :math:`TN_i` be the mean daily temperature of day :math:`i`,
-    then for a period :math:`p` starting at day :math:`a` and finishing
-    on day :math:`b`:
-
-    .. math::
-
-       TG_p = \frac{\sum_{i=a}^{b} TN_i}{b - a + 1}
-
-    Examples
-    --------
-    The following would compute for each grid cell of file `tas.day.nc`
-    the mean temperature at the seasonal frequency, i.e.
-    DJF, MAM, JJA, SON, DJF, etc.:
-
-    >>> from xclim.indices import tg_mean
-    >>> t = xr.open_dataset(path_to_tas_file).tas
-    >>> tg = tg_mean(t, freq="QS-DEC")
+    xr.DataArray, [same units as rsds]
+        The mean daily net shortwave radiation at the given time frequency.
     """
 
     return select_resample_op(rsds, op="mean", freq=freq)
+
+
+@declare_units(hurs="[]")
+def hurs_mean(hurs: xr.DataArray, freq: str = "YS") -> xr.DataArray:
+    r"""
+    Mean of daily near-surface relative humidity.
+
+    Resample the original daily mean near-surface relative humidity series
+    by taking the mean over each period.
+
+    Parameters
+    ----------
+    hurs : xr.DataArray
+        Mean daily near-surface relative humidity.
+    freq : str
+        Resampling frequency.
+
+    Returns
+    -------
+    xr.DataArray, [same units as hurs]
+        The mean daily near-surface relative humidity at the given time
+        frequency.
+    """
+
+    return select_resample_op(hurs, op="mean", freq=freq)
+
+
+@declare_units(ps="[pressure]")
+def ps_mean(ps: xr.DataArray, freq: str = "YS") -> xr.DataArray:
+    r"""
+    Mean of daily station pressure.
+
+    Resample the original daily station pressure
+    by taking the mean over each period.
+
+    Parameters
+    ----------
+    ps : xr.DataArray
+        Mean daily station pressure.
+    freq : str
+        Resampling frequency.
+
+    Returns
+    -------
+    xr.DataArray, [same units as ps]
+        The mean station pressure at the given time frequency.
+    """
+
+    return select_resample_op(ps, op="mean", freq=freq)
+
+
+@declare_units(psl="[pressure]")
+def psl_mean(psl: xr.DataArray, freq: str = "YS") -> xr.DataArray:
+    r"""
+    Mean of daily air pressure at sea level.
+
+    Resample the original daily air pressure at sea level
+    by taking the mean over each period.
+
+    Parameters
+    ----------
+    ps : xr.DataArray
+        Mean daily air pressure at sea level.
+    freq : str
+        Resampling frequency.
+
+    Returns
+    -------
+    xr.DataArray, [same units as psl]
+        The mean air pressure at sea level at the given time frequency.
+    """
+
+    return select_resample_op(psl, op="mean", freq=freq)
 
 
 @declare_units(
@@ -701,6 +754,8 @@ def percentile_grouped(
     if np.isscalar(per):
         per = [per]
 
+    arr = arr.chunk(time=-1)
+
     def apply_perc(group: xr.DataArray) -> xr.DataArray:
         result = xr.apply_ufunc(
             calc_perc,
@@ -715,7 +770,10 @@ def percentile_grouped(
             },
             dask="parallelized",
             output_dtypes=[arr.dtype],
-            dask_gufunc_kwargs={"output_sizes": {"percentiles": len(per)}},
+            dask_gufunc_kwargs={
+                "output_sizes": {"percentiles": len(per)},
+                "allow_rechunk": True,
+            },
         )
         result.coords["percentiles"] = per
         return result

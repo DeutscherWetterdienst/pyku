@@ -167,9 +167,14 @@ def _computable_varnames(available_varnames, wanted_varnames):
     wanted_varnames = set(wanted_varnames)
     computable_varnames = set()
 
-    if 'hurs' in wanted_varnames and 'hurs' not in available_varnames and \
-       {'ps', 'tas', 'huss'}.issubset(available_varnames):
-
+    if (
+        'hurs' in wanted_varnames
+        and 'hurs' not in available_varnames
+        and (
+            {'ps', 'tas', 'huss'}.issubset(available_varnames)
+            or {'tas', 'tdew'}.issubset(available_varnames)
+        )
+    ):
         computable_varnames.add('hurs')
         available_varnames.add('hurs')
 
@@ -443,14 +448,19 @@ def calc_tdps(ds):
     return ds
 
 
-def calc_hurs(ds):
+def calc_hurs(ds, phase='auto'):
 
     """
-    Calculate 'hurs' from 'ps', 'tas' and 'huss'
+    Calculate 'hurs' from 'ps', 'tas' and 'huss' or from 'tas' and 'tdew'
 
     Arguments:
         ds (:class:`xarray.Dataset`): The Input data containing 'ps', 'tas' and
-            'huss'.
+            'huss' or 'tas' and 'tdew'.
+        phase (str): {'liquid', 'solid', 'auto'}
+            Where applicable, adjust assumptions and constants to make
+            calculation valid in ``'liquid'`` water (default) or ``'solid'``
+            ice regimes. ``'auto'`` will change regime based on determination
+            of phase boundaries, eg `temperature` relative to freezing.
 
     Returns:
         :class:`xarray.Dataset`: The dataset including tdps (Dew point
@@ -476,11 +486,10 @@ def calc_hurs(ds):
               ...: ds.data_vars
     """
 
-    import textwrap
     import metpy
+
     import xarray as xr
-    import pyku.drs as drs
-    import pyku.meta as meta
+    from pyku import drs, meta
 
     # Check if variables are in the dataset
     # -------------------------------------
@@ -489,22 +498,35 @@ def calc_hurs(ds):
 
         raise Exception("Variable hurs is already in the dataset")
 
-    if 'ps' not in ds.data_vars or \
-       'tas' not in ds.data_vars or \
-       'huss' not in ds.data_vars:
+    # Define the two acceptable combinations of variables
+    combo_1 = {'ps', 'huss', 'tas'}
+    combo_2 = {'tas', 'tdew'}
 
-        message = textwrap.dedent(
-            f"""
-            During preprocessing and while trying to calculate 'hurs',
-            either 'ps', 'tas' or 'huss' is missing. Available variables
-            are {ds.data_vars}.
-            """)
+    # Get all available variables as a set for quick comparison
+    available_vars = set(ds.data_vars)
 
-        raise Exception(message)
+    # Check if NEITHER combination is fully present
+    if not (combo_1.issubset(available_vars) or
+            combo_2.issubset(available_vars)):
 
-    hurs = metpy.calc.relative_humidity_from_specific_humidity(
-        ds['ps'], ds['tas'], ds['huss']
-    ).rename('hurs')
+        raise Exception(
+            "During preprocessing and while trying to calculate 'hurs', "
+            "the required variable combinations are missing. You need either "
+            "{list(combo_1)} OR {list(combo_2)}. Available variables are: "
+            "{list(ds.data_vars)}."
+        )
+
+    if combo_1.issubset(available_vars):
+
+        hurs = metpy.calc.relative_humidity_from_specific_humidity(
+            ds['ps'], ds['tas'], ds['huss'], phase=phase
+        ).rename('hurs')
+
+    elif combo_2.issubset(available_vars):
+
+        hurs = metpy.calc.relative_humidity_from_dewpoint(
+            ds['tas'], ds['tdew'], phase=phase
+        ).rename('hurs')
 
     # Dequantify and set attributes
     # -----------------------------
@@ -528,16 +550,22 @@ def calc_hurs(ds):
     # Set cell_method
     # ---------------
 
-    ps_cm = ds.ps.attrs.get('cell_methods', None)
-    tas_cm = ds.tas.attrs.get('cell_methods', None)
-    huss_cm = ds.huss.attrs.get('cell_methods', None)
+    # Identify which combination is present in the dataset
+    if combo_1.issubset(available_vars):
+        active_vars = combo_1
+    elif combo_2.issubset(available_vars):
+        active_vars = combo_2
 
-    if ps_cm and tas_cm and huss_cm and (ps_cm == tas_cm == huss_cm):
-        hurs.attrs['cell_methods'] = ps_cm
+    # Extract cell_methods for the active variables
+    cms = [ds[v].attrs.get('cell_methods') for v in active_vars]
+
+    # Verify all attributes exist and are completely identical
+    if cms and all(cm is not None for cm in cms) and len(set(cms)) == 1:
+        hurs.attrs['cell_methods'] = cms[0]
     else:
         logger.warning(
-            "cell_methods not set: attributes either differ or are missing "
-            "from input data"
+            "cell_methods not set: attributes either differ, are missing, "
+            "or input variables could not be determined."
         )
 
     # Set attributes
@@ -675,12 +703,10 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
         :class:`xarray.Dataset`: The dataset with degreeday included.
     """  # noqa
 
-    import xarray as xr
-    import warnings
-    import textwrap
     import numpy as np
-    import pyku.mask as mask
-    import pyku.compute as compute
+
+    import xarray as xr
+    from pyku import mask, timekit
 
     # Keep data attributes over operations
     # ------------------------------------
@@ -693,12 +719,11 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
     if ds['tas'].attrs.get('units') is None:
         raise Exception('tas has not units in attributes')
 
-    if 'celsius' not in [ds['tas'].attrs.get('units').lower()]:
-        message = textwrap.dedent(
-            """
-            tas not in Celsius, checking if units ist Kelvins for conversion.
-            """)
-        warnings.warn(message)
+    if 'celsius' != ds['tas'].attrs.get('units').lower():
+
+        logger.warning(
+            "Converting to Celsius"
+        )
 
         # Temperature
         # -----------
@@ -746,7 +771,7 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
         # Resample
         # --------
 
-        ds_out = compute.resample_datetimes(
+        ds_out = timekit.resample_datetimes(
             ds_out,
             how='sum',
             frequency=period,
@@ -767,8 +792,10 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
     return ds_out
 
 
-def calc_globalwarminglevels(ds, GWL_levels=None, ref_period=None, navg=30,
-                             GWL_temp_offset=0., cellarea=None):
+def calc_globalwarminglevels(
+    ds, GWL_levels=None, ref_period=None, navg=30, GWL_temp_offset=0.,
+    cellarea=None
+):
 
     """
     Calculate  Global Warming Level central,
@@ -828,7 +855,8 @@ def calc_globalwarminglevels(ds, GWL_levels=None, ref_period=None, navg=30,
 
     import numpy as np
     import pandas as pd
-    import pyku.meta as meta
+
+    from pyku import meta
 
     # Deal with exceptions
     # --------------------
@@ -843,10 +871,9 @@ def calc_globalwarminglevels(ds, GWL_levels=None, ref_period=None, navg=30,
         raise ValueError("navg must be a positive integer, got {navg}")
 
     if not isinstance(GWL_temp_offset, (int, float)):
-        message = """\
-GWL_temp_offset must be a float, got {GWL_temp_offset}!
-"""
-        raise ValueError(message)
+        raise ValueError(
+            "GWL_temp_offset must be a float, got {GWL_temp_offset}!"
+        )
 
     if 'tas' not in meta.get_geodata_varnames(ds):
         raise Exception("Variable 'tas' is not a variable in the dataset")
@@ -868,8 +895,10 @@ GWL_temp_offset must be a float, got {GWL_temp_offset}!
             year = int(year)
             continue
         except ValueError:
-            raise Exception("Given start and/or end year of " +
-                            "reference period is not an integer!")
+            raise Exception(
+                "Given start and/or end year of reference period is not an "
+                "integer!"
+            )
 
     # Get correct names of geographic latitude and longitude
     # ------------------------------------------------------
@@ -1112,17 +1141,19 @@ def persistent_processing(
               ...: temp_dir.cleanup()
     """
 
-    import pathlib
+    import gc
+    import glob
     import hashlib
     import os
-    import xarray as xr
-    import pyku.timekit as timekit
-    import dask
-    import glob
-    from dask import delayed
+    import pathlib
     from pathlib import Path
+
+    import dask
+    from dask import delayed
     from dask.distributed import default_client
-    import gc
+
+    import xarray as xr
+    from pyku import timekit
 
     # Deal with exceptions
     # --------------------
