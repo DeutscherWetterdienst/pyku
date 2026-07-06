@@ -109,7 +109,6 @@ exclude = ["tests*"]
 pyku = [
     "etc/*.yaml",
     "etc/variables/*.yaml",
-    "etc/static/*.*",
     "etc/geodata/*.geojson"
 ]
 

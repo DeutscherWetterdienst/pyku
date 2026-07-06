@@ -418,10 +418,9 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # Get file pattern from json file
     # -------------------------------
 
-    pathname_pattern = PYKU_RESOURCES.get_value('drs',
-                                                'standards',
-                                                standard,
-                                                'parent_pattern')
+    pathname_pattern = PYKU_RESOURCES.get_value(
+        'drs', 'standards', standard, 'parent_pattern'
+    )
 
     # Get all variables needed from file pattern
     # ------------------------------------------
@@ -1359,7 +1358,6 @@ def _to_cmor_attrs_frequency(ds):
     from pandas.tseries.frequencies import to_offset
 
     import xarray as xr
-
     from pyku import meta
 
     # Keep variables attributes
@@ -1552,10 +1550,9 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     # ------------------------------
 
     parent_pattern = (
-        PYKU_RESOURCES.get_value('drs',
-                                 'standards',
-                                 standard,
-                                 'parent_pattern')
+        PYKU_RESOURCES.get_value(
+            'drs', 'standards', standard, 'parent_pattern'
+        )
     )
 
     # Deal with the variable name

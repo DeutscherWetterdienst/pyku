@@ -13,7 +13,7 @@ pr:
   names:
     - precipitation_flux
     - avg_tprate
-tdpsn:
+tdps:
   comment: Backward compatibility
   names:
     - tdew
