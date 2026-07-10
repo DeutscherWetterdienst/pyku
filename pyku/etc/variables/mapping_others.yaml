@@ -1,0 +1,22 @@
+tasmax:
+  comment: tmax originates from old HYRAS data files
+  names:
+    - tmax
+tasmin:
+  comment: tmin originates from old HYRAS data files
+  names:
+    - tmin
+pr:
+  comment: >
+    prcipitation_flux is the short_name. Kept for backward compatibility.
+    avg_tprate origin is unclear, likely from CDS API GRIB data.
+  names:
+    - precipitation_flux
+    - avg_tprate
+tdps:
+  comment: Backward compatibility
+  names:
+    - tdew
+    - tdewAdjust
+    - tdewAdjustInterp
+

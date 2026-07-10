@@ -1,0 +1,33 @@
+tas:
+  comment: null
+  name: tasAdjustInterp
+tasmax:
+  comment: null
+  name: tasmaxAdjustInterp
+tasmin:
+  comment: null
+  name: tasminAdjustInterp
+tdps:
+  comment: null
+  name: tdpsAdjustInterp
+hurs:
+  comment: null
+  name: hursAdjustInterp
+pr:
+  comment: null
+  name: prAdjustInterp
+rsds:
+  comment: null
+  name: rsdsAdjustInterp
+sfcWind:
+  comment: null
+  name: sfcWindAdjustInterp
+psl:
+  comment: null
+  name: pslAdjustInterp
+ps:
+  comment: null
+  name: psAdjustInterp
+huss:
+  comment: null
+  name: hussAdjustInterp

@@ -496,6 +496,11 @@ class pykuDatasetAccessor:
         return libcompute.calc(self._obj, *args, **kwargs)
     calc.__doc__ = libcompute.calc.__doc__
 
+    def calc_tdps(self, *args, **kwargs):
+        return libcompute.calc_tdps(self._obj, *args, **kwargs)
+    calc_tdps.__doc__ = libcompute.calc_tdps.__doc__
+
+    # calc_tdew is deprecated but kept for backward compatibility
     def calc_tdew(self, *args, **kwargs):
         return libcompute.calc_tdew(self._obj, *args, **kwargs)
     calc_tdew.__doc__ = libcompute.calc_tdew.__doc__

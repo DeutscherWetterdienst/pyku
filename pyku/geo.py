@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 __all__ = [
-            'list_standard_areas',
-            'load_area_def'
-            ]
+    'list_standard_areas',
+    'load_area_def'
+]
 
 """
 Functions for managing georeferencing
@@ -3397,13 +3397,13 @@ def project(
         # reading the CF-conform area definition.
 
         out_da.coords['lat'].attrs = \
-            PYKU_RESOURCES.get_value('drs', 'coordinates', 'lat')['attrs']
+            PYKU_RESOURCES.get_value('coordinates', 'lat')['attrs']
         out_da.coords['lon'].attrs = \
-            PYKU_RESOURCES.get_value('drs', 'coordinates', 'lon')['attrs']
+            PYKU_RESOURCES.get_value('coordinates', 'lon')['attrs']
         out_da.coords['y'].attrs = \
-            PYKU_RESOURCES.get_value('drs', 'coordinates', 'y')['attrs']
+            PYKU_RESOURCES.get_value('coordinates', 'y')['attrs']
         out_da.coords['x'].attrs = \
-            PYKU_RESOURCES.get_value('drs', 'coordinates', 'x')['attrs']
+            PYKU_RESOURCES.get_value('coordinates', 'x')['attrs']
 
         # Append DataArray to the list of DataArrays
         # ------------------------------------------

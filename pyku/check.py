@@ -10,7 +10,7 @@ See also:
     * ``./pyku/etc/metadata.yaml``
 """
 
-from pyku import logger, PYKU_RESOURCES
+from pyku import PYKU_RESOURCES, logger
 
 
 def check(ds, standard=None, completeness_period=None, all_nan_slices=False):
@@ -216,8 +216,9 @@ def check_datetimes(ds):
     import cftime
     import numpy as np
     import pandas as pd
-    import pyku.meta as meta
     from pandas.tseries.frequencies import to_offset
+
+    from pyku import meta
 
     # We will gather issues in this list
     # ----------------------------------
@@ -707,10 +708,10 @@ def check_valid_bounds(ds, bounds=None):
               ...: )
     """
 
-    import pandas as pd
     import dask
-    import pyku.meta as meta
-    import pyku.drs as drs
+    import pandas as pd
+
+    from pyku import drs, meta
 
     # Copy array to run operations out-of-place
     # -----------------------------------------
@@ -720,28 +721,17 @@ def check_valid_bounds(ds, bounds=None):
 
     ds_copy = ds.copy()
 
-    # Automatically chunk the Dataset
-    # -------------------------------
+    # Get pyku variable resources
+    # ---------------------------
 
-    # This avoid a large computation graph when looking for values
-    # below and above the threshold. For the computations at hand, the exact
-    # chunking should be quite unimportant.
-
-    # Marker. This is turned off by default now and should be dealt with when
-    # reading the data I think. The problem is that when using one of the weird
-    # cftime calendars with the time bounds sets and using
-    # ds[['time_bnds']].chunk(chunks='auto'), xarray/dask is not able to deal
-    # with the chunking automatically and this must be done manually with
-    # ds[['time_bnds']].chunk({'time': 10})
-
-    # The command is kept commented out for now, but indeed should most likely
-    # be left commented out and the user should take care of the chunking.
-
-    # ds_copy = ds_copy.chunk(chunks='auto')
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     if bounds:
-        bounds_dict = {'variables': bounds}
-        ds_varnames = list(bounds_dict.get('variables').keys())
+        bounds_dict = bounds
+        ds_varnames = list(bounds_dict.keys())
 
     else:
         try:
@@ -766,7 +756,7 @@ def check_valid_bounds(ds, bounds=None):
 
             return issues
 
-        bounds_dict = PYKU_RESOURCES.get_value('drs')
+        bounds_dict = pyku_variables
         ds_varnames = meta.get_geodata_varnames(ds_copy)
 
     data = []
@@ -776,10 +766,10 @@ def check_valid_bounds(ds, bounds=None):
         da = ds_copy[var]
 
         lower_threshold = \
-            float(bounds_dict.get('variables').get(var).get('valid_bounds')[0])
+            float(bounds_dict[var].get('valid_bounds')[0])
 
         upper_threshold = \
-            float(bounds_dict.get('variables').get(var).get('valid_bounds')[1])
+            float(bounds_dict[var].get('valid_bounds')[1])
 
         logger.debug(f"{var=}")
         logger.debug(f"{lower_threshold=}")
@@ -797,7 +787,7 @@ def check_valid_bounds(ds, bounds=None):
         data.append((
             f"{var} above {upper_threshold}",
             f"{count_above_threshold} values above threshold",
-            f"Shape {above_threshold.data.shape} First 50 indices: " +
+            f"Shape {above_threshold.data.shape} First 50 indices: "
             f"{where_above_threshold[0:50]}"
             if count_above_threshold > 1 else None
         ))
@@ -814,7 +804,7 @@ def check_valid_bounds(ds, bounds=None):
         data.append((
             f"{var} below {lower_threshold}",
             f"{count_below_threshold} values below threshold",
-            f"Shape {below_threshold.data.shape} First 50 indices: " +
+            f"Shape {below_threshold.data.shape} First 50 indices: "
             "{where_below_threshold[0:50]}"
             if count_below_threshold > 1 else None
         ))
@@ -1435,10 +1425,16 @@ def check_cmor_varnames(ds):
     """
 
     import pandas as pd
-    import pyku.meta as meta
+
+    from pyku import meta
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     data = [
-        (var, var, None) if var in PYKU_RESOURCES.get_keys('drs', 'variables')
+        (var, var, None) if var in pyku_variables
         else ('variable name', var, 'Variable not CMOR-conform')
         for var in meta.get_geodata_varnames(ds)
     ]
@@ -1457,15 +1453,23 @@ def _check_variables_cmor_standard_name(ds):
     Check variable CMOR standard_name.
 
     Arguments:
-        ds (:class:`xarray.Dataset`): Input dataset
+        ds (:class:`xarray.Dataset`): Input dataset.
 
     Returns:
-        :class:`pandas.DataFrame`: Dataframe containing checks and issues
+        :class:`pandas.DataFrame`: Dataframe containing checks and issues.
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1489,29 +1493,26 @@ def _check_variables_cmor_standard_name(ds):
 
         if cmor_varname is None:
             the_result = False
-            the_issue = "Could not get CMOR standard variable name and hence \
-could not check if standard_name is CMOR-conform"
+            the_issue = (
+                "Could not get CMOR standard variable name and hence"
+                "could not check if standard_name is CMOR-conform"
+            )
 
         elif ds[varname].attrs.get('standard_name') is None:
             the_result = False
             the_issue = "Variable has no attribute standard_name"
 
         else:
-            expected_std_name = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'standard_name'
-            )
-
+            expected_std_name = pyku_variables[cmor_varname]['standard_name']
             read_std_name = ds[varname].attrs.get('standard_name')
-
-            the_result = \
-                True if read_std_name in [expected_std_name] else False
-
-            the_issue = None if read_std_name in [expected_std_name] \
-                else f"{varname} standard_name is {read_std_name} but the \
-expected standard_name is {expected_std_name}"
+            the_result = read_std_name == expected_std_name
+            the_issue = (
+                None if read_std_name == expected_std_name
+                else (
+                    f"{varname} standard_name is {read_std_name} but the "
+                    "expected standard_name is {expected_std_name}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 
@@ -1536,8 +1537,16 @@ def _check_variables_cmor_long_name(ds):
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1571,20 +1580,16 @@ def _check_variables_cmor_long_name(ds):
             the_issue = "Variable has no attribute long_name"
 
         else:
-            expected_long_name = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'standard_name'
-            )
+            expected_long_name = pyku_variables[cmor_varname]['standard_name']
             read_long_name = ds[varname].attrs.get('long_name')
-
-            the_result = \
-                True if read_long_name in [expected_long_name] else False
-
-            the_issue = None if read_long_name in [expected_long_name] \
-                else f"{varname} long_name is {read_long_name} but the \
-expected standard_name is {expected_long_name}"
+            the_result = read_long_name == expected_long_name
+            the_issue = (
+                None if read_long_name == expected_long_name
+                else (
+                    f"{varname} long_name is {read_long_name} but the "
+                    "expected standard_name is {expected_long_name}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 
@@ -1609,8 +1614,16 @@ def _check_variables_cmor_units(ds):
     """
 
     import pandas as pd
-    import pyku.drs as drs
-    import pyku.meta as meta
+
+    from pyku import drs, meta
+
+    # Get pyku variable resources
+    # ---------------------------
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource('cmor-like'),
+        **PYKU_RESOURCES.load_resource('cmor')
+    }
 
     # Get geodata varnames in dataset
     # -------------------------------
@@ -1644,21 +1657,16 @@ def _check_variables_cmor_units(ds):
             the_issue = "Variable has no attribute units"
 
         else:
-            expected_units = PYKU_RESOURCES.get_value(
-                'drs',
-                'variables',
-                cmor_varname,
-                'cmor_units'
-            )
-
+            expected_units = pyku_variables[cmor_varname]['cmor_units']
             read_units = ds[varname].attrs.get('units')
-
-            the_result = \
-                True if read_units in [expected_units] else False
-
-            the_issue = None if read_units in [expected_units] \
-                else f"{varname} unit is {read_units} but the expected units \
-is {expected_units}"
+            the_result = read_units == expected_units
+            the_issue = (
+                None if read_units == expected_units
+                else (
+                    f"{varname} unit is {read_units} but the expected units "
+                    "is {expected_units}"
+                )
+            )
 
         data.append((the_check, the_result, the_issue, the_description))
 

@@ -1,0 +1,9 @@
+cclm-td-2m:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: TD_2M
+cclm-clct:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: CLCT
+cclm-athb-s:
+  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+  name: ATHB_S

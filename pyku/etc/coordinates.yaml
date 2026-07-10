@@ -1,0 +1,71 @@
+---
+
+time:
+  attrs:
+    comment: >
+      * units set automatically from the encoding field `ds.time.encoding`
+      * calendar set automatically from ds.time.dt.calendar
+    standard_name: "time"
+    long_name: "time"
+    axis: "T"
+  encoding:
+    dtype: 'float64'
+    _FillValue: null
+    units: 'days since 1949-12-01T00:00:00Z'
+  aliases: []
+lat:
+  attrs:
+    standard_name: 'latitude'
+    long_name: 'latitude'
+    units: 'degrees_north'
+  aliases:
+    - 'lats'
+    - 'latitude'
+    - 'latitudes'
+    - 'LAT'
+    - 'LATS'
+    - 'LATITUDE'
+    - 'LATITUDES'
+lon:
+  attrs:
+    standard_name: 'longitude'
+    long_name: 'longitude'
+    units: 'degrees_east'
+  aliases:
+    - 'lons'
+    - 'longitude'
+    - 'longitudes'
+    - 'LON'
+    - 'LONS'
+    - 'LONGITUDE'
+    - 'LONGITUDES'
+y:
+  attrs:
+    long_name: 'y coordinate of projection'
+    standard_name: 'projection_y_coordinate'
+    units: 'm'
+  aliases:
+    - 'Y'
+x:
+  attrs:
+    long_name: 'x coordinate of projection'
+    standard_name: 'projection_x_coordinate'
+    units: 'm'
+  aliases:
+     - 'X'
+rlat:
+  attrs:
+    standard_name: 'grid_latitude'
+    long_name: 'latitude in rotated pole grid'
+    units: 'degrees'
+    axis: 'Y'
+  aliases:
+    - 'RLAT'
+rlon:
+  attrs:
+    standard_name: 'grid_longitude'
+    long_name: 'longitude in rotated pole grid'
+    units: 'degrees'
+    axis: 'X'
+  aliases:
+    - 'RLON'

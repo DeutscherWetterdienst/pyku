@@ -60,7 +60,7 @@ For more detailed information on each function, refer to their respective
 docstrings.
 """
 
-from pyku import logger, PYKU_RESOURCES
+from pyku import PYKU_RESOURCES, logger
 
 
 def find_match(searched_words, words, excluded_words=None):
@@ -790,7 +790,6 @@ def get_time_bounds(ds, which=None):
     """
 
     import numpy as np
-    import warnings
 
     # Find the name of the temporal bounds in file
     # --------------------------------------------
@@ -801,7 +800,7 @@ def get_time_bounds(ds, which=None):
     )
 
     if len(time_bnds_names) > 1:
-        warnings.warn("Found more than one temporal bounds in dataset")
+        logger.warning("Found more than one temporal bounds in dataset")
 
     if len(time_bnds_names) == 0:
         return None
@@ -981,9 +980,8 @@ def _get_freqstr_from_single_time_bound(ds):
     time bounds.
     """
 
-    import pandas as pd
-    import pyku.meta as meta
     import numpy as np
+    import pandas as pd
     from pandas.tseries.frequencies import to_offset
 
     # Intialize to None
@@ -994,9 +992,9 @@ def _get_freqstr_from_single_time_bound(ds):
     # Check if there is only one time label and available time bounds
     # ---------------------------------------------------------------
 
-    if ds.time.size == 1 and meta.has_time_bounds(ds):
+    if ds.time.size == 1 and has_time_bounds(ds):
 
-        time_bounds_varname = meta.get_time_bounds_varname(ds)
+        time_bounds_varname = get_time_bounds_varname(ds)
 
         # Squeeze to [[begin, end]] to [begin, end] if applicable
         time_bounds = np.squeeze(ds[time_bounds_varname].values)
@@ -1023,7 +1021,6 @@ def _get_freqstr_from_two_time_bounds(ds):
     """
 
     import pandas as pd
-    import pyku.meta as meta
 
     # Intialize to None
     # -----------------
@@ -1033,9 +1030,9 @@ def _get_freqstr_from_two_time_bounds(ds):
     # Check if there is only two time labels with available time bounds
     # -----------------------------------------------------------------
 
-    if ds.time.size == 2 and meta.has_time_bounds(ds):
+    if ds.time.size == 2 and has_time_bounds(ds):
 
-        time_bounds_varname = meta.get_time_bounds_varname(ds)
+        time_bounds_varname = get_time_bounds_varname(ds)
 
         # Get lower and upper time bounds for the first time step
         # -------------------------------------------------------
@@ -1353,7 +1350,7 @@ def is_georeferenced(ds):
               ...: ds.pyku.is_georeferenced()
     """
 
-    import pyku.geo as geo
+    from pyku import geo
 
     # Special case if the georeferencing exist but is unstructured
     # ------------------------------------------------------------
@@ -1727,83 +1724,55 @@ def get_geodataset(ds, var):
 
 def set_time_labels_from_time_bounds(*args, **kwargs):
     """
-    This function has moved to
+    Deprecated. This function has moved to
     :func:`pyku.timekit.set_time_labels_from_time_bounds`
     """
 
-    import warnings
-    import pyku.timekit as timekit
-
-    warnings.warn(
-        "This function has moved to "
-        "pyku.timekit.set_time_labels_from_time_bounds and will be removed "
-        "soon.",
-        FutureWarning,
+    raise Exception(
+        "This function has moved to pyku "
+        "`timekit.set_time_labels_from_time_bounds`"
     )
-
-    return timekit.set_time_labels_from_time_bounds(*args, **kwargs)
 
 
 def set_time_bounds(*args, **kwargs):
     """
-    This function has changed name and moved to
-    timekit.set_time_bounds_from_time_labels.
+    Deprecated. This function moved to
+    :func:`timekit.set_time_bounds_from_time_labels`.
     """
 
-    import warnings
-    import pyku.timekit as timekit
-
-    warnings.warn(
-        "This function changed named and moved to "
-        "pyku.timekit.set_time_bounds_from_time_labels.",
-        FutureWarning,
+    raise Exception(
+        "This function has moved to pyku"
+        "`timekit.set_time_bounds_from_time_labels`.",
     )
-
-    return timekit.set_time_bounds_from_time_labels(*args, **kwargs)
 
 
 def to_gregorian_calendar(*args, **kwargs):
     """
-    This function has moved to :func:`pyku.timekit.to_gregorian_calendar`.
+    Deprecated. This function has moved to
+    :func:`pyku.timekit.to_gregorian_calendar`.
     """
 
-    import warnings
-    import pyku.timekit as timekit
-
-    warnings.warn(
-        "This function has moved to pyku.timekit.to_gregorian_calendar.",
-        FutureWarning,
+    raise Exception(
+        "This function has moved to pyku `timekit.to_gregorian_calendar`."
     )
-
-    ds = timekit.to_gregorian_calendar(*args, **kwargs)
-
-    return ds
 
 
 def select_common_datetimes(*args, **kwargs):
     """
-    This function has moved to :func:`pyku.timekit.select_common_datetimes`
+    Deprecated. This function has moved to
+    :func:`pyku.timekit.select_common_datetimes`.
     """
 
-    import warnings
-    import pyku.timekit as timekit
-
-    warnings.warn(
-        "This function has moved to pyku.timekit.select_common_datetimes "
-        "and will be removed soon.",
-        FutureWarning,
+    raise Exception(
+        "This function has moved to pyku `timekit.select_common_datetimes`. "
     )
-
-    return timekit.select_common_datetimes(*args, **kwargs)
 
 
 def to_netcdf(ds, output_file):
     """
-    Deprecated. Use :func:`pyku.magic.to_netcdf` instead
+    Deprecated. This function has move dot :func:`pyku.magic.to_netcdf`.
     """
 
-    import pyku.magic as magic
-
-    logger.warning("This function is about to get deprecated")
-
-    magic.to_netcdf(ds=ds, output_file=output_file, cmor_encoding=True)
+    raise Exception(
+        "This function has moved to pyku `magic.to_netcdf`."
+    )

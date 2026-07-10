@@ -106,7 +106,11 @@ where = ["."]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-pyku = ["etc/*.yaml", "etc/static/*.*", "etc/geodata/*.geojson"]
+pyku = [
+    "etc/*.yaml",
+    "etc/variables/*.yaml",
+    "etc/geodata/*.geojson"
+]
 
 [project.scripts]
 pyku = "pyku.pyku:main"

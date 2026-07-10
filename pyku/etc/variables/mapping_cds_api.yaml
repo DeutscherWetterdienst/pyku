@@ -1,0 +1,72 @@
+tos:
+  comment: null
+  name: sea_surface_temperature
+ta:
+  comment: Check for conflict with HOSTRADA name
+  name: temperature
+tas:
+  comment: null
+  name: 2m_temperature
+tasmax:
+  comment: null
+  name: maximum_2m_temperature
+tasmin:
+  comment: null
+  name: minimum_2m_temperature
+tdps:
+  comment: null
+  name: 2m_dewpoint_temperature
+hur:
+  comment: null
+  name: humidity
+pr:
+  comment: null
+  name: mean_total_precipitation_rate
+rsds:
+  comment: null
+  name: surface_solar_radiation_downwards
+psl:
+  comment: null
+  name: mean_sea_level_pressure
+ps:
+  comment: null
+  name: surface_pressure
+clt:
+  comment: null
+  name: total_cloud_cover
+ssr:
+  comment: null
+  name: surface_net_solar_radiation
+rlut:
+  comment: null
+  name: top_net_thermal_radiation
+rlds:
+  comment: null
+  name: surface_thermal_radiation_downwards
+sd:
+  comment: null
+  name: snow_depth
+va:
+  comment: null
+  name: v_component_of_wind
+vas:
+  comment: null
+  name: 10m_v_component_of_wind
+ua:
+  comment: null
+  name: u_component_of_wind
+uas:
+  comment: null
+  name: 10m_u_component_of_wind
+zg:
+  comment: null
+  name: geopotential
+pevpr:
+  comment: null
+  name: mean_potential_evaporation_rate
+evspsbl:
+  comment: null
+  name: evaporation
+sic:
+  comment: null
+  name: sea_ice_cover
