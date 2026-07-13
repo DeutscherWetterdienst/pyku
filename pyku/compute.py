@@ -65,10 +65,11 @@ def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
            )
     """
 
-    import textwrap
-    import numpy as np
     import copy
-    import pyku.meta as meta
+
+    import numpy as np
+
+    from pyku import meta
 
     try:
         import cv2
@@ -84,11 +85,10 @@ def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
     elif method == "INPAINT_NS":
         method = cv2.INPAINT_NS
     else:
-        message = textwrap.dedent(
-            f"""
-            Method {method} not defined. Use either INPAINT_TELEA or INPAINT_NS
-            """)
-        raise Exception(message)
+        raise Exception(
+            f"Method {method} not defined. Use either INPAINT_TELEA "
+            "or INPAINT_NS"
+        )
 
     # Make a copy of the input dataset
     # --------------------------------
@@ -194,7 +194,6 @@ def _computable_varnames(available_varnames, wanted_varnames):
 
 
 def calc(ds):
-
     """
     Add 'huss', 'hurs' and 'tdps' to dataset if possible
 
@@ -223,12 +222,11 @@ def calc(ds):
               ...:
               ...: ds = ds.pyku.calc()
               ...: ds.data_vars
-
     """
 
     # Note that a list is used for wanted_varnames since a set is not ordered.
 
-    import pyku.meta as meta
+    from pyku import meta
 
     available_varnames = meta.get_geodata_varnames(ds)
     wanted_varnames = ['hurs', 'tdps', 'huss']
@@ -238,11 +236,11 @@ def calc(ds):
 
     for varname in wanted_varnames:
 
-        if varname in ['hurs'] and varname in tobecomputed_varnames:
+        if varname == 'hurs' and varname in tobecomputed_varnames:
             ds = calc_hurs(ds)
-        if varname in ['tdps'] and varname in tobecomputed_varnames:
+        if varname == 'tdps' and varname in tobecomputed_varnames:
             ds = calc_tdps(ds)
-        if varname in ['huss'] and varname in tobecomputed_varnames:
+        if varname == 'huss' and varname in tobecomputed_varnames:
             ds = calc_huss(ds)
 
     return ds
@@ -275,8 +273,9 @@ def calc_windspeed(ds):
             xr.DataArray containing the norm (e.g. wind speed)
         """
 
-        import xarray as xr
         import dask.array as dk
+
+        import xarray as xr
 
         ds = xr.merge([da_ua, da_va])
 
@@ -341,7 +340,6 @@ def calc_tdew(ds):
 
 
 def calc_tdps(ds):
-
     """
     Add dew point temperature to dataset, calculated from 'tas' and 'hurs'
 
@@ -370,15 +368,13 @@ def calc_tdps(ds):
               ...:
               ...: ds = ds.pyku.calc_tdps()
               ...: ds.data_vars
-
     """
 
-    import textwrap
     import metpy
     import metpy.calc
+
     import xarray as xr
-    import pyku.drs as drs
-    import pyku.meta as meta
+    from pyku import drs, meta
 
     # Check if variables are in the dataset
     # -------------------------------------
@@ -388,15 +384,11 @@ def calc_tdps(ds):
 
     if 'tas' not in ds.data_vars or 'hurs' not in ds.data_vars:
 
-        message = textwrap.dedent(
-            f"""
-            During preprocessing and while trying to calculate 'tdps',
-            either 'tas' or 'hurs' is missing. Available variables are
-            {ds.data_vars}.
-            """
+        raise Exception(
+            "During preprocessing and while trying to calculate 'tdps', "
+            "either 'tas' or 'hurs' is missing. Available variables are "
+            f"{ds.data_vars}."
         )
-
-        raise Exception(message)
 
     tdps = metpy.calc.dewpoint_from_relative_humidity(
         ds['tas'],
@@ -412,7 +404,6 @@ def calc_tdps(ds):
     # ---------
 
     # The function to_cmor_units only accept xarray.Dataset
-
     tdps = drs.to_cmor_units(tdps.to_dataset())['tdps']
 
     # Set name of crs variable
@@ -437,10 +428,10 @@ def calc_tdps(ds):
             "from input data"
         )
 
-    # Set attributes
-    tdps = tdps.to_cmor_attrs()
+    # The function to_cmor_attrs only accept xarray.Dataset
+    tdps = drs.to_cmor_attrs(tdps.to_dataset())['tdps']
 
-    ds = xr.merge([ds, tdps])
+    ds = xr.merge([ds, tdps], compat='no_conflicts')
 
     # Return
     # ------
@@ -449,7 +440,6 @@ def calc_tdps(ds):
 
 
 def calc_hurs(ds, phase='auto'):
-
     """
     Calculate 'hurs' from 'ps', 'tas' and 'huss' or from 'tas' and 'tdew'
 
@@ -571,11 +561,8 @@ def calc_hurs(ds, phase='auto'):
     # Set attributes
     # --------------
 
-    hurs = hurs.assign_attrs({
-        'standard_name': "relative_humidity",
-        'long_name': "Near-Surface Relative Humidity",
-        'comment': 'Calculated with pyku/metpy',
-    })
+    # The function to_cmor_attrs only accept xarray.Dataset
+    hurs = drs.to_cmor_attrs(hurs.to_dataset())['hurs']
 
     # Merge hurs to dataset
     # ---------------------
@@ -598,12 +585,11 @@ def calc_huss(ds):
         :class:`xarray.Dataset`: The dataset including huss.
     """
 
-    import textwrap
     import metpy
     import metpy.calc
+
     import xarray as xr
-    import pyku.drs as drs
-    import pyku.meta as meta
+    from pyku import drs, meta
 
     # Check if variables are in the dataset
     # -------------------------------------
@@ -614,15 +600,13 @@ def calc_huss(ds):
 
     if 'ps' not in ds.data_vars or 'tdps' not in ds.data_vars:
 
-        message = textwrap.dedent(
-            f"""
-            While trying to calculate 'huss', either 'ps' or 'tdps' is missing.
-            Available variables are {ds.data_vars}.
-            """)
-        raise Exception(message)
+        raise Exception(
+            "While trying to calculate 'huss', either 'ps' or 'tdps' is "
+            f"missing. Available variables are {ds.data_vars}."
+        )
 
     huss = metpy.calc.specific_humidity_from_dewpoint(
-            ds['ps'], ds['tdps']
+        ds['ps'], ds['tdps']
     ).rename('huss')
 
     # Dequantify and set attributes
@@ -660,11 +644,8 @@ def calc_huss(ds):
     # Set attributes
     # --------------
 
-    huss = huss.assign_attrs({
-        'standard_name': "specific_humidity",
-        'long_name': "Near-Surface Specific Humidity",
-        'comment': 'Calculated with pyku/metpy',
-    })
+    # The function to_cmor_attrs only accept xarray.Dataset
+    huss = drs.to_cmor_attrs(huss.to_dataset())['huss']
 
     # Merge to dataset
     # ----------------
@@ -675,7 +656,6 @@ def calc_huss(ds):
 
 
 def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
-
     """
     Add degree day to dataset, calculated from 'tas'
 
@@ -796,7 +776,6 @@ def calc_globalwarminglevels(
     ds, GWL_levels=None, ref_period=None, navg=30, GWL_temp_offset=0.,
     cellarea=None
 ):
-
     """
     Calculate  Global Warming Level central,
     start and end years, calculated from 'tas'
@@ -920,8 +899,7 @@ def calc_globalwarminglevels(
     # Calculate temperature within reference period
     # ---------------------------------------------
 
-    seltime = slice(str(ref_period[0])+'-01-01',
-                    str(ref_period[1])+'-12-30')
+    seltime = slice(str(ref_period[0])+'-01-01', str(ref_period[1])+'-12-30')
 
     tas_ref_period = tas.sel(time=seltime).weighted(weights).mean()
 
@@ -939,17 +917,20 @@ def calc_globalwarminglevels(
 
     fac = 1  # factor
     if ds.attrs.get('frequency') not in ['day', 'mon', 'year']:
-        raise Exception("The function only works if frequency  is set " +
-                        "as a global attribute. User shall ensure " +
-                        "the data frequency matches.")
+        raise Exception(
+            "The function only works if frequency  is set as a global "
+            "attribute. User shall ensure the data frequency matches."
+        )
 
     if ds.attrs['frequency'] == 'mon':
         fac = 12
 
     if ds.attrs['frequency'] == 'day':
         fac = 365
-        logger.warning("Detected data frequency is 'day', " +
-                       "assuming a 365-day calendar on the underlying data.")
+        logger.warning(
+            "Detected data frequency is 'day', assuming a 365-day calendar"
+            " on the underlying data."
+        )
 
     # Calculate temperature anomalies
     # -------------------------------
@@ -993,9 +974,10 @@ def calc_globalwarminglevels(
     return df_GWL
 
 
-def calc_ssim(mean_ref, mean_model, variance_ref, variance_model,
-              covariance, c1=1e-8, c2=1e-8):
-
+def calc_ssim(
+    mean_ref, mean_model, variance_ref, variance_model, covariance, c1=1e-8,
+    c2=1e-8
+):
     """
     Calculate Structural Similarity Index Measure
 
@@ -1033,8 +1015,7 @@ def calc_ssim(mean_ref, mean_model, variance_ref, variance_model,
 def persistent_processing(
     func, files=None, tmpdir=None, identifier='pyku', persist=False,
     engine=None, unify_chunks=True, chunks={'time': -1}, extension='nc'
-  ):
-
+):
     """
     Apply a function to a list of files, save the results in a temporary
     directory, and return the names of the processed files.
@@ -1319,12 +1300,12 @@ def persistent_processing(
             # Write to disk
             # -------------
 
-            if extension in ['zarr']:
+            if extension == 'zarr':
                 magic.to_zarr(
                     processed_data,
                     written_file,
                 )
-            elif extension in ['nc']:
+            elif extension == 'nc':
                 magic.to_netcdf(
                     processed_data,
                     written_file,

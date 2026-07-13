@@ -1010,41 +1010,35 @@ def get_file_dataframe(files, standard='cordex'):
         .. ipython::
            :okwarning:
 
-           In [0]: import pyku.find as find
-              ...: from pyfakefs.fake_filesystem_unittest import Patcher
+           In [0]: from pyku import find
+              ...: import tempfile
               ...:
-              ...: # Create a fake filesystem to run example
-              ...: # ---------------------------------------
+              ...: # Create fake files
+              ...: # -----------------
               ...:
-              ...: with Patcher() as patcher:
+              ...: tmpdir = tempfile.gettempdir()
               ...:
-              ...:     # Create fake files on fake filesystem
-              ...:     # ------------------------------------
-              ...:
-              ...:     fake_files = [
-              ...:         '/fakedisk/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
+              ...: fake_files = [
+              ...:     f'{tmpdir}/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
               ...: ECMWF-ERA5/evaluation/r1i1p1/CLMcom-DWD-CCLM5-0-16/\\
               ...: x0n1-v1/1hr/tas/v20221116/tas_GER-0275_ECMWF-ERA5_\\
               ...: evaluation_r1i1p1_CLMcom-DWD-CCLM5-0-16_x0n1-v1_\\
               ...: 1hr_202001010000-202012312300.nc',
-              ...:         '/fakedisk/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
+              ...:     f'{tmpdir}/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
               ...: ECMWF-ERA5/evaluation/r1i1p1/CLMcom-DWD-CCLM5-0-16/\\
               ...: x0n1-v1/1hr/tas/v20221116/tas_GER-0275_ECMWF-ERA5_\\
               ...: evaluation_r1i1p1_CLMcom-DWD-CCLM5-0-16_x0n1-v1_1hr_\\
               ...: 202101010000-202112312300.nc',
-              ...:         '/fakedisk/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
+              ...:     f'{tmpdir}/DWD-CPS/output/GER-0275/CLMcom-DWD/\\
               ...: ECMWF-ERA5/evaluation/r1i1p1/CLMcom-DWD-CCLM5-0-16/\\
               ...: x0n1-v1/day/pr/v20230630/pr_GER-0275_ECMWF-ERA5_\\
               ...: evaluation_r1i1p1_CLMcom-DWD-CCLM5-0-16_x0n1-v1_day_\\
               ...: 20220101-20221231.nc'
-              ...:     ]
+              ...: ]
               ...:
-              ...:     for fake_file in fake_files:
-              ...:         patcher.fs.create_file(fake_file)
-              ...:
-              ...:     df = find.get_file_dataframe(
-              ...:         fake_files, standard='cordex'
-              ...:     )
+              ...: df = find.get_file_dataframe(
+              ...:     fake_files, standard='cordex'
+              ...: )
               ...:
               ...: # Show the data
               ...: # -------------

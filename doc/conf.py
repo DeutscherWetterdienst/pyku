@@ -50,7 +50,7 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org/stable/', None),
 }
 
-ipython_warning_is_error = False
+ipython_warning_is_error = True
 
 sphinx_ipython_plot = "inline"
 templates_path = ['_templates']
