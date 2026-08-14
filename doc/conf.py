@@ -15,6 +15,10 @@ warnings.filterwarnings(
     category=RuntimeWarning, 
     message="You are using an unsupported version of pandoc"
 )
+
+# Suppress UserWarnings (e.g., automated data downloads) during doc generation
+warnings.filterwarnings("ignore", category=UserWarning)
+
 # Extensions
 # ----------
 
