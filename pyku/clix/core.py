@@ -970,8 +970,6 @@ def main(args: list[str] | None = None) -> None:
     # call core function to calculate indicator
     results = run_tool_from_datasets(
         datasets=base_datasets,
-        indicator=indicator,
-        frequency=args.frequency,
         clindicator=clindicator,
         date_ranges=args.date_range or [(None, None)],
         ref_date_range=args.ref_date_range or [(None, None)],
