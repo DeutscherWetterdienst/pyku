@@ -69,7 +69,7 @@ dependencies = [
     "tqdm",
     "tz",
     "xarray",
-    "xclim>=0.59.1",
+    "xclim>=0.59.1,<1.0",
     "xskillscore",
     "zarr",
     "s3fs",

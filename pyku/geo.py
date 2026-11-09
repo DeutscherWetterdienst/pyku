@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
+from os import PathLike
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyresample.geometry import AreaDefinition
+
+    import xarray as xr
+
 __all__ = [
     'list_standard_areas',
     'load_area_def'
@@ -434,121 +444,278 @@ def _set_georeferencing_attrs(ds, area_def=None):
     return ds
 
 
-def apply_georeferencing(ds, area_def):
+def apply_georeferencing(
+    ds: xr.Dataset,
+    area_def: AreaDefinition | str | xr.Dataset,
+) -> xr.Dataset:
+    """Apply or force georeferencing on a dataset.
+
+    This function is useful if data with known georeferencing is available,
+    but the georeferencing is missing or incorrect.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The input dataset.
+    area_def : pyresample.geometry.AreaDefinition, str, or xarray.Dataset
+        The target area definition, area string identifier, or a deprecated
+        dataset from which an area definition can be derived.
+
+    Returns
+    -------
+    xarray.Dataset
+        New dataset with updated projection and geographical coordinates.
+
+    Notes
+    -----
+    This function is not intended to be a core production function, but is used
+    regularly in practice. Please use it with caution: input datasets should
+    ideally arrive clean and correctly georeferenced, making this override
+    unnecessary.
+
+    Unstructured grids are not supported.
+
+    Passing an :class:`xarray.Dataset` as ``area_def`` is deprecated. Pass an
+    area definition or its string identifier instead.
+
+    Examples
+    --------
+    Exemplary data are loaded and regridded to a default pyku projection.
+    Then the georeferencing is broken for the example.
+
+    .. ipython::
+        :okwarning:
+
+        In [0]: %%time
+           ...: import pyku
+           ...: # Get data and project to HYRAS 5km resolution grid
+           ...: # -------------------------------------------------
+           ...:
+           ...: ds = pyku.resources.get_test_data('global_data')
+           ...: ds = ds.pyku.project('HYR-LAEA-5')
+           ...:
+           ...: # Break georeferencing
+           ...: # --------------------
+           ...:
+           ...: broken = ds.drop_vars(['crs', 'y', 'x'])
+           ...: print("Broken dataset")
+           ...: print(broken)
+
+    The georeferencing is then repaired by applying the georeferencing
+    to the broken data.
+
+    .. ipython::
+        :okwarning:
+
+        In [1]: %%time
+           ...: import pyku.geo as geo
+           ...: repaired = geo.apply_georeferencing(broken, 'HYR-LAEA-5')
+           ...: print(repaired)
     """
-    Apply/force georeferencing to dataset. This function is usefull if data
-    with a known georeferencing are available but the georeferencing is not
-    correct/broken.
 
-    Arguments:
-        ds (:class:`xarray.Dataset`): The input dataset.
-        area_def (:class:`pyresample.AreaDefinition`): The area definition.
-
-    Returns:
-        :class:`xarray.Dataset`:
-            Dataset containing projection coordinates, geographical coordinates
-            according to the georeferincing dataset.
-
-    Example:
-
-        Exemplary data are loaded and regridded to a default *pyku* projection.
-        Then the georeferencing is broken for the example.
-
-        .. ipython::
-           :okwarning:
-
-           In [0]: %%time
-              ...: import pyku
-              ...: # Get data and project to HYRAS 5km resolution grid
-              ...: # -------------------------------------------------
-              ...:
-              ...: ds = pyku.resources.get_test_data('global_data')
-              ...: ds = ds.pyku.project('HYR-LAEA-5')
-              ...:
-              ...: # Break georeferencing
-              ...: # --------------------
-              ...:
-              ...: broken = ds.drop_vars(['crs', 'y', 'x'])
-              ...: print("Broken dataset")
-              ...: print(broken)
-
-        The georeferencing is then repaired by applying the georeferencing
-        to the broken data.
-
-        .. ipython::
-           :okwarning:
-
-           In [1]: %%time
-              ...: import pyku.geo as geo
-              ...: repaired = geo.apply_georeferencing(broken, 'HYR-LAEA-5')
-              ...: print(repaired)
-    """
+    import pyresample
 
     import xarray as xr
-    from pyku.meta import (
-        get_geographic_latlon_varnames,
-        get_projection_yx_varnames,
-    )
-
-    # Info for sanity
-    # ---------------
-
-    logger.info(
-        "Applying georeferencing to a dataset should not be the default. "
-        "The georeferencing should be properly set in the first place. "
-        "It is impossible to include all issues that could in a bad dataset. "
-        "This function covers only common issues. "
-    )
+    from pyku import meta
 
     # Sanity checks
     # -------------
 
+    if not isinstance(ds, xr.Dataset):
+        raise TypeError("ds must be an xarray.Dataset")
+
     if isinstance(area_def, xr.DataArray):
-        raise ValueError(
-            'area_def must be a pyresample.AreaDefintion, not DataArray'
+        raise TypeError(
+            'area_def must be a pyresample.AreaDefinition, not DataArray'
         )
 
     if isinstance(area_def, xr.Dataset):
         logger.warning("Using a xr.Dataset for the area_def is deprecated")
         area_def = get_area_def(area_def)
 
-    # If a string identifier is passed, convert to an area definition
-    # ---------------------------------------------------------------
+    # Convert string identifier to AreaDefinition
+    # -------------------------------------------
 
     if isinstance(area_def, str):
         area_def = load_area_def(area_def)
 
-    try:
-        in_lat_name, in_lon_name = get_geographic_latlon_varnames(ds)
-    except Exception:
-        in_lat_name, in_lon_name = 'lat', 'lon'
+    if not isinstance(area_def, pyresample.AreaDefinition):
+        raise TypeError(
+            "area_def must be a pyresample.AreaDefinition, string, or "
+            "xarray.Dataset"
+        )
 
-    try:
-        in_y_name, in_x_name = get_projection_yx_varnames(ds)
-    except Exception:
-        in_y_name, in_x_name = 'y', 'x'
+    if meta.has_unstructured_geographic_coordinates(ds):
+        raise NotImplementedError(
+            "apply_georeferencing does not support unstructured grids"
+        )
 
-    xs, ys = area_def.get_proj_coords()
-    xs = xs[0, :]
-    ys = ys[:, 0]
+    # Determine existing dimension/coordinate names
+    in_lat_name, in_lon_name = meta.get_geographic_latlon_varnames(ds)
+    in_y_name, in_x_name = meta.get_projection_yx_varnames(ds)
 
-    lons, lats = area_def.get_lonlats()
+    ds_out = ds.copy()
 
-    if in_y_name is None and in_x_name is None:
-        ds = ds.assign_coords({'y': ys, 'x': xs})
+    has_geographic_coords = all(
+        name is not None and name in ds_out.coords
+        for name in (in_lat_name, in_lon_name)
+    )
+    has_projection_coords = all(
+        name is not None and name in ds_out.coords
+        for name in (in_y_name, in_x_name)
+    )
 
-    if in_y_name not in ds.coords or in_x_name not in ds.coords:
-        ds = ds.assign_coords({'y': ys, 'x': xs})
+    # Keep data aligned to existing coordinates when complete. Missing or
+    # partial coordinates are rebuilt below without relying on these helpers.
+    if has_geographic_coords and has_projection_coords:
+        ds_out = wrap_longitudes(ds_out)
+    if has_projection_coords:
+        ds_out = sort_georeferencing(ds_out)
 
-    if in_lat_name is None and in_lon_name is None:
-        ds = ds.assign_coords({'lat': lats, 'lon': lons})
+    # Identify regular geographic (lat/lon) grids. In this case, lat and lon
+    # are 1D coordinates whose names match the corresponding y and x projection
+    # axes.
 
-    ds = project(ds, area_def=area_def)
+    proj_dict = getattr(area_def, 'proj_dict', {})
+    proj_type = proj_dict.get('proj', '').lower()
 
-    return ds
+    GEOGRAPHIC_PROJ_ALIASES = {
+        'longlat',
+        'latlong',
+        'latlon',
+        'lonlat',
+    }
+
+    is_regular_latlon = proj_type in GEOGRAPHIC_PROJ_ALIASES
+
+    coords_to_assign: dict[str, tuple[tuple[str, ...], object]] = {}
+
+    if is_regular_latlon:
+
+        xs, ys = area_def.get_proj_coords()
+
+        lon_1d = xs[0, :]
+        lat_1d = ys[:, 0]
+
+        lat_name = in_lat_name or 'lat'
+        lon_name = in_lon_name or 'lon'
+
+        y_dim = next(
+            (
+                name
+                for name in (in_y_name, 'y', lat_name)
+                if name is not None and name in ds_out.sizes
+            ),
+            lat_name,
+        )
+        x_dim = next(
+            (
+                name
+                for name in (in_x_name, 'x', lon_name)
+                if name is not None and name in ds_out.sizes
+            ),
+            lon_name,
+        )
+
+        coords_to_assign[lat_name] = ((y_dim,), lat_1d)
+        coords_to_assign[lon_name] = ((x_dim,), lon_1d)
+
+    else:
+
+        xs, ys = area_def.get_proj_coords()
+        xs = xs[0, :]
+        ys = ys[:, 0]
+
+        lons, lats = area_def.get_lonlats()
+
+        y_name = in_y_name or 'y'
+        x_name = in_x_name or 'x'
+
+        coords_to_assign[y_name] = ((y_name,), ys)
+        coords_to_assign[x_name] = ((x_name,), xs)
+
+        lat_name = in_lat_name or 'lat'
+        lon_name = in_lon_name or 'lon'
+
+        coords_to_assign[lat_name] = ((y_name, x_name), lats)
+        coords_to_assign[lon_name] = ((y_name, x_name), lons)
+
+    # Remove crs variable, projection and geographic coordinates
+    # ----------------------------------------------------------
+
+    crs_vars = set(
+        PYKU_RESOURCES.get_value('metadata', 'coordinate_reference_system')
+    )
+
+    spatial_vars = {
+        name
+        for name in (in_lat_name, in_lon_name, in_y_name, in_x_name)
+        if name is not None
+    }
+    vars_to_drop = spatial_vars.union(crs_vars).intersection(ds_out.variables)
+
+    if vars_to_drop:
+        ds_out = ds_out.drop_vars(vars_to_drop)
+
+    # Remove spatial bounds
+    # ---------------------
+
+    # Get all possible names for spatial bounds names from configuration
+    bounds_keys = (
+        PYKU_RESOURCES.get_value('metadata', 'spatial_bounds', default=[])
+        + PYKU_RESOURCES.get_value('metadata', 'longitude_bounds', default=[])
+        + PYKU_RESOURCES.get_value('metadata', 'latitude_bounds', default=[])
+    )
+
+    # Only select keys that exist in the dataset
+    vars_to_drop = set(ds_out.variables).intersection(bounds_keys)
+
+    ds_out = ds_out.drop_vars(vars_to_drop)
+
+    # Remove any reference to former coordinate system
+    # ------------------------------------------------
+
+    ds_out.attrs.pop('grid', None)
+    ds_out.attrs.pop('grid_mapping', None)
+    ds_out.attrs.pop('CoordinateSystems', None)
+    ds_out.attrs.pop('esri_pe_string', None)
+
+    # Assign coordinates
+    # ------------------
+
+    ds_out = ds_out.assign_coords(coords_to_assign)
+
+    # Set area CF-conform metadata if available
+    # -----------------------------------------
+
+    ds_out = _add_cf_georeferencing(ds_out, area_def)
+
+    # Set CMOR-conform attributes
+    # ---------------------------
+
+    y_name, x_name = meta.get_projection_yx_varnames(ds_out)
+    lat_name, lon_name = meta.get_geographic_latlon_varnames(ds_out)
+
+    lat_attrs = PYKU_RESOURCES.get_value('coordinates', lat_name)['attrs']
+    lon_attrs = PYKU_RESOURCES.get_value('coordinates', lon_name)['attrs']
+    y_attrs = PYKU_RESOURCES.get_value('coordinates', y_name)['attrs']
+    x_attrs = PYKU_RESOURCES.get_value('coordinates', x_name)['attrs']
+
+    ds_out.coords[lat_name].attrs = lat_attrs
+    ds_out.coords[lon_name].attrs = lon_attrs
+    ds_out.coords[y_name].attrs = y_attrs
+    ds_out.coords[x_name].attrs = x_attrs
+
+    # For all variables, set the grid_mapping attribute
+    # -------------------------------------------------
+
+    for var in meta.get_geodata_varnames(ds_out):
+        ds_out[var].attrs['grid_mapping'] = meta.get_crs_varname(ds_out)
+
+    return ds_out
 
 
-def get_georeferencing(ds):
+def get_georeferencing(ds: xr.Dataset) -> xr.Dataset:
     """
     Return georeferencing from dataset.
 
@@ -576,28 +743,6 @@ def get_georeferencing(ds):
 
     lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
     y_name, x_name = meta.get_projection_yx_varnames(ds)
-
-    # Something seems a bit off in this checking
-    # ------------------------------------------
-
-    if y_name == lat_name and x_name == lon_name:
-
-        if ds[y_name] == 1 and ds[x_name].ndim == 1:
-
-            nlons = get_nx(ds)
-            nlats = get_ny(ds)
-
-            # lats = np.array([lats.transpose()]*nlons).transpose()
-            # lons = np.array([lons]*nlats)
-
-        elif nlats == 1 and nlons != 1:
-            raise Exception("Edge case in get_lonlats should not be possible")
-
-        elif nlats != 1 and nlons == 1:
-            raise Exception("Edge case in get_lonlats should not be possible")
-
-        else:
-            pass
 
     # Create DataArrays containing lons and lats
     # ------------------------------------------
@@ -961,7 +1106,7 @@ def set_latlon_bounds(ds):
     return ds_out
 
 
-def get_area_at_true_scale(ds):
+def get_area_at_true_scale(ds: xr.Dataset) -> float:
     """
     Get the area of a single pixel at true scale. Given the dataset resolution
     and area definition, the area of a pixel centered at true scale is
@@ -1007,14 +1152,14 @@ def get_area_at_true_scale(ds):
 
     proj_dict = area_def.proj_dict
 
-    if 'longlat' in [proj_dict.get('proj')]:
+    if 'longlat' == proj_dict.get('proj'):
 
         # e.g. Mercator or regular lat lon
         true_scale_lat, true_scale_lon = 0, 0
 
     elif (
-        'ob_tran' in [proj_dict.get('proj')]
-        and 'longlat' in [proj_dict.get('o_proj')]
+        'ob_tran' == proj_dict.get('proj')
+        and 'longlat' == proj_dict.get('o_proj')
     ):
 
         # Rotated grid
@@ -1179,7 +1324,10 @@ def get_area_at_true_scale(ds):
     return true_scale_area
 
 
-def set_spatial_weights(ds, how='area'):
+def set_spatial_weights(
+    ds: xr.Dataset,
+    how: str = 'area',
+) -> xr.Dataset:
     """
     Set area weights for a dataset.
 
@@ -1258,7 +1406,6 @@ def set_spatial_weights(ds, how='area'):
     # Get geographic and projection coordinate names
     # ----------------------------------------------
 
-    lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
     y_name, x_name = meta.get_projection_yx_varnames(ds)
 
     # Get area definition
@@ -1392,7 +1539,7 @@ def set_spatial_weights(ds, how='area'):
         # Get latitudes as 2D numpy array
         # -------------------------------
 
-        longitudes, latitudes = get_lonlats(ds, dtype='ndarray')
+        _longitudes, latitudes = get_lonlats(ds, dtype='ndarray')
 
         # Calculate weights based on cosine of latitude
         # ---------------------------------------------
@@ -1407,7 +1554,7 @@ def set_spatial_weights(ds, how='area'):
     return out_ds
 
 
-def are_longitudes_wrapped(ds):
+def are_longitudes_wrapped(ds: xr.Dataset) -> bool:
     """
     Check if the longitudes in the dataset are within the range [-180, 180).
 
@@ -1433,7 +1580,7 @@ def are_longitudes_wrapped(ds):
 
     from pyku import meta
 
-    lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
+    _lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
 
     if lon_name is None:
         raise AssertionError("No geographic longitudes in dataset!")
@@ -1452,7 +1599,7 @@ def are_longitudes_wrapped(ds):
     return bool(is_wrapped)
 
 
-def wrap_longitudes(ds):
+def wrap_longitudes(ds: xr.Dataset) -> xr.Dataset:
     """
     Wrap longitudes to [-180, +180[, and sort by increasing longitudes.
 
@@ -1487,8 +1634,8 @@ def wrap_longitudes(ds):
     # Get projection and geographic coordinates names
     # -----------------------------------------------
 
-    lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
-    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    _lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
+    _y_name, x_name = meta.get_projection_yx_varnames(ds)
 
     # Keep attributes during operations
     # ---------------------------------
@@ -1507,7 +1654,7 @@ def wrap_longitudes(ds):
     # If y projection name is also the geographic longitude (e.g. lat long)
     # ---------------------------------------------------------------------
 
-    if x_name in [lon_name]:
+    if x_name == lon_name:
         ds[x_name] = ((ds[x_name] + 180) % 360) - 180
 
     # Sort by increasing y projection coordinate
@@ -1521,6 +1668,144 @@ def wrap_longitudes(ds):
     ds = ds.sortby(x_name)
 
     return ds
+
+
+def round_spatial_coordinates(ds: xr.Dataset) -> xr.Dataset:
+    """Round spatial coordinate values to fix floating-point precision
+    misalignments.
+
+    Automatically detects projection (x/y, rlon/rlat) and geographic (lon/lat)
+    coordinates and rounds their values to an appropriate number of decimal
+    places based on their unit attributes (6 decimals for degrees, 2 decimals
+    for meters). This prevents spurious coordinate mismatches caused by
+    float32/float64 representation differences during dataset operations.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input dataset containing spatial coordinates to round.
+
+    Returns
+    -------
+    xarray.Dataset
+        A copy of the input dataset with rounded coordinate values.
+
+    Examples
+    --------
+    .. ipython:: python
+
+        import pyku
+
+        ds = pyku.resources.get_test_data("global_data")
+        ds_proj = ds.pyku.project("HYR-LAEA-5")
+
+        # Unrounded coordinate value with floating-point drift
+        ds_proj.lon.values[0][0]
+
+        # Cleaned coordinate value after rounding
+        ds_rounded = ds_proj.pyku.round_spatial_coordinates()
+        ds_rounded.lon.values[0][0]
+    """
+
+    import numpy as np
+
+    from pyku import meta
+
+    ds_out = ds.copy()
+
+    # Get projection x/y and geographic lat/lon names
+    # -----------------------------------------------
+
+    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    lat_name, lon_name = meta.get_geographic_latlon_varnames(ds)
+
+    if meta.has_projection_coordinates(ds):
+
+        # Check if projection x/y units are degrees
+        # --------------------------------------------
+
+        x_name_units = (ds[x_name].attrs.get('units') or '').lower()
+        y_name_units = (ds[y_name].attrs.get('units') or '').lower()
+
+        is_degree = (
+            'degree' in x_name_units and 'degree' in y_name_units
+        )
+
+        # Check if projection x/y units are meters
+        # --------------------------------------------
+
+        is_meter = (
+            x_name_units == 'm' and y_name_units == 'm'
+        )
+
+        # Set decimals to defaults depending on unit
+        # ------------------------------------------
+
+        logger.debug(f"{is_degree=}")
+        logger.debug(f"{is_meter=}")
+
+        if is_degree:
+            decimals = 6
+        elif is_meter:
+            decimals = 2
+        else:
+            decimals = 6
+            logger.warning(
+                f"Cannot read unit, using {decimals=} decimals"
+            )
+
+        ds_out = ds_out.assign_coords({
+            y_name: (
+                ds_out[y_name].dims,
+                np.round(ds_out[y_name].values, decimals=decimals),
+                ds_out[y_name].attrs,
+            ),
+            x_name: (
+                ds_out[x_name].dims,
+                np.round(ds_out[x_name].values, decimals=decimals),
+                ds_out[x_name].attrs,
+            ),
+        })
+
+    # Round geographic coordinates
+    # ----------------------------
+
+    if meta.has_geographic_coordinates(ds):
+
+        # Check if geographic coordinates are in degree
+        # ---------------------------------------------
+
+        lat_units = (ds[lat_name].attrs.get('units') or '').lower()
+        lon_units = (ds[lon_name].attrs.get('units') or '').lower()
+
+        is_degree = (
+            'degree' in lon_units and 'degree' in lat_units
+        )
+
+        if not is_degree:
+            logger.warning(
+                f"Geographic coordinates ('{lat_name}', '{lon_name}') do not "
+                f"have explicit 'degree' units. (got lat='{lat_units}', "
+                f"lon='{lon_units}'). Assuming degrees for rounding."
+            )
+
+        # Round geographic coordinates
+        # ----------------------------
+
+        ds_out = ds_out.assign_coords({
+            lat_name: (
+                ds_out[lat_name].dims,
+                np.round(ds_out[lat_name].values, decimals=6),
+                ds_out[lat_name].attrs,
+            ),
+            lon_name: (
+                ds_out[lon_name].dims,
+                np.round(ds_out[lon_name].values, decimals=6),
+                ds_out[lon_name].attrs,
+            ),
+        })
+
+    return ds_out
 
 
 def is_georeferencing_sorted(ds):
@@ -1703,7 +1988,9 @@ def sort_georeferencing(ds):
     return ds_copy
 
 
-def _get_area_def_from_crs_cf(ds):
+def _get_area_def_from_crs_cf(
+    ds: xr.Dataset,
+) -> AreaDefinition | None:
     """
     Get area definition from CF metadata
 
@@ -1721,14 +2008,16 @@ def _get_area_def_from_crs_cf(ds):
     import pyresample.utils
 
     try:
-        area_def, cf_info = pyresample.utils.load_cf_area(ds)
+        area_def, _cf_info = pyresample.utils.load_cf_area(ds)
         return area_def
 
     except Exception:
         return None
 
 
-def _get_area_def_from_global_attrs(ds):
+def _get_area_def_from_global_attrs(
+    ds: xr.Dataset,
+) -> AreaDefinition | None:
     """
     Get area definition from global attributes (deprecated)
 
@@ -1778,7 +2067,9 @@ def _get_area_def_from_global_attrs(ds):
     return area_def
 
 
-def _get_area_def_from_crs_proj_str(ds):
+def _get_area_def_from_crs_proj_str(
+    ds: xr.Dataset,
+) -> AreaDefinition | None:
     """
     Get area definition from PROJ string in the crs metadata.
 
@@ -1789,8 +2080,9 @@ def _get_area_def_from_crs_proj_str(ds):
         :class:`pyresample.geometry.AreaDefinition`: The area definition.
     """
 
-    from pyku import meta
     from pyresample.geometry import AreaDefinition
+
+    from pyku import meta
 
     try:
 
@@ -1825,7 +2117,7 @@ def _get_area_def_from_crs_proj_str(ds):
         return None
 
 
-def get_area_def(ds):
+def get_area_def(ds: xr.Dataset) -> AreaDefinition:
     """
     Get area definition.
 
@@ -1871,9 +2163,12 @@ def get_area_def(ds):
 
 
 def select_area_extent(
-    ds, lower_left_lat=None, lower_left_lon=None, upper_right_lat=None,
-    upper_right_lon=None
-):
+    ds: xr.Dataset,
+    lower_left_lat: float | None = None,
+    lower_left_lon: float | None = None,
+    upper_right_lat: float | None = None,
+    upper_right_lon: float | None = None,
+) -> xr.Dataset:
     """
     Select an area extent in geographic coordinates, defined by the latitude
     and longitude of the lower-left and upper-right corners.
@@ -1911,8 +2206,9 @@ def select_area_extent(
               ...: ds.isel(time=0).ana.one_map(var='tas')
     """
 
-    import pyku.meta as meta
     import pyproj
+
+    from pyku import meta
 
     # Set default values to system min and max of data projection
     # -----------------------------------------------------------
@@ -2658,10 +2954,123 @@ def _resampling_bilinear_from_swath_to_grid_legacy(
     return out_arr
 
 
+def _add_cf_georeferencing(
+    ds: xr.Dataset,
+    area_def: AreaDefinition,
+) -> xr.Dataset:
+    """Add CF-compliant or fallback georeferencing metadata to a dataset.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input dataset to enrich with coordinate reference system (CRS)
+        metadata.
+    area_def : pyresample.geometry.AreaDefinition
+        Target area definition supplying projection and geometry information.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with attached CRS coordinate and updated spatial attributes.
+
+    Notes
+    -----
+    CF-compliant georeferencing is only included if the area ID of the
+    projection is predefined in the pyku configuration files.
+    """
+
+    import numpy as np
+
+    import xarray as xr
+    from pyku import drs
+
+    areas_cf_definitions = get_areas_cf_definitions()
+    area_id = area_def.area_id
+
+    if area_id in areas_cf_definitions:
+
+        # Get CF-conform metadata
+        # -----------------------
+
+        cf_def = areas_cf_definitions[area_id]
+
+        # Set CRS coordinate
+        # ------------------
+
+        cf_crs = xr.DataArray(
+            np.array(1, dtype='int32'),
+            name=cf_def.get('crs_name'),
+            attrs=cf_def.get('crs_data')
+        )
+
+        # Get name of projection coordinates
+        # ----------------------------------
+
+        x_name = cf_def.get('x_coordinate', 'x')
+        y_name = cf_def.get('y_coordinate', 'y')
+
+        # Rename x and y coordinates if necessary
+        # ---------------------------------------
+
+        rename_dict = {}
+        if 'x' in ds.coords and x_name != 'x':
+            rename_dict['x'] = x_name
+        if 'y' in ds.coords and y_name != 'y':
+            rename_dict['y'] = y_name
+
+        if rename_dict:
+            ds = ds.rename(rename_dict)
+
+        # Set CMOR-conform coordinate attributes
+        # --------------------------------------
+
+        ds = drs._to_cmor_attrs_coords(ds)
+
+        # Add CRS variable to dataset
+        # ---------------------------
+
+        ds = ds.assign(**{cf_crs.name: cf_crs})
+
+        # Add/overwrite cordex domain the the global metadata
+        # ---------------------------------------------------
+
+        ds.attrs['CORDEX_domain'] = cf_def.get('CORDEX_domain', 'undefined')
+
+    else:
+        logger.warning("No CF-conform georeferencing available.")
+
+        default_crs = xr.DataArray(
+            np.array(1, dtype='int32'),
+            name='crs',
+            attrs={
+                'proj_str': area_def.proj_str,
+                'proj4_string': area_def.proj4_string,
+                'proj4': area_def.proj4_string,
+                'proj4_params': area_def.proj4_string,
+                'crs_wkt': area_def.crs_wkt,
+                'spatial_ref': area_def.crs_wkt,
+            }
+        )
+
+        # Add CRS variable to Dataset
+        # ---------------------------
+
+        ds = ds.assign(crs=default_crs)
+
+    return ds
+
+
 def project(
-    ds, area_def=None, roi=1E6, method='nearest_neighbor', use_dask=True,
-    area_file=None, keep_mask=False, power_parameter=None, neighbours=None,
-):
+    ds: xr.Dataset,
+    area_def: AreaDefinition | str | xr.Dataset | None = None,
+    roi: float = 1E6,
+    method: str = 'nearest_neighbor',
+    use_dask: bool = True,
+    area_file: str | PathLike[str] | None = None,
+    keep_mask: bool = False,
+    power_parameter: float | None = None,
+    neighbours: int | None = None,
+) -> xr.Dataset:
     """
     Project dataset to target projection.
 
@@ -2725,8 +3134,8 @@ def project(
             are defined by a string are defined.
 
         power_parameter (float): Power parameter for Inverse Distance Weighting
-            (IDW). Defaults to 2.5. For other interpolation methods, this
-            parameter is ignored.
+            (IDW). Defaults to None. A starting point can be 2.5. For other
+            interpolation methods, this parameter is ignored.
 
         neighbours (int): The number of neigbours to consider for each grid
             point. Default value is dependent on the interpolation method.
@@ -2803,7 +3212,6 @@ def project(
     # think it would add to clarity. Hence here is a summary:
     #
     # - Load libraries
-    # - Ignore warnings
     # - Get output projection as an AreaDefinition object
     # - Get output geographic and projection coordinates
     # - Get input geographic coordinates
@@ -2826,7 +3234,7 @@ def project(
     from pyresample import geometry
 
     import xarray as xr
-    from pyku import drs, features, mask, meta
+    from pyku import features, mask, meta
 
     try:
         import xesmf as xe
@@ -2839,6 +3247,9 @@ def project(
 
     in_ds = ds.copy()
     out_area_def = area_def
+
+    # Define methods
+    # --------------
 
     valid_methods = [
         'pyresample_nearest_neighbor',
@@ -2862,6 +3273,9 @@ def project(
         'idw',
         'conservative'
     ]
+
+    # Aliases
+    # -------
 
     if method == 'nearest_neighbor':
         method = 'pyresample_nearest_neighbor'
@@ -3302,7 +3716,7 @@ def project(
 
         out_coords = dict(in_da.coords)
 
-        # Remove georeferencing which is invalid after gegoraphic reprojection
+        # Remove georeferencing which is invalid after geographic reprojection
         # --------------------------------------------------------------------
 
         for element in meta.get_geographic_latlon_varnames(in_ds):
@@ -3391,21 +3805,38 @@ def project(
             attrs=out_attrs
         )
 
-        # Set CMOR-Conform default attributes
-        # -----------------------------------
+        # Set CF-conform projection coordinate names
+        # ------------------------------------------
+
+        # CF-Conform georeferencing is only included if the projection Area Id
+        # pre-defined in pyku configuration files
+
+        cf_def = get_areas_cf_definitions()
+        out_area_id = out_area_def.area_id
+
+        if out_area_id in list(areas_cf_definitions.keys()):
+            y_name = cf_def.get(out_area_id).get('y_coordinate', 'y')
+            x_name = cf_def.get(out_area_id).get('x_coordinate', 'x')
+            out_da = out_da.rename({'y': y_name, 'x': x_name})
+
+        # Set CMOR-conform attributes
+        # ---------------------------
 
         # For 'irregular' projection attributes (e.g. rlats and rlons), the
         # names for the y/x projection coordinates are set later in the code by
         # reading the CF-conform area definition.
 
-        out_da.coords['lat'].attrs = \
-            PYKU_RESOURCES.get_value('coordinates', 'lat')['attrs']
-        out_da.coords['lon'].attrs = \
-            PYKU_RESOURCES.get_value('coordinates', 'lon')['attrs']
-        out_da.coords['y'].attrs = \
-            PYKU_RESOURCES.get_value('coordinates', 'y')['attrs']
-        out_da.coords['x'].attrs = \
-            PYKU_RESOURCES.get_value('coordinates', 'x')['attrs']
+        y_name, x_name = meta.get_projection_yx_varnames(out_da)
+        lat_name, lon_name = meta.get_geographic_latlon_varnames(out_da)
+
+        out_da.coords[lat_name].attrs = \
+            PYKU_RESOURCES.get_value('coordinates', lat_name)['attrs']
+        out_da.coords[lon_name].attrs = \
+            PYKU_RESOURCES.get_value('coordinates', lon_name)['attrs']
+        out_da.coords[y_name].attrs = \
+            PYKU_RESOURCES.get_value('coordinates', y_name)['attrs']
+        out_da.coords[x_name].attrs = \
+            PYKU_RESOURCES.get_value('coordinates', x_name)['attrs']
 
         # Append DataArray to the list of DataArrays
         # ------------------------------------------
@@ -3420,79 +3851,14 @@ def project(
     # Add CF-conform georeferencing
     # -----------------------------
 
-    # CF-Conform georeferencing is only included if the projection Area Id
-    # pre-defined in pyku configuration files
+    # Copy global metadata
+    # --------------------
 
-    areas_cf_definitions = get_areas_cf_definitions()
-    out_area_id = out_area_def.area_id
+    out_ds.attrs = in_ds.attrs
 
-    if out_area_id in list(areas_cf_definitions.keys()):
-
-        # Set crs coodinate
-        # -----------------
-
-        cf_crs = xr.DataArray(
-            np.array(1, dtype='int32'),
-            name=areas_cf_definitions.get(out_area_id).get('crs_name'),
-            attrs=areas_cf_definitions.get(out_area_id).get('crs_data')
-        )
-
-        # Get name of projection coordinates
-        # ----------------------------------
-
-        x_name = areas_cf_definitions.get(out_area_id).get('x_coordinate', 'x')
-        y_name = areas_cf_definitions.get(out_area_id).get('y_coordinate', 'y')
-
-        # Rename x and y coordinates if necessary
-        # ---------------------------------------
-
-        if x_name != 'x' and y_name != 'y':
-            out_ds = out_ds.rename({'x': x_name, 'y': y_name})
-
-        # Set CMOR-conform coordinate attributes
-        # --------------------------------------
-
-        out_ds = drs._to_cmor_attrs_coords(out_ds)
-
-        # Merge CRS to dataset
-        # --------------------
-
-        out_ds = xr.merge([out_ds, cf_crs])
-
-        # Copy global metadata
-        # --------------------
-
-        out_ds.attrs = in_ds.attrs
-
-        # Add/overwrite cordex domain the the global metadata
-        # ---------------------------------------------------
-
-        out_ds = out_ds.assign_attrs({
-            'CORDEX_domain': areas_cf_definitions.get(out_area_id).get(
-                'CORDEX_domain', 'undefined'
-            )
-        })
-
-    else:
-        logger.warning("No CF-conform georeferencing added")
-
-        # Set crs coodinate
-        # -----------------
-
-        default_crs = xr.DataArray(
-            np.array(1, dtype='int32'),
-            name='crs',
-            attrs={
-                'proj_str': out_area_def.proj_str,
-                'proj4_string': out_area_def.proj4_string,
-                'proj4': out_area_def.proj4_string,
-                'proj4_params': out_area_def.proj4_string,
-                'crs_wkt': out_area_def.crs_wkt,
-                'spatial_ref': out_area_def.crs_wkt,
-            }
-        )
-
-        out_ds = xr.merge([out_ds, default_crs])
+    # Apply target projection metadata after copying the input attributes so
+    # that values such as CORDEX_domain describe the output grid.
+    out_ds = _add_cf_georeferencing(out_ds, out_area_def)
 
     # For all variables, set the grid_mapping attribute
     # -------------------------------------------------

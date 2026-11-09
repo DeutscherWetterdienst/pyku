@@ -111,7 +111,9 @@ class TestDrsMethods(unittest.TestCase):
 
     def test_resolve_template(self):
         from pyku.drs import _resolve_template
-        with self.subTest('Testing _resolve_template with all placeholders provided'):
+        with self.subTest(
+            'Testing _resolve_template with all placeholders provided'
+        ):
             filename_pattern = (
                 '{variable}_{frequency}_{model}_{experiment}_'
                 '{member}_{grid}_{start_time}-{end_time}'
@@ -127,11 +129,15 @@ class TestDrsMethods(unittest.TestCase):
                 'end_time': '1995013123',
                 'time_range': 'not_used_in_pattern'
             }
-            expected_filename = 'tas_1hr_HOSTRADA-v1-0_historical_BE_gn_1995010100-1995013123'
+            expected_filename = (
+                'tas_1hr_HOSTRADA-v1-0_historical_BE_gn_1995010100-1995013123'
+            )
             filename = _resolve_template(filename_pattern, namespace)
             self.assertEqual(filename, expected_filename)
 
-        with self.subTest('Testing _resolve_template with missing placeholders'):
+        with self.subTest(
+            'Testing _resolve_template with missing placeholders'
+        ):
             filename_pattern = '{variable}_{frequency}_{model}_{experiment}'
             namespace = {
                 'variable': 'tas',
@@ -164,7 +170,9 @@ class TestDrsMethods(unittest.TestCase):
         self.assertIsInstance(new_data, type(data))
 
         for freq, cmor_freq in mappings.items():
-            with self.subTest(f'Testing frequency {freq} to CMOR frequency {cmor_freq} mapping'):
+            with self.subTest(
+                f'Testing frequency {freq} mapping {cmor_freq} CMOR standard'
+            ):
                 data.attrs = {'frequency': cmor_freq}
                 mock_get_frequency.return_value = freq
                 new_data = _to_cmor_attrs_frequency(data)
