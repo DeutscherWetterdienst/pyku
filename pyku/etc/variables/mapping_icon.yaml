@@ -1,357 +1,476 @@
 cape:
+  comment: null
   name: CAPE_ML
   level: null
 clivi:
+  comment: null
   name: TQI
   level: null
 clt:
+  comment: null
   name: ACLCT
   level: null
 clwvi:
+  comment: null
   name: TQW
   level: null
 evspsblpot:
+  comment: null
   name: APOTEVAP_S
   level: null
 hfls:
+  comment: null
   name: ALHFL_S
   level: null
 hfss:
+  comment: null
   name: ASHFL_S
   level: null
 hurs:
+  comment: null
   name: RELHUM_2M
   level: height2m
 hus50m:
+  comment: null
   name: QV
   level: height50m
 huss:
+  comment: null
   name: QV_2M
   level: height2m
 li:
+  comment: null
   name: SLI
   level: null
 pr:
+  comment: >-
+    TOT_PREC is an amount accumulated over the output interval, not a rate.
+    Map it to pr; pyku converts the interval amount to a precipitation flux.
+    prhmax is the daily maximum of hourly precipitation rates and requires a
+    daily maximum operation, so it cannot be inferred from TOT_PREC alone.
   name: TOT_PREC
   level: null
 prc:
+  comment: null
   name: PREC_CON
   level: null
 prsn:
+  comment: null
   name: TOT_SNOW
   level: null
 prw:
+  comment: null
   name: TQV
   level: null
 ps:
+  comment: null
   name: PS
   level: null
 psl:
+  comment: null
   name: PMSL
   level: null
 rlds:
+  comment: null
   name: ATHD_S
   level: null
 rlus:
+  comment: null
   name: ATHU_S
   level: null
 rlut:
+  comment: null
   name: ATHB_T
   level: null
 rsds:
+  comment: null
   name: ASOD_S
   level: null
 rsdsdir:
+  comment: null
   name: ASODIRD_S
   level: null
 rsdt:
+  comment: null
   name: ASOD_T
   level: null
 rsus:
+  comment: null
   name: ASODIFU_S
   level: null
 rsut:
+  comment: null
   name: ASOU_T
   level: null
 sfcWind:
+  comment: null
   name: ASP_10M
   level: height10m
 ta50m:
+  comment: null
   name: T
   level: height50m
 tas:
+  comment: null
   name: T_2M
   level: height2m
 tauu:
+  comment: null
   name: AUMFL_S
   level: null
 tauv:
+  comment: null
   name: AVMFL_S
   level: null
 ts:
+  comment: null
   name: T_G
   level: null
 ua100m:
+  comment: null
   name: U100z
   level: height100m
 ua150m:
+  comment: null
   name: U150z
   level: height150m
 ua200m:
+  comment: null
   name: U200z
   level: height200m
 ua250m:
+  comment: null
   name: U250z
   level: height250m
 ua300m:
+  comment: null
   name: U300z
   level: height300m
 ua50m:
+  comment: null
   name: U50z
   level: height50m
 uas:
+  comment: null
   name: U_10M
   level: height10m
 va100m:
+  comment: null
   name: V100z
   level: height100m
 va150m:
+  comment: null
   name: V150z
   level: height150m
 va200m:
+  comment: null
   name: V200z
   level: height200m
 va250m:
+  comment: null
   name: V250z
   level: height250m
 va300m:
+  comment: null
   name: V300z
   level: height300m
 va50m:
+  comment: null
   name: V50z
   level: height50m
 vas:
+  comment: null
   name: V_10M
   level: height10m
 zmla:
+  comment: null
   name: HPBL
   level: null
 clh:
+  comment: null
   name: ACLCH
   level: null
 cll:
+  comment: null
   name: ACLCL
   level: null
 clm:
+  comment: null
   name: ACLCM
   level: null
 hus1000:
+  comment: null
   name: QV1000p
   level: p1000
 hus200:
+  comment: null
   name: QV200p
   level: p200
 hus250:
+  comment: null
   name: QV250p
   level: p250
 hus300:
+  comment: null
   name: QV300p
   level: p300
 hus400:
+  comment: null
   name: QV400p
   level: p400
 hus500:
+  comment: null
   name: QV500p
   level: p500
 hus600:
+  comment: null
   name: QV600p
   level: p600
 hus700:
+  comment: null
   name: QV700p
   level: p700
 hus750:
+  comment: null
   name: QV750p
   level: p750
 hus850:
+  comment: null
   name: QV850p
   level: p850
 hus925:
+  comment: null
   name: QV925p
   level: p925
 ta1000:
+  comment: null
   name: T1000p
   level: p1000
 ta200:
+  comment: null
   name: T200p
   level: p200
 ta250:
+  comment: null
   name: T250p
   level: p250
 ta300:
+  comment: null
   name: T300p
   level: p300
 ta400:
+  comment: null
   name: T400p
   level: p400
 ta500:
+  comment: null
   name: T500p
   level: p500
 ta600:
+  comment: null
   name: T600p
   level: p600
 ta700:
+  comment: null
   name: T700p
   level: p700
 ta750:
+  comment: null
   name: T750p
   level: p750
 ta850:
+  comment: null
   name: T850p
   level: p850
 ta925:
+  comment: null
   name: T925p
   level: p925
 ua1000:
+  comment: null
   name: U1000p
   level: p1000
 ua200:
+  comment: null
   name: U200p
   level: p200
 ua250:
+  comment: null
   name: U250p
   level: p250
 ua300:
+  comment: null
   name: U300p
   level: p300
 ua400:
+  comment: null
   name: U400p
   level: p400
 ua500:
+  comment: null
   name: U500p
   level: p500
 ua600:
+  comment: null
   name: U600p
   level: p600
 ua700:
+  comment: null
   name: U700p
   level: p700
 ua750:
+  comment: null
   name: U750p
   level: p750
 ua850:
+  comment: null
   name: U850p
   level: p850
 ua925:
+  comment: null
   name: U925p
   level: p925
 va1000:
+  comment: null
   name: V1000p
   level: p1000
 va200:
+  comment: null
   name: V200p
   level: p200
 va250:
+  comment: null
   name: V250p
   level: p250
 va300:
+  comment: null
   name: V300p
   level: p300
 va400:
+  comment: null
   name: V400p
   level: p400
 va500:
+  comment: null
   name: V500p
   level: p500
 va600:
+  comment: null
   name: V600p
   level: p600
 va700:
+  comment: null
   name: V700p
   level: p700
 va750:
+  comment: null
   name: V750p
   level: p750
 va850:
+  comment: null
   name: V850p
   level: p850
 va925:
+  comment: null
   name: V925p
   level: p925
 wa1000:
+  comment: null
   name: W1000p
   level: p1000
 wa200:
+  comment: null
   name: W200p
   level: p200
 wa250:
+  comment: null
   name: W250p
   level: p250
 wa300:
+  comment: null
   name: W300p
   level: p300
 wa400:
+  comment: null
   name: W400p
   level: p400
 wa500:
+  comment: null
   name: W500p
   level: p500
 wa600:
+  comment: null
   name: W600p
   level: p600
 wa700:
+  comment: null
   name: W700p
   level: p700
 wa750:
+  comment: null
   name: W750p
   level: p750
 wa850:
+  comment: null
   name: W850p
   level: p850
 wa925:
+  comment: null
   name: W925p
   level: p925
 capemax:
+  comment: null
   name: CAPE_MLMAX
   level: null
 limax:
+  comment: null
   name: SLIMAX
   level: null
-prhmax:
-  name: TOT_PREC
-  level: null
 sfcWindmax:
+  comment: null
   name: SPMAX_10M
   level: height10m
 sund:
+  comment: null
   name: DURSUN
   level: null
 tasmax:
+  comment: null
   name: TMAX_2M
   level: height2m
 tasmin:
+  comment: null
   name: TMIN_2M
   level: height2m
 wsgsmax:
+  comment: null
   name: SPGUST_10M
   level: height10m
 z0:
+  comment: null
   name: AZ0
   level: null
 orog:
+  comment: null
   name: HSURF
   level: null
 sftgif:
+  comment: null
   name: FR_GLAC
   level: null
 sftlaf:
+  comment: null
   name: FR_LAKE
   level: null
 sftlf:
+  comment: null
   name: FR_LAND
   level: null
 sfturf:
+  comment: null
   name: FR_URB
   level: null
 od550aer:
+  comment: null
   name: AAOD_550NM
   level: null

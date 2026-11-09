@@ -25,9 +25,7 @@ in global attributes with the key 'variable_id'.
 
 from pyku import PYKU_RESOURCES, logger
 
-__all__ = [
-    'list_drs_standards'
-]
+__all__ = ["list_drs_standards"]
 
 
 def _check_available_standards(standard):
@@ -40,7 +38,7 @@ def _check_available_standards(standard):
     Raises:
         Value Error if standard is not defined
     """
-    _available_standards = PYKU_RESOURCES.get_keys('drs', 'standards')
+    _available_standards = PYKU_RESOURCES.get_keys("drs", "standards")
     if standard not in _available_standards:
         raise ValueError(
             f"DRS standard {standard} not implemented. Available standards "
@@ -56,7 +54,7 @@ def list_drs_standards():
         List(str): List of DRS standards.
     """
 
-    return list(PYKU_RESOURCES.get_keys('drs', 'standards'))
+    return list(PYKU_RESOURCES.get_keys("drs", "standards"))
 
 
 def drs_filename(ds, varname=None, standard=None, version=None):
@@ -120,11 +118,7 @@ def drs_filename(ds, varname=None, standard=None, version=None):
 
     _check_available_standards(standard)
 
-    path = drs_parent(
-        ds,
-        standard=standard,
-        version=version
-    )
+    path = drs_parent(ds, standard=standard, version=version)
 
     stem = drs_stem(
         ds,
@@ -134,6 +128,81 @@ def drs_filename(ds, varname=None, standard=None, version=None):
     filename = os.path.join(path, stem)
 
     return filename
+
+
+def _has_daily_time_bounds(ds):
+    """Return whether every time bound covers one midnight-to-midnight day."""
+
+    from datetime import timedelta
+
+    import numpy as np
+
+    from pyku import meta
+
+    if not meta.has_time_bounds(ds):
+        return False
+
+    bounds = np.asarray(meta.get_time_bounds(ds))
+    if bounds.ndim == 1 and bounds.size == 2:
+        bounds = bounds.reshape(1, 2)
+
+    if (
+        bounds.ndim != 2
+        or bounds.shape[1] != 2
+        or bounds.shape[0] != ds.sizes.get("time")
+    ):
+        return False
+
+    def is_midnight(value):
+        if isinstance(value, np.datetime64):
+            return not np.isnat(value) and value == value.astype(
+                "datetime64[D]"
+            )
+
+        if getattr(value, "tzinfo", None) is not None:
+            return False
+
+        return all(
+            getattr(value, component, 0) == 0
+            for component in (
+                "hour",
+                "minute",
+                "second",
+                "microsecond",
+                "nanosecond",
+            )
+        )
+
+    try:
+        for lower, upper in bounds:
+            if not is_midnight(lower) or not is_midnight(upper):
+                return False
+            duration = upper - lower
+            if isinstance(duration, np.timedelta64):
+                is_one_day = duration == np.timedelta64(1, "D")
+            else:
+                is_one_day = duration == timedelta(days=1)
+            if not is_one_day:
+                return False
+
+        if bounds.shape[0] > 1 and not np.all(bounds[:-1, 1] == bounds[1:, 0]):
+            return False
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+    return True
+
+
+def _get_cmor_frequency_offset(ds, frequency):
+    """Normalize only bounded, midnight-aligned 24-hour data to daily."""
+
+    from pandas.tseries.frequencies import to_offset
+
+    offset = to_offset(frequency)
+    if offset == to_offset("24h") and _has_daily_time_bounds(ds):
+        return to_offset("1D")
+
+    return offset
 
 
 def drs_stem(ds, varname=None, standard=None):
@@ -223,51 +292,51 @@ def drs_stem(ds, varname=None, standard=None):
     # Get file start and end time if applicable
     # -----------------------------------------
 
-    if 'time' not in ds.coords:
+    if "time" not in ds.coords:
         start_time = None
         end_time = None
 
     else:
-
-        start_time = min(ds.coords['time'].values)
-        end_time = max(ds.coords['time'].values)
+        start_time = min(ds.coords["time"].values)
+        end_time = max(ds.coords["time"].values)
 
         # Convert to ISO String, datetime, timestamp yyyymmdd
         # ---------------------------------------------------
 
         if isinstance(start_time, np.datetime64):
             start_time = np.datetime_as_string(
-                start_time, unit='m', timezone='UTC'
+                start_time, unit="m", timezone="UTC"
             )
             start_time = parser.parse(start_time)
 
         if isinstance(end_time, np.datetime64):
             end_time = np.datetime_as_string(
-                end_time, unit='m', timezone='UTC'
+                end_time,
+                unit="m",
+                timezone="UTC",
             )
             end_time = parser.parse(end_time)
 
         # Get frequency string and set output format accordingly
         # ------------------------------------------------------
 
-        freqstr = meta.get_frequency(ds, dtype='freqstr')
+        freqstr = meta.get_frequency(ds, dtype="freqstr")
 
         # Define frequency mappings with their corresponding time formats
         frequency_format_mapping = {
-            to_offset('1h'): "%Y%m%d%H",
-            to_offset('3h'): "%Y%m%d%H",
-            to_offset('6h'): "%Y%m%d%H",
-            to_offset('12h'): "%Y%m%d%H",
-            to_offset('1D'): "%Y%m%d",
-            to_offset('1MS'): "%Y%m",
-            to_offset('QS-DEC'): "%Y%m",
-            to_offset('1YS'): "%Y",
+            to_offset("1h"): "%Y%m%d%H",
+            to_offset("3h"): "%Y%m%d%H",
+            to_offset("6h"): "%Y%m%d%H",
+            to_offset("12h"): "%Y%m%d%H",
+            to_offset("1D"): "%Y%m%d",
+            to_offset("1MS"): "%Y%m",
+            to_offset("QS-DEC"): "%Y%m",
+            to_offset("1YS"): "%Y",
         }
 
         # Get the format string for this frequency, default to full timestamp
         time_format = frequency_format_mapping.get(
-            to_offset(freqstr),
-            "%Y%m%d%H%M%S"
+            _get_cmor_frequency_offset(ds, freqstr), "%Y%m%d%H%M%S"
         )
 
         # Format the time strings
@@ -277,20 +346,19 @@ def drs_stem(ds, varname=None, standard=None):
     # Get file pattern from json file
     # -------------------------------
 
-    filename_pattern = (
-        PYKU_RESOURCES.get_value('drs', 'standards', standard, 'stem_pattern')
+    filename_pattern = PYKU_RESOURCES.get_value(
+        "drs", "standards", standard, "stem_pattern"
     )
 
     # Get all variables needed from file pattern
     # ------------------------------------------
 
-    filename_keys = re.findall(r'\{(.*?)\}', filename_pattern)
+    filename_keys = re.findall(r"\{(.*?)\}", filename_pattern)
 
     # Locally set variables to their values
     # -------------------------------------
     for key in filename_keys:
-
-        if key == 'member_id':
+        if key == "member_id":
             # Check for CMIP6 member_id which distinguish different simulations
             # belonging to a common root experiment. The member_id is
             # constructed from the sub_experiment_id and variant_label
@@ -301,11 +369,13 @@ def drs_stem(ds, varname=None, standard=None):
                 "The DRS configuration for CMIP6 is new and not fully checked"
             )
 
-            if ds.attrs.get('sub_experiment_id') == 'none':
-                namespace[key] = ds.attrs.get('variant_label')
+            if ds.attrs.get("sub_experiment_id") == "none":
+                namespace[key] = ds.attrs.get("variant_label")
             else:
-                namespace[key] = (f"{ds.attrs.get('sub_experiment_id')}-"
-                                  f"{ds.attrs.get('variant_label')}")
+                namespace[key] = (
+                    f"{ds.attrs.get('sub_experiment_id')}-"
+                    f"{ds.attrs.get('variant_label')}"
+                )
         else:
             namespace[key] = ds.attrs.get(key)
 
@@ -328,14 +398,14 @@ def drs_stem(ds, varname=None, standard=None):
     # Add variables to the namespace
     # ------------------------------
 
-    namespace['variable_name'] = variable_name
-    namespace['start_time'] = start_time
-    namespace['end_time'] = end_time
+    namespace["variable_name"] = variable_name
+    namespace["start_time"] = start_time
+    namespace["end_time"] = end_time
 
     # Evaluate the file pattern as an f-string
     # ----------------------------------------
 
-    filename = _resolve_template(filename_pattern, namespace) + '.nc'
+    filename = _resolve_template(filename_pattern, namespace) + ".nc"
 
     return filename
 
@@ -419,13 +489,13 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # -------------------------------
 
     pathname_pattern = PYKU_RESOURCES.get_value(
-        'drs', 'standards', standard, 'parent_pattern'
+        "drs", "standards", standard, "parent_pattern"
     )
 
     # Get all variables needed from file pattern
     # ------------------------------------------
 
-    pathname_keys = re.findall(r'\{(.*?)\}', pathname_pattern)
+    pathname_keys = re.findall(r"\{(.*?)\}", pathname_pattern)
 
     # Locally set variables to their values
     # -------------------------------------
@@ -434,20 +504,20 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # it is the right way to do thing idk.
 
     for key in pathname_keys:
-
-        if key == 'member_id':
-
+        if key == "member_id":
             # Check for CMIP6 member_id which distinguish different simulations
             # belonging to a common root experiment. The member_id is
             # constructed from the sub_experiment_id and variant_label using
             # the following algorithm (I don't like this, but cannot figure it
             # out in a nicer way...):
 
-            if ds.attrs.get('sub_experiment_id') == 'none':
-                namespace[key] = ds.attrs.get('variant_label')
+            if ds.attrs.get("sub_experiment_id") == "none":
+                namespace[key] = ds.attrs.get("variant_label")
             else:
-                namespace[key] = (f"{ds.attrs.get('sub_experiment_id')}-"
-                                  f"{ds.attrs.get('variant_label')}")
+                namespace[key] = (
+                    f"{ds.attrs.get('sub_experiment_id')}-"
+                    f"{ds.attrs.get('variant_label')}"
+                )
         else:
             namespace[key] = ds.attrs.get(key)
 
@@ -460,8 +530,8 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # should be included but is sometimes missing. This discrepancy leads to
     # the complications described below.
 
-    version_is_in_pattern = 'version' in pathname_keys
-    version_from_attrs = ds.attrs.get('version', None)
+    version_is_in_pattern = "version" in pathname_keys
+    version_from_attrs = ds.attrs.get("version", None)
     version_from_parameters = version
 
     # Remove version from pattern
@@ -472,7 +542,7 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     # Add variables to the namespace
     # ------------------------------
 
-    namespace['variable_name'] = variable_name
+    namespace["variable_name"] = variable_name
 
     # Evaluate the file pattern as an f-string
     # ----------------------------------------
@@ -480,7 +550,6 @@ def drs_parent(ds, varname=None, standard=None, version=None):
     pathname = _resolve_template(pathname_pattern, namespace)
 
     if version_is_in_pattern and version_from_attrs is None:
-
         logger.warning(
             "The metadata shall contain the 'version' attribute in accordance "
             f"with the standard {standard}, where the directory pattern is "
@@ -488,7 +557,6 @@ def drs_parent(ds, varname=None, standard=None, version=None):
         )
 
     if version_from_attrs is not None and version_from_parameters is not None:
-
         if version_from_attrs != version_from_parameters:
             logger.warning(
                 f"Passing version={version_from_parameters} as an argument to "
@@ -514,8 +582,16 @@ def drs_parent(ds, varname=None, standard=None, version=None):
 
 
 def to_drs_netcdfs(
-    ds, base_dir=None, standard='cordex', var=None, version=None,
-    dry_run=False, encoding='auto', overwrite=False, complevel=None, **kwargs
+    ds,
+    base_dir=None,
+    standard="cordex",
+    var=None,
+    version=None,
+    dry_run=False,
+    encoding="auto",
+    overwrite=False,
+    complevel=None,
+    **kwargs,
 ):
     """
     Write CMOR-conform NetCDF files.
@@ -580,10 +656,11 @@ def to_drs_netcdfs(
     # -------------
 
     assert base_dir is not None, "base_dir is mandatory"
-    assert len(data_variables) == 1, \
+    assert len(data_variables) == 1, (
         "One and only one CMOR variable in dataset supported"
+    )
 
-    if 'time' not in list(dict(ds.sizes).keys()):
+    if "time" not in list(dict(ds.sizes).keys()):
         logger.warning("No 'time' dimension found in dataset")
         logger.warning("Trying cmorization of a constant field")
 
@@ -592,7 +669,6 @@ def to_drs_netcdfs(
         has_time_dim = False
 
     else:
-
         has_time_dim = True
 
         if has_cmor_time_labels(ds, var=data_variables[0]) is False:
@@ -613,7 +689,7 @@ def to_drs_netcdfs(
         # Get data frequency
         # ------------------
 
-        data_frequency = meta.get_frequency(ds, dtype='freqstr')
+        data_frequency = meta.get_frequency(ds, dtype="freqstr")
 
         # Determine the type of CMOR outputs
         # ----------------------------------
@@ -621,32 +697,35 @@ def to_drs_netcdfs(
         # Split data into groups of 1 year, if 1-hourly, 3-hourly or 6-hourly
         # -------------------------------------------------------------------
 
-        interval_type = kwargs.get('output_frequency', 'year')
-        if to_offset(data_frequency) in \
-           [to_offset('h'), to_offset('3h'), to_offset('6h')]:
-            interval_range = kwargs.get('interval_range', 1)
+        interval_type = kwargs.get("output_frequency", "year")
+        if to_offset(data_frequency) in [
+            to_offset("h"),
+            to_offset("3h"),
+            to_offset("6h"),
+        ]:
+            interval_range = kwargs.get("interval_range", 1)
 
-        elif to_offset(data_frequency) in [to_offset('12h'), to_offset('1D')]:
-            interval_range = kwargs.get('interval_range', 5)
+        elif to_offset(data_frequency) in [to_offset("12h"), to_offset("1D")]:
+            interval_range = kwargs.get("interval_range", 5)
 
-        elif (
-            to_offset(data_frequency) in
-            [to_offset('1MS'), to_offset('QS-DEC')]
-        ):
-            interval_range = kwargs.get('interval_range', 10)
+        elif to_offset(data_frequency) in [
+            to_offset("1MS"),
+            to_offset("QS-DEC"),
+        ]:
+            interval_range = kwargs.get("interval_range", 10)
 
-        elif (to_offset(data_frequency) == to_offset('1YS')):
-            interval_range = kwargs.get('interval_range', 100)
+        elif to_offset(data_frequency) == to_offset("1YS"):
+            interval_range = kwargs.get("interval_range", 100)
 
         else:
-            interval_range = kwargs.get('interval_range', 5)
-            logger.warning('Not data frequency detected!')
-            logger.warning('Splitting data into groups of 5 years!')
+            interval_range = kwargs.get("interval_range", 5)
+            logger.warning("Not data frequency detected!")
+            logger.warning("Splitting data into groups of 5 years!")
 
-        if interval_type == 'month':
+        if interval_type == "month":
             # year + month
             times, _ = zip(
-                *ds.groupby(['time.year', 'time.month']), strict=False
+                *ds.groupby(["time.year", "time.month"]), strict=False
             )
             times = list(times)
 
@@ -655,30 +734,37 @@ def to_drs_netcdfs(
             logger.info(f"TIMES SORTED {times_sorted}")
             times_idx = list(range(len(times_sorted)))
 
-            groups = np.array([
-                [times_sorted[i] for i in g]
-                for k, g in itertools.groupby(
-                    times_idx, lambda i: i // interval_range)
-            ], dtype=object)
+            groups = np.array(
+                [
+                    [times_sorted[i] for i in g]
+                    for k, g in itertools.groupby(
+                        times_idx, lambda i: i // interval_range
+                    )
+                ],
+                dtype=object,
+            )
 
         else:
-            times, _ = zip(*ds.groupby(f'time.{interval_type}'), strict=False)
+            times, _ = zip(*ds.groupby(f"time.{interval_type}"), strict=False)
 
-            groups = np.array([
-                list(g) for k, g
-                in itertools.groupby(
-                    times, lambda i: (i - 1) // interval_range)
-            ], dtype=object)
+            groups = np.array(
+                [
+                    list(g)
+                    for k, g in itertools.groupby(
+                        times, lambda i: (i - 1) // interval_range
+                    )
+                ],
+                dtype=object,
+            )
 
     for group in groups:
-
         logger.info(f"Processing {group}")
 
         # Select data within yearly group time range
         # ------------------------------------------
 
         if has_time_dim:
-            if interval_type == 'month':
+            if interval_type == "month":
                 start = f"{group[0][0]:04d}-{group[0][1]:02d}-01"
                 end_year, end_month = group[-1]
                 last_day = calendar.monthrange(end_year, end_month)[1]
@@ -692,22 +778,14 @@ def to_drs_netcdfs(
         # Set file tracking id
         # --------------------
 
-        ds_sel.attrs['tracking_id'] = str(uuid.uuid4())
+        ds_sel.attrs["tracking_id"] = str(uuid.uuid4())
 
         # Determine DRS file name from metadata
         # -------------------------------------
 
-        filename = drs_filename(
-            ds_sel,
-            version=version,
-            standard=standard
-        )
+        filename = drs_filename(ds_sel, version=version, standard=standard)
 
-        path = drs_parent(
-            ds_sel,
-            version=version,
-            standard=standard
-        )
+        path = drs_parent(ds_sel, version=version, standard=standard)
 
         # Set output dir and output_file
         # ------------------------------
@@ -728,7 +806,6 @@ def to_drs_netcdfs(
         # -------------
 
         if dry_run is False:
-
             # Create directory structure
             # --------------------------
 
@@ -737,11 +814,10 @@ def to_drs_netcdfs(
             # Write data to NetCDF
             # --------------------
 
-            if pathlib.Path(f'{output_file}').is_file() and not overwrite:
+            if pathlib.Path(f"{output_file}").is_file() and not overwrite:
                 logger.info(f"{output_file} already exists. Doing nothing!")
 
             else:
-
                 magic.to_netcdf(
                     ds_sel,
                     f"{output_file}",
@@ -773,16 +849,15 @@ def _is_precipitations(ds, var=None):
     # We lower the case and strip white spaces for the function to work despite
     # typos
 
-    standard_name = ds[var].attrs.get('standard_name', 'na').lower().strip()
-    long_name = ds[var].attrs.get('long_name', 'na').lower().strip()
+    standard_name = ds[var].attrs.get("standard_name", "na").lower().strip()
+    long_name = ds[var].attrs.get("long_name", "na").lower().strip()
 
     is_precipitation = (
-        get_cmor_varname(ds[var]) == 'pr'
-        or standard_name in [
-            "precipitation_amount",
-            "thickness_of_rainfall_amount"
-        ]
-        or long_name in [
+        get_cmor_varname(ds[var]) == "pr"
+        or standard_name
+        in ["precipitation_amount", "thickness_of_rainfall_amount"]
+        or long_name
+        in [
             "total precipitation amount",
             "precipitation heigth",
             "daily precipitation sum",
@@ -819,8 +894,8 @@ def _to_precipitations_cmor_units(ds, var=None):
     # ---------------------------
 
     pyku_variables = {
-        **PYKU_RESOURCES.load_resource('cmor-like'),
-        **PYKU_RESOURCES.load_resource('cmor')
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
     }
 
     # Keep variables attributes
@@ -840,18 +915,18 @@ def _to_precipitations_cmor_units(ds, var=None):
     # -------------------------------------------------
 
     if _is_precipitations(ds_copy, var=var) is False:
-        logger.warning('No precipitations in dataarray, cannot convert units')
+        logger.warning("No precipitations in dataarray, cannot convert units")
         return ds
 
-    pr_units = ds[var].attrs.get('units').lower().strip()
+    pr_units = ds[var].attrs.get("units").lower().strip()
 
     # Case where units are already correct
     # ------------------------------------
 
-    if pr_units in ['kg m-2 s-1', 'kg m^-2 s^-1']:
+    if pr_units in ["kg m-2 s-1", "kg m^-2 s^-1"]:
         return ds
 
-    if pr_units not in ['kg m-2', 'kg m^-2', 'mm']:
+    if pr_units not in ["kg m-2", "kg m^-2", "mm"]:
         logger.warning(
             f"Units are {pr_units}. Unit assumes it is equivalent to kg m-2."
             "per default. Check your output."
@@ -874,7 +949,7 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Here with metpy.quantify it will be better to update
     # and use get_time_intervals for it to be more general
 
-    time_delta = meta.get_frequency(ds_copy, dtype='Timedelta')
+    time_delta = meta.get_frequency(ds_copy, dtype="Timedelta")
 
     # Divide by the total number of seconds
     # -------------------------------------
@@ -884,7 +959,12 @@ def _to_precipitations_cmor_units(ds, var=None):
     # Set the CMOR precipitation units
     # --------------------------------
 
-    da.attrs['units'] = pyku_variables['pr']['cmor_units']
+    da.attrs["units"] = pyku_variables["pr"]["cmor_units"]
+
+    # The amount accumulated over an interval becomes the mean rate over that
+    # interval when divided by its duration.
+    if da.attrs.get("cell_methods") == "time: sum":
+        da.attrs["cell_methods"] = "time: mean"
 
     # Set CMOR attributes
     # -------------------
@@ -893,13 +973,11 @@ def _to_precipitations_cmor_units(ds, var=None):
     # attributes. However there is so much creativity for precipitation units,
     # standard_name and long_name, that this is set here.
 
-    da.attrs['standard_name'] = (
-        PYKU_RESOURCES.get_value('cmor', 'pr', 'standard_name')
+    da.attrs["standard_name"] = PYKU_RESOURCES.get_value(
+        "cmor", "pr", "standard_name"
     )
 
-    da.attrs['long_name'] = (
-        PYKU_RESOURCES.get_value('cmor', 'pr', 'long_name')
-    )
+    da.attrs["long_name"] = PYKU_RESOURCES.get_value("cmor", "pr", "long_name")
 
     # Overwrite DataArray into Dataset and return
     # -------------------------------------------
@@ -940,8 +1018,8 @@ def to_cmor_units(ds):
     #         - Otherwise convert units
 
     pyku_variables = {
-        **PYKU_RESOURCES.load_resource('cmor-like'),
-        **PYKU_RESOURCES.load_resource('cmor')
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
     }
 
     # Keep variables attributes
@@ -962,14 +1040,12 @@ def to_cmor_units(ds):
     # ------------------------
 
     for var in ds_out.data_vars:
-
         # Get variable CMOR name
         # ----------------------
 
         cmor_varname = get_cmor_varname(ds_out[var])
 
-        if (cmor_varname in pyku_variables):
-
+        if cmor_varname in pyku_variables:
             # Deal with units of precipitations, which can be creative
             # --------------------------------------------------------
 
@@ -977,11 +1053,10 @@ def to_cmor_units(ds):
                 ds_out[var] = _to_precipitations_cmor_units(ds_out, var)[var]
 
             else:
-
                 # Get unit from CMOR or CMOR-like variable
                 # ----------------------------------------
 
-                units = pyku_variables[cmor_varname]['units']
+                units = pyku_variables[cmor_varname]["units"]
 
                 # Quantify
                 # --------
@@ -1001,11 +1076,60 @@ def to_cmor_units(ds):
                 # Set unit attribute in the CMOR standard
                 # ---------------------------------------
 
-                units = pyku_variables[cmor_varname]['cmor_units']
+                units = pyku_variables[cmor_varname]["cmor_units"]
 
                 ds_out[var] = da
 
     return ds_out
+
+
+def _validate_cmor_units(ds):
+    """Validate CMOR units and normalize equivalent unit spellings."""
+
+    from metpy.units import units
+
+    pyku_variables = {
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
+    }
+    incompatible_units = []
+    equivalent_units_to_normalize = []
+
+    for varname, da in ds.data_vars.items():
+        cmor_varname = get_cmor_varname(da)
+
+        if cmor_varname not in pyku_variables:
+            continue
+
+        expected_units = pyku_variables[cmor_varname]["cmor_units"]
+        actual_units = da.attrs.get("units")
+
+        if actual_units == expected_units:
+            continue
+
+        try:
+            equivalent_units = actual_units is not None and units.parse_units(
+                actual_units
+            ) == units.parse_units(expected_units)
+        except Exception:
+            equivalent_units = False
+
+        if equivalent_units:
+            equivalent_units_to_normalize.append((varname, expected_units))
+        else:
+            incompatible_units.append(
+                f"{varname} has units {actual_units!r}; expected CMOR units "
+                f"{expected_units!r}"
+            )
+
+    if incompatible_units:
+        raise ValueError(
+            "Resampling produced units incompatible with CMOR output: "
+            + "; ".join(incompatible_units)
+        )
+
+    for varname, expected_units in equivalent_units_to_normalize:
+        ds[varname].attrs["units"] = expected_units
 
 
 def get_cmor_varname_aliases(cmor_varname):
@@ -1020,8 +1144,8 @@ def get_cmor_varname_aliases(cmor_varname):
     """
 
     pyku_variables = {
-        **PYKU_RESOURCES.load_resource('cmor-like'),
-        **PYKU_RESOURCES.load_resource('cmor')
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
     }
 
     if cmor_varname not in pyku_variables:
@@ -1032,26 +1156,22 @@ def get_cmor_varname_aliases(cmor_varname):
     aliases = []
 
     for mapping in mappings:
-
         if cmor_varname in PYKU_RESOURCES.get_value(mapping):
-
             # The mapping data contain either a single alias under 'name',
             # or a list of aliases under 'names'.
 
-            if (
-                cmor_varname in PYKU_RESOURCES.get_value(mapping)
-                and 'name' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
-            ):
+            if cmor_varname in PYKU_RESOURCES.get_value(
+                mapping
+            ) and "name" in PYKU_RESOURCES.get_value(mapping, cmor_varname):
                 aliases.append(
-                    PYKU_RESOURCES.get_value(mapping, cmor_varname, 'name')
+                    PYKU_RESOURCES.get_value(mapping, cmor_varname, "name")
                 )
 
-            if (
-                cmor_varname in PYKU_RESOURCES.get_value(mapping)
-                and 'names' in PYKU_RESOURCES.get_value(mapping, cmor_varname)
-            ):
+            if cmor_varname in PYKU_RESOURCES.get_value(
+                mapping
+            ) and "names" in PYKU_RESOURCES.get_value(mapping, cmor_varname):
                 alias_list = PYKU_RESOURCES.get_value(
-                    mapping, cmor_varname, 'names'
+                    mapping, cmor_varname, "names"
                 )
                 aliases.extend(alias_list)
 
@@ -1089,8 +1209,8 @@ def get_cmor_varname(da):
         )
 
     pyku_variables = {
-        **PYKU_RESOURCES.load_resource('cmor-like'),
-        **PYKU_RESOURCES.load_resource('cmor')
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
     }
 
     # Variable name already CMOR-conform
@@ -1106,13 +1226,9 @@ def get_cmor_varname(da):
     # not guaranteed to be unique across different variables.
 
     for var, var_data in pyku_variables.items():
+        long_name = da.attrs.get("long_name")
 
-        long_name = da.attrs.get('long_name')
-
-        if (
-            long_name is not None and
-            long_name == var_data.get('long_name')
-        ):
+        if long_name is not None and long_name == var_data.get("long_name"):
             return var
 
     # Try identifying the variable from aliases
@@ -1154,15 +1270,13 @@ def to_cmor_varnames(ds):
     # should not be present at the Dataset level. The field is therefore
     # removed by default.
 
-    if "variable_id" in ds.attrs and \
-       len(meta.get_geodata_varnames(ds)) > 1:
+    if "variable_id" in ds.attrs and len(meta.get_geodata_varnames(ds)) > 1:
         del ds.attrs["variable_id"]
 
     # Loop over all data variables in dataset
     # ---------------------------------------
 
     for var in ds.data_vars:
-
         # Get the corresponding CMOR variable name
         # ----------------------------------------
 
@@ -1195,8 +1309,8 @@ def _to_cmor_attrs_var(ds):
     from pyku import meta
 
     pyku_variables = {
-        **PYKU_RESOURCES.load_resource('cmor-like'),
-        **PYKU_RESOURCES.load_resource('cmor')
+        **PYKU_RESOURCES.load_resource("cmor-like"),
+        **PYKU_RESOURCES.load_resource("cmor"),
     }
 
     # Keep variables attributes
@@ -1208,7 +1322,6 @@ def _to_cmor_attrs_var(ds):
     # ---------------------------------------
 
     for var in ds.data_vars:
-
         # Convert GRIB convention
         # -----------------------
 
@@ -1217,11 +1330,10 @@ def _to_cmor_attrs_var(ds):
         # dedicated conversion functions should be written. This is thus
         # exploratory.
 
-        if ds[var].attrs.get('GRIB_stepType', None) == 'instant':
-
+        if ds[var].attrs.get("GRIB_stepType", None) == "instant":
             if (
-                ds[var].attrs.get('cell_methods', None) is not None and
-                ds[var].attrs.get('cell_methods', None) != 'time: point'
+                ds[var].attrs.get("cell_methods", None) is not None
+                and ds[var].attrs.get("cell_methods", None) != "time: point"
             ):
                 raise Exception(
                     "GRIB_stepType is instant, but the CF-conform are not "
@@ -1230,7 +1342,7 @@ def _to_cmor_attrs_var(ds):
                     "'cell_methods' manually."
                 )
 
-            ds[var].attrs['cell_methods'] = 'time: point'
+            ds[var].attrs["cell_methods"] = "time: point"
 
         # Get the CMOR variable name
         # --------------------------
@@ -1241,15 +1353,13 @@ def _to_cmor_attrs_var(ds):
         # --------------------------------------
 
         if cmor_varname in pyku_variables:
-
             # Send a warning if rotated wind components are found
             # ---------------------------------------------------
 
-            if (
-                ds[var].attrs.get('standard_name') in
-                ['grid_eastward_wind', 'grid_northward_wind']
-            ):
-
+            if ds[var].attrs.get("standard_name") in [
+                "grid_eastward_wind",
+                "grid_northward_wind",
+            ]:
                 logger.warning = (
                     "The standard name for {var} is "
                     "{ds[var].attrs['standard_name']}. Are you using rotated "
@@ -1262,11 +1372,13 @@ def _to_cmor_attrs_var(ds):
             # Get CMOR or CMOR-like attributes
             # --------------------------------
 
-            ds[var].attrs['standard_name'] = \
-                pyku_variables[cmor_varname]['standard_name']
+            ds[var].attrs["standard_name"] = pyku_variables[cmor_varname][
+                "standard_name"
+            ]
 
-            ds[var].attrs['long_name'] = \
-                pyku_variables[cmor_varname]['long_name']
+            ds[var].attrs["long_name"] = pyku_variables[cmor_varname][
+                "long_name"
+            ]
 
         elif var in meta.get_geodata_varnames(ds):
             logger.warning(
@@ -1291,14 +1403,14 @@ def _get_cmor_coordinate_name(coordinate_name):
     # Case where the name of the coordinate is already CMOR-conform
     # -------------------------------------------------------------
 
-    if coordinate_name in PYKU_RESOURCES.get_keys('coordinates'):
+    if coordinate_name in PYKU_RESOURCES.get_keys("coordinates"):
         return coordinate_name
 
     # Try identifying the variable with aliases
     # -----------------------------------------
 
-    for name in PYKU_RESOURCES.get_keys('coordinates'):
-        if name in PYKU_RESOURCES.get_value('coordinates', name, 'aliases'):
+    for name in PYKU_RESOURCES.get_keys("coordinates"):
+        if name in PYKU_RESOURCES.get_value("coordinates", name, "aliases"):
             return name
 
     # We have reached the end and could not find the variable
@@ -1330,11 +1442,10 @@ def _to_cmor_attrs_coords(ds):
     # ------------------------------
 
     for coordinate in ds.coords.keys():
-
         if _get_cmor_coordinate_name(coordinate) is not None:
-
-            ds[coordinate].attrs = \
-                PYKU_RESOURCES.get_value('coordinates', coordinate, 'attrs')
+            ds[coordinate].attrs = PYKU_RESOURCES.get_value(
+                "coordinates", coordinate, "attrs"
+            )
 
         else:
             logger.info(
@@ -1368,30 +1479,30 @@ def _to_cmor_attrs_frequency(ds):
     # Get frequency from dataset
     # --------------------------
 
-    frequency = meta.get_frequency(ds, dtype='freqstr')
+    frequency = meta.get_frequency(ds, dtype="freqstr")
 
     # Find if frequency is part of the CMOR standard
     # ----------------------------------------------
 
     # Mapping of frequency offsets to CMOR-conform frequency strings
     frequency_mapping = {
-        to_offset('1h'): '1hr',
-        to_offset('3h'): '3hr',
-        to_offset('6h'): '6hr',
-        to_offset('12h'): '12hr',
-        to_offset('1D'): 'day',
-        to_offset('1MS'): 'mon',
-        to_offset('QS-DEC'): 'sem',
-        to_offset('1YS'): 'year',
+        to_offset("1h"): "1hr",
+        to_offset("3h"): "3hr",
+        to_offset("6h"): "6hr",
+        to_offset("12h"): "12hr",
+        to_offset("1D"): "day",
+        to_offset("1MS"): "mon",
+        to_offset("QS-DEC"): "sem",
+        to_offset("1YS"): "year",
     }
 
     # Set CMOR-conform frequency attribute
     # ------------------------------------
 
-    offset = to_offset(frequency)
+    offset = _get_cmor_frequency_offset(ds, frequency)
 
     if offset in frequency_mapping:
-        ds.attrs['frequency'] = frequency_mapping[offset]
+        ds.attrs["frequency"] = frequency_mapping[offset]
     else:
         logger.warning(
             f"frequency not a CMOR standard, using frequency="
@@ -1399,7 +1510,7 @@ def _to_cmor_attrs_frequency(ds):
             "https://pandas.pydata.org/pandas-docs/stable/user_guide/"
             "timeseries.html#offset-aliases"
         )
-        ds.attrs['frequency'] = offset.freqstr
+        ds.attrs["frequency"] = offset.freqstr
 
     return ds
 
@@ -1459,7 +1570,7 @@ def has_cmor_time_labels(ds, var=None):
     # Check 'cell_methods' attribute and return False if not available
     # ----------------------------------------------------------------
 
-    if var_ds[var].attrs.get('cell_methods', None) is None:
+    if var_ds[var].attrs.get("cell_methods", None) is None:
         logger.warn("Variable has no 'cell_methods' attribute!")
         return False
 
@@ -1472,11 +1583,10 @@ def has_cmor_time_labels(ds, var=None):
     # -----------------------------------------------------------
 
     if meta.has_time_bounds(var_ds):
-
         time_labels = var_ds.time.values
 
         middle_time_labels = timekit.set_time_labels_from_time_bounds(
-            var_ds, how='middle'
+            var_ds, how="middle"
         ).time.values
 
         are_equal = np.array_equal(time_labels, middle_time_labels)
@@ -1549,10 +1659,8 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     # Get stem pattern from standard
     # ------------------------------
 
-    parent_pattern = (
-        PYKU_RESOURCES.get_value(
-            'drs', 'standards', standard, 'parent_pattern'
-        )
+    parent_pattern = PYKU_RESOURCES.get_value(
+        "drs", "standards", standard, "parent_pattern"
     )
 
     # Deal with the variable name
@@ -1562,14 +1670,14 @@ def get_facets_from_file_parent(filename, standard, has_version=False):
     # this by hand.
 
     if has_version is True:
-        parent_pattern = str(Path(parent_pattern)) + '/{version}'
+        parent_pattern = str(Path(parent_pattern)) + "/{version}"
 
     # Check for a file
     # ----------------
 
     # Files are identified by checking if there is a suffix
 
-    has_file = Path(filename).suffix != ''
+    has_file = Path(filename).suffix != ""
 
     # Get directory
     # -------------
@@ -1666,17 +1774,14 @@ def get_facets_from_file_stem(filename, standard):
     # Get stem pattern from standard
     # ------------------------------
 
-    stem_pattern = (
-        PYKU_RESOURCES.get_value('drs', 'standards', standard, 'stem_pattern')
+    stem_pattern = PYKU_RESOURCES.get_value(
+        "drs", "standards", standard, "stem_pattern"
     )
 
     # Get stem from file name
     # -----------------------
 
-    facets = parse.parse(
-        stem_pattern,
-        str(Path(filename).stem)
-    )
+    facets = parse.parse(stem_pattern, str(Path(filename).stem))
 
     if facets:
         return facets.named
@@ -1769,7 +1874,7 @@ def cmorize(ds, global_metadata=None):
     # -------------------------------------
 
     if meta.has_time_bounds(ds):
-        ds = timekit.set_time_labels_from_time_bounds(ds, how='middle')
+        ds = timekit.set_time_labels_from_time_bounds(ds, how="middle")
 
     # Get the variable dataset
     # ------------------------
@@ -1802,13 +1907,14 @@ def cmorize(ds, global_metadata=None):
     yx_varnames = meta.get_projection_yx_varnames(ds)
 
     valid_cmor_coordinates = [
-        'time',
+        "time",
         *latlon_varnames,
         *yx_varnames,
     ]
 
-    invalid_cmor_coordinates = \
-        set(dsvar.coords.keys()) - set(valid_cmor_coordinates)
+    invalid_cmor_coordinates = set(dsvar.coords.keys()) - set(
+        valid_cmor_coordinates
+    )
 
     dsvar = dsvar.drop_vars(invalid_cmor_coordinates)
 
@@ -1838,5 +1944,6 @@ def _resolve_template(tstring, namespace):
         return tstring.format(**namespace)
 
     from string import Template
+
     if isinstance(tstring, Template):
         return tstring.substitute(namespace)

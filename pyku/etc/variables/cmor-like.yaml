@@ -2,7 +2,9 @@
 # part of the CORDEX standard.
 
 tdps:
-  comment: Custom non-standard CORDEX/CMOR-like variable.
+  comment: >-
+    CMOR-like output name for near-surface dew-point temperature; COSMO-CLM
+    provides this variable as TD_2M.
   long_name: Near-Surface Dew Point Temperature
   standard_name: dew_point_temperature
   units: kelvins
@@ -18,16 +20,11 @@ mixr:
   units: dimensionless
   cmor_units: '1'
   valid_bounds: [0, 1]
-cclm-clct:
-  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
-  comment: COSMO-CLM variable
-  long_name: Total Cloud Cover
-  standard_name: cloud_area_fraction
-  units: percent
-  cmor_units: '%'
-  valid_bounds: [0, 100]
-cclm-athb-s:
-  comment: Custom CMOR-like variable for COSMO-CLM. Not part of CORDEX standard.
+rlns:
+  comment: >-
+    COSMO-CLM ATHB_S is averaged surface net downward longwave radiation. Its
+    metadata identifies surface_net_downward_longwave_flux, and hourly values
+    match ALWD_S minus ALWU_S, confirming the positive-downward convention.
   long_name: Averaged Surface Net Downward Longwave Radiation
   standard_name: surface_net_downward_longwave_flux
   units: W m^-2

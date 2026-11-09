@@ -1,9 +1,47 @@
-cclm-td-2m:
-  comment: Custom CMOR-like variable. Not part of CORDEX standard.
-  name: TD_2M
-cclm-clct:
-  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+clt:
+  comment: >-
+    COSMO-CLM CLCT is total cloud cover as a fraction. Map it to clt; pyku
+    converts the values to the target percent units.
   name: CLCT
-cclm-athb-s:
-  comment: Custom CMOR-like variable. Not part of CORDEX standard.
+pr:
+  comment: >-
+    TOT_PREC is an amount accumulated over the output interval, not a rate.
+    Map it to pr; pyku converts the interval amount to a precipitation flux.
+    prhmax is the daily maximum of hourly precipitation rates and requires a
+    daily maximum operation, so it cannot be inferred from TOT_PREC alone.
+  name: TOT_PREC
+rlds:
+  comment: COSMO-CLM variable
+  name: ALWD_S
+rlus:
+  comment: COSMO-CLM variable
+  name: ALWU_S
+rlns:
+  comment: >-
+    COSMO-CLM ATHB_S is net downward longwave radiation; hourly values match
+    ALWD_S minus ALWU_S.
   name: ATHB_S
+rsds:
+  comment: COSMO-CLM variable
+  name: ASWD_S
+ts:
+  comment: COSMO-CLM variable
+  name: T_S
+sfcWind:
+  comment: COSMO-CLM variable
+  name: SP_10M
+sfcWindmax:
+  comment: COSMO-CLM variable
+  name: VABSMX_10M
+tdps:
+  comment: COSMO-CLM 2-m dew-point temperature.
+  name: TD_2M
+snc:
+  comment: COSMO-CLM variable
+  name: FR_SNOW
+snd:
+  comment: COSMO-CLM variable
+  name: H_SNOW
+wsgsmax:
+  comment: COSMO-CLM variable
+  name: VMAX_10M
