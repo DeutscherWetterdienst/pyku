@@ -4,6 +4,7 @@
 Processing library
 """
 
+import xarray as xr
 from pyku import logger
 
 
@@ -57,11 +58,10 @@ def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
            broken = broken.assign_attrs({'label': 'Broken'})
            repaired = repaired.assign_attrs({'label': 'Repaired'})
 
-           pyku.analyse.two_maps(
+           pyku.visualisation.two_maps(
                broken.isel(time=0),
                repaired.isel(time=0),
                var = 'tas',
-               crs='EUR-11'
            )
     """
 
@@ -655,38 +655,36 @@ def calc_huss(ds):
     return ds
 
 
-def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
+def calc_degreeday(
+    ds: xr.Dataset,
+    period: str | None = None,
+    data_frequency: str | None = None,
+    complete: bool = False,
+) -> xr.Dataset:
+    """Add degree days to a dataset, calculated from ``tas``.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input data containing ``tas``.
+    period : str, optional
+        Resampling period, e.g. ``7D`` or ``1W``. ``7D`` calculates degree
+        days over seven days; ``1W`` calculates them for each calendar week.
+    data_frequency : str, optional
+        Source data frequency. If omitted, it is inferred from time bounds or
+        time labels.
+    complete : bool, default False
+        Use only complete output periods over the input data range.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with degree days included.
     """
-    Add degree day to dataset, calculated from 'tas'
-
-    Arguments:
-        ds (:class:`xarray.Dataset`): The input data containing 'tas'.
-        period (str):
-            (Optional) Period, e.g. ``7D`` or ``1W``. For a full list, see
-            https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-            If '7D' is given, the degree-days are calculated over 7 days. If
-            '1W' is given, the degree-days are calculated for each calender
-            week.
-        data_frequency (str):
-            (Optional) data frequency: e.g. ``7D`` or ``1W``. For a full list,
-            see https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-            If not given explicitely, the data frequency is extracted from
-            the data itself by looking at the time bounds, or calculated from
-            the time labels.
-        complete:
-            (Optional) Use only complete data over the input period. For
-            example, if ``period`` is 7 days and the data contains 16 days,
-            only the first 14 days will be taken into account and the last 2
-            days are discared.
-
-    Returns:
-        :class:`xarray.Dataset`: The dataset with degreeday included.
-    """  # noqa
 
     import numpy as np
 
-    import xarray as xr
-    from pyku import mask, timekit
+    from pyku import mask, meta, timekit
 
     # Keep data attributes over operations
     # ------------------------------------
@@ -742,7 +740,7 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
 
     ds_out['gt'].attrs = ds['tas'].attrs
 
-    ds_out['gt'].attrs['units'] = 'K.d'
+    ds_out['gt'].attrs['units'] = 'K day'
     ds_out['gt'].attrs['long_name'] = 'degree day'
     ds_out['gt'].attrs['standard_name'] = 'degree_day'
 
@@ -751,13 +749,25 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
         # Resample
         # --------
 
+        # Integrate temperature differences into per-interval degree days
+        # before summing, since the resampler only integrates rate units.
+        if meta.get_time_bounds(ds_out) is None:
+            ds_out = timekit.set_time_bounds_from_time_labels(
+                ds_out,
+                frequency=data_frequency,
+            )
+        intervals = meta.get_time_intervals(ds_out)
+        ds_out['gt'] = ds_out['gt'] * intervals.interval / 86400
+        ds_out['gt'].attrs['units'] = 'K day'
         ds_out = timekit.resample_datetimes(
             ds_out,
             how='sum',
             frequency=period,
+            complete=complete,
             data_frequency=data_frequency,
-            complete=complete
         )
+
+        ds_out['gt'].attrs['units'] = 'K day'
 
         # Reset cell method after resampling
         # ----------------------------------
@@ -767,7 +777,7 @@ def calc_degreeday(ds, period=None, data_frequency=None, complete=False):
     # Set data mask
     # -------------
 
-    ds_out['gt'] = ds_out['gt'].where(da_mask == 0)
+    ds_out['gt'] = ds_out['gt'].where(da_mask['mask'] == 0)
 
     return ds_out
 

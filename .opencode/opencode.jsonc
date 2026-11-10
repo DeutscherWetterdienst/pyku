@@ -1,0 +1,46 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "name": "pyku_dev",
+  "description": "Configuration for the pyku development repository",
+  "lsp": true,
+  "formatter": {
+    "prettier": {
+      "extensions": [".yaml", ".yml", ".md"]
+    },
+    "rstfmt": {
+      "command": ["rstfmt", "$FILE"],
+      "extensions": [".rst"]
+    },
+    "shfmt": {
+      "extensions": [".sh", ".bash"]
+    },
+    "ruff": {
+      "command": ["ruff", "check", "--format", "json", "$FILE"],
+      "extensions": [".py"]
+    },
+    "flake8": {
+      "command": ["flake8", "$FILE"],
+      "extensions": [".py"]
+    },
+    "black": {
+      "command": ["black", "--check", "$FILE"],
+      "extensions": [".py"]
+    },
+    "isort": {
+      "command": ["isort", "--check-only", "$FILE"],
+      "extensions": [".py"]
+    },
+    "mypy": {
+      "command": ["mypy", "$FILE"],
+      "extensions": [".py"]
+    }
+  },
+  "graphify": {
+    "enabled": true,
+    "path": "../graphify-out"
+  },
+  "git": {
+    "push": false,
+    "commitPrompt": true
+  }
+}

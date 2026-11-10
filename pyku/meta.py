@@ -1659,7 +1659,6 @@ def get_geodataset(ds, var):
            In [0]: import pyku
               ...: ds = pyku.resources.get_test_data('hyras')
               ...: ds.pyku.get_geodataset(var='tas')
-
     """
 
     import copy
@@ -1680,10 +1679,11 @@ def get_geodataset(ds, var):
 
     geodata_varnames = get_geodata_varnames(ds)
 
-    for var in vars:
-        if var not in geodata_varnames:
-            message = f"Variable {var} is not a georeferenced data variable"
-            raise Exception(message)
+    for variable in vars:
+        if variable not in geodata_varnames:
+            raise Exception(
+                f"Variable {var} is not a georeferenced data variable"
+            )
 
     # Get the name of the climate data variables
     # ------------------------------------------
@@ -1698,9 +1698,9 @@ def get_geodataset(ds, var):
 
     list_of_point_variables = []
 
-    for var in vars:
-        if ds[var].attrs.get("cell_methods", None) in ["time: point"]:
-            list_of_point_variables.append(var)
+    for variable in vars:
+        if ds[variable].attrs.get("cell_methods", None) == "time: point":
+            list_of_point_variables.append(variable)
 
     if set(list_of_point_variables) == set(vars):
         time_bounds_varname = None
@@ -1708,7 +1708,7 @@ def get_geodataset(ds, var):
     # Add to the list of selected data variables
     # ------------------------------------------
 
-    selected_datavars = vars
+    selected_datavars = list(vars)
 
     if crs_varname is not None:
         selected_datavars.append(crs_varname)

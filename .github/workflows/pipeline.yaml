@@ -5,6 +5,8 @@ on:
     branches:
       - main
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -71,11 +73,11 @@ jobs:
           WHEEL_PATH=$(ls dist/*.whl)
           uv pip install "$WHEEL_PATH[documentation,cdo_bindings]"
 
-          uv pip install flake8
+          uv pip install flake8 pytest
           flake8 pyku/
           ipython ./testing/check_notebooks_are_cleared.ipy
 
-          python3 -m unittest discover -v -s ./testing -p "*_test.py"
+          python3 -m pytest testing/ -v --tb=short
           sphinx-build -j 1 ./doc/ ./docs
 
       - name: Upload pages artifacts

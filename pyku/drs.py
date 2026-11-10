@@ -594,38 +594,53 @@ def to_drs_netcdfs(
     **kwargs,
 ):
     """
-    Write CMOR-conform NetCDF files.
+    Write CMOR-conform NetCDF files using a DRS layout.
 
-    Arguments:
+    The dataset is split into time intervals according to its data frequency.
+    Each interval is written beneath ``base_dir`` using the path and filename
+    defined by the selected DRS standard. A dry run logs the generated output
+    paths without creating files.
 
-        ds (:class:`xarray.Dataset`): Dataset with CMOR-conform metadata.
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset containing CMOR-conform metadata and exactly one data variable.
+    base_dir : str or os.PathLike
+        Root directory below which the DRS directory structure is created.
+    standard : str, default 'cordex'
+        DRS standard to apply. Supported standards are ``'cordex'``,
+        ``'cordex_adjust'``, ``'reanalysis'``, ``'obs4mips'`` and ``'cmip6'``.
+    var : str, optional
+        Variable to be cmorized. Only one variable per file is supported.
+    version : str, optional
+        Optional version string that creates an additional directory between the
+        DRS path and the filename. Its use is non‑standard but retained for
+        compatibility with DWD workflows.
+    dry_run : bool, default False
+        If True, log the paths that would be written without creating files.
+    encoding : dict or str, default 'auto'
+        NetCDF encoding passed to :func:`xarray.Dataset.to_netcdf`. Defaults are
+        read from ``drs.yaml``.
+    overwrite : bool, default False
+        If True, overwrite existing files. Otherwise existing files are left
+        unchanged.
+    complevel : int, optional
+        Compression level passed to the NetCDF writer.
+    **kwargs
+        Additional options controlling temporal grouping.
 
-        base_dir (str): Output base directory. The file will be written
-        according to 'base_dir/cmor_path/cmor_filename.nc'
+        output_frequency : str, default 'year'
+            Temporal grouping frequency. ``'month'`` groups by year and month;
+            other values are interpreted as dataset time attributes.
+        interval_range : int, optional
+            Number of grouping periods per output file. The default depends on
+            the data frequency.
 
-        standard (str): The DRS standard to apply. Supported standards include
-        {'cordex', 'cordex_adjust', 'reanalysis', 'obs4mips', 'cmip6'}, as
-        specified in ``pyku/drs.yaml``. The complete list of available
-        standards can be obtained using ``pyku.list_drs_standards()``.
-
-        var (str): Variable to be cmorized. Only one variable per file is
-        supported at the moment.
-
-        version (str): Optional. The version string creates an additional
-        directory between the cmor path and the cmor filename
-        ``/cmor/path/version/cmor_filename.nc``. The practice is not
-        CMOR-conform and its usage should be discouraged. However the use of
-        the version argument in that manner is widespread at DWD.
-
-        dry_run (bool): Optional. Whether to try a dry run without writing the
-        data first.
-
-        encoding (dict): Deprecated. Now the encoding is set from yaml file
-        ``drs.yaml``. Optional encoding parameters when writing the NetCDF
-        files. For details, see :func:`xarray.Dataset.to_netcdf`.
-
-        overwrite (bool): Optional. Whether exiting files should be overwritten
-        if they already exist. Defaults to False
+    Raises
+    ------
+    AssertionError
+        If ``base_dir`` is not provided, the dataset contains no or more than
+        one data variable, or a dataset attribute is ``None``.
     """
 
     import calendar

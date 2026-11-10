@@ -6,6 +6,8 @@ Analysis module
 import logging
 import os
 import textwrap
+import warnings
+from functools import wraps
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -15,6 +17,20 @@ import matplotlib.pyplot as plt
 plt.rcParams['savefig.bbox'] = 'tight'
 
 logger = logging.getLogger('analyse')
+
+
+def _warn_deprecated(name, replacement):
+    def decorate(function):
+        @wraps(function)
+        def wrapped(*args, **kwargs):
+            warnings.warn(
+                f"`{name}` is deprecated; use `{replacement}` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return function(*args, **kwargs)
+        return wrapped
+    return decorate
 
 
 def _unchunk_along_time(da):
@@ -29,6 +45,13 @@ def _unchunk_along_time(da):
         xarray.Dataset, or xarray.DataArray:
             Data unchunked along the time dimension if present
     """
+
+    warnings.warn(
+        "`_unchunk_along_time` is deprecated; use "
+        "`pyku.visualisation._unchunk_along_time` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     chunks = {dim: 'auto' for dim in da.dims}
 
@@ -51,6 +74,13 @@ def _get_DataArrays(dats, var=None):
     Returns:
         list: List of DataArrays if dats is a list
     """
+
+    warnings.warn(
+        "`_get_DataArrays` is deprecated; use "
+        "`pyku.visualisation` data handling instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     import textwrap
     import xarray as xr
@@ -148,6 +178,7 @@ def _get_DataArrays(dats, var=None):
     return das
 
 
+@_warn_deprecated("one_map", "pyku.visualisation.one_map")
 def one_map(dat, var=None, crs=None, **kwargs):
 
     """
@@ -187,6 +218,7 @@ def one_map(dat, var=None, crs=None, **kwargs):
     n_maps(dat, var=var, crs=crs, **kwargs)
 
 
+@_warn_deprecated("two_maps", "pyku.visualisation.two_maps")
 def two_maps(dat1, dat2, var=None, crs=None, **kwargs):
 
     """
@@ -237,6 +269,7 @@ def two_maps(dat1, dat2, var=None, crs=None, **kwargs):
     n_maps(dat1, dat2, var=var, crs=crs, **kwargs)
 
 
+@_warn_deprecated("n_maps", "pyku.visualisation.n_maps")
 def n_maps(*dats, var=None, crs=None, colorbar=True, **kwargs):
 
     """
@@ -620,6 +653,7 @@ def n_maps(*dats, var=None, crs=None, colorbar=True, **kwargs):
         gl.left_labels = True
 
 
+@_warn_deprecated("metadata", "No replacement available")
 def metadata(ds_mod, ds_obs):
 
     """
@@ -785,6 +819,7 @@ def metadata(ds_mod, ds_obs):
     return report
 
 
+@_warn_deprecated("summary_table", "No replacement available")
 def summary_table(ds_mod, ds_obs, **kwargs):
 
     """
@@ -862,6 +897,7 @@ def summary_table(ds_mod, ds_obs, **kwargs):
         """)
 
 
+@_warn_deprecated("regions", "pyku.visualisation.regions")
 def regions(gdf, area_def, **kwargs):
 
     """
@@ -975,6 +1011,7 @@ def regions(gdf, area_def, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("pdf", "pyku.visualisation.pdf")
 def pdf(*dats, var=None, ax=None, **kwargs):
 
     """
@@ -1232,6 +1269,7 @@ def pdf(*dats, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("monthly_pdf", "pyku.visualisation.pdf(groupby='time.month')")
 def monthly_pdf(*dats, var=None, **kwargs):
 
     """
@@ -1336,6 +1374,9 @@ def monthly_pdf(*dats, var=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated(
+    "seasonal_pdf", "pyku.visualisation.pdf(groupby='time.season')"
+)
 def seasonal_pdf(*dats, var=None, **kwargs):
 
     """
@@ -1433,6 +1474,7 @@ def seasonal_pdf(*dats, var=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("mean_map", "pyku.visualisation.mean_map")
 def mean_map(*dats, var=None, crs=None, same_datetimes=True, **kwargs):
 
     """
@@ -1509,6 +1551,7 @@ def mean_map(*dats, var=None, crs=None, same_datetimes=True, **kwargs):
     n_maps(*das_mean, crs=crs, **kwargs)
 
 
+@_warn_deprecated("mae_map", "pyku.visualisation.metric_map(metric='mae')")
 def mae_map(*dats, ref=None, var=None, crs=None, **kwargs):
 
     """
@@ -1610,6 +1653,7 @@ def mae_map(*dats, ref=None, var=None, crs=None, **kwargs):
     n_maps(*das_mae, crs=crs, **kwargs)
 
 
+@_warn_deprecated("monthly_bias_var", "pyku.visualisation.bias_cycle")
 def monthly_bias_var(ds_mod, ds_obs, var, **kwargs):
 
     """
@@ -1758,6 +1802,7 @@ def monthly_bias_var(ds_mod, ds_obs, var, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("monthly_bias", "pyku.visualisation.bias_cycle")
 def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
 
     """
@@ -1931,6 +1976,7 @@ def monthly_bias(dat_mod, dat_obs, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("mean_bias_map", "pyku.visualisation.bias_cycle")
 def mean_bias_map(*dats, ref, var=None, crs=None, **kwargs):
 
     """
@@ -2039,6 +2085,10 @@ def mean_bias_map(*dats, ref, var=None, crs=None, **kwargs):
     n_maps(*das_bias, crs=crs, **kwargs)
 
 
+@_warn_deprecated(
+    "seasonal_mean_bias_map",
+    "pyku.visualisation.bias_cycle(groupby='time.season')"
+)
 def seasonal_mean_bias_map(dats, ref, var=None, crs=None, **kwargs):
 
     """
@@ -2158,6 +2208,7 @@ def seasonal_mean_bias_map(dats, ref, var=None, crs=None, **kwargs):
     n_maps(*das_bias, crs=crs, **kwargs, nrows=2, ncols=2)
 
 
+@_warn_deprecated("daily_mean", "pyku.visualisation.time_series")
 def daily_mean(*dats, var=None, ax=None, **kwargs):
 
     """
@@ -2281,6 +2332,7 @@ def daily_mean(*dats, var=None, ax=None, **kwargs):
     plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
 
 
+@_warn_deprecated("monthly_mean", "pyku.visualisation.time_series")
 def monthly_mean(*dats, var=None, **kwargs):
 
     """
@@ -2428,6 +2480,7 @@ def monthly_mean(*dats, var=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("diurnal_cycle", "pyku.visualisation.diurnal_cycle")
 def diurnal_cycle(*dats, var=None, ax=None, **kwargs):
 
     """
@@ -2563,6 +2616,10 @@ def diurnal_cycle(*dats, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated(
+    "monthly_diurnal_cycle",
+    "pyku.visualisation.diurnal_cycle(groupby='time.month')"
+)
 def monthly_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
 
     """
@@ -2661,6 +2718,10 @@ def monthly_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated(
+    "seasonal_diurnal_cycle",
+    "pyku.visualisation.diurnal_cycle(groupby='time.season')"
+)
 def seasonal_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
 
     """
@@ -2751,6 +2812,10 @@ def seasonal_diurnal_cycle(dat1, dat2=None, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated(
+    "monthly_variability",
+    "pyku.visualisation.variability(groupby='time.month')"
+)
 def monthly_variability(dat1, dat2=None, var=None, ax=None, **kwargs):
 
     """
@@ -2916,6 +2981,7 @@ def monthly_variability(dat1, dat2=None, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("diurnal_cycle_variability", "pyku.visualisation.variability")
 def diurnal_cycle_variability(dat1, dat2=None, var=None, ax=None, **kwargs):
 
     """
@@ -3069,6 +3135,9 @@ def diurnal_cycle_variability(dat1, dat2=None, var=None, ax=None, **kwargs):
     extra_kwargs = {k: kwargs.get(k) for k in extra_arguments}
 
 
+@_warn_deprecated(
+    "regional_monthly_variability", "pyku.visualisation.variability"
+)
 def regional_monthly_variability(ds1, ds2, gdf=None, var=None, **kwargs):
 
     """
@@ -3217,6 +3286,7 @@ def regional_monthly_variability(ds1, ds2, gdf=None, var=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("regional_monthly_bias", "pyku.visualisation.bias_cycle")
 def regional_monthly_bias(ds_mod, ds_obs, gdf, area_def, var=None, **kwargs):
 
     """
@@ -3377,6 +3447,7 @@ def regional_monthly_bias(ds_mod, ds_obs, gdf, area_def, var=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("regional_mean_vs_time", "pyku.visualisation.time_series")
 def regional_mean_vs_time(ds_mod, ds_obs=None, gdf=None, time_resolution='1MS',
                           var=None, **kwargs):
 
@@ -3516,6 +3587,7 @@ def regional_mean_vs_time(ds_mod, ds_obs=None, gdf=None, time_resolution='1MS',
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("time_serie", "pyku.visualisation.time_series")
 def time_serie(*dats, var=None, ax=None, **kwargs):
 
     """
@@ -3668,6 +3740,7 @@ def time_serie(*dats, var=None, ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("mean_vs_time", "pyku.visualisation.time_series")
 def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
 
     """
@@ -3839,6 +3912,7 @@ def mean_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
         plt.setp(plt.gcf(), **extra_kwargs)
 
 
+@_warn_deprecated("var_vs_year", "No replacement available")
 def var_vs_year(dat_mod, dat_obs, var=None, **kwargs):
 
     """
@@ -4048,6 +4122,7 @@ def var_vs_year(dat_mod, dat_obs, var=None, **kwargs):
         plt.setp(plt.gca(), **extra_kwargs)
 
 
+@_warn_deprecated("percentile_map", "pyku.visualisation.percentile_map")
 def percentile_map(ds_mod, ds_obs, var=None, percentile=0.5, crs=None,
                    **kwargs):
 
@@ -4102,6 +4177,7 @@ def percentile_map(ds_mod, ds_obs, var=None, percentile=0.5, crs=None,
         }
 
 
+@_warn_deprecated("p98_map", "pyku.visualisation.percentile_map(percentile=98)")
 def p98_map(*dats, var, crs=None, **kwargs):
 
     """
@@ -4169,6 +4245,7 @@ def p98_map(*dats, var, crs=None, **kwargs):
     n_maps(*das_percentile, crs=crs, **kwargs)
 
 
+@_warn_deprecated("p98_vs_time", "No replacement available")
 def p98_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
 
     """
@@ -4351,6 +4428,7 @@ def p98_vs_time(*dats, var=None, time_resolution='1YS', ax=None, **kwargs):
         plt.setp(plt.gca(), **extra_kwargs)
 
 
+@_warn_deprecated("mse_map", "pyku.visualisation.metric_map(metric='mse')")
 def mse_map(*dats, ref, var=None, ds_ref=None, crs=None, **kwargs):
 
     """
@@ -4460,6 +4538,7 @@ def mse_map(*dats, ref, var=None, ds_ref=None, crs=None, **kwargs):
     n_maps(*das_mse, crs=crs, **kwargs)
 
 
+@_warn_deprecated("rmse_map", "pyku.visualisation.metric_map(metric='rmse')")
 def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
 
     """
@@ -4565,6 +4644,7 @@ def rmse_map(*dats, ref, var=None, crs=None, ds_ref=None, **kwargs):
     n_maps(*das_rmse, crs=crs, **kwargs)
 
 
+@_warn_deprecated("pcc_map", "pyku.visualisation.metric_map(metric='pcc')")
 def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
 
     """
@@ -4674,6 +4754,7 @@ def pcc_map(*dats, ref, var=None, crs=None, **kwargs):
     n_maps(*das_pcc, crs=crs, **kwargs)
 
 
+@_warn_deprecated("pdf2D", "No replacement available")
 def pdf2D(ds, var=None, varx=None, vary=None, sample_size=100, ax=None,
           **kwargs):
 
@@ -4788,6 +4869,7 @@ def pdf2D(ds, var=None, varx=None, vary=None, sample_size=100, ax=None,
         plt.setp(plt.gca(), **extra_kwargs)
 
 
+@_warn_deprecated("wasserstein_distance", "No replacement available")
 def wasserstein_distance(ds_mod, ds_obs, nsamples=10000, numItermax=500000):
 
     """

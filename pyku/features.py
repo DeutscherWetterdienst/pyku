@@ -151,7 +151,7 @@ def rasterize_polygons(features, area_def, all_touched=False):
               ...:     'natural_areas_of_germany'
               ...: )
               ...: ds = pyku.features.rasterize_polygons(gdf, 'HYR-LAEA-5')
-              ...: pyku.analyse.one_map(ds, var='regions', crs='HYR-LAEA-5')
+              ...: pyku.visualisation.one_map(ds, var='regions')
     """
 
     import warnings
@@ -374,7 +374,7 @@ def polygonize(
            In [0]: import pyku
               ...: ds = pyku.resources.get_test_data('hyras')
               ...: gdf = ds.pyku.polygonize()
-              ...: pyku.analyse.regions(gdf, area_def='HYR-LAEA-5')
+              ...: pyku.visualisation.regions(gdf, area_def='HYR-LAEA-5')
     """
 
     import warnings
@@ -651,14 +651,13 @@ def regionalize(ds, gdf=None, area_def=None, **kwargs):
               ...:
               ...: regionalized = ds.pyku.regionalize(gdf)
               ...:
-              ...: pyku.analyse.n_maps(
+              ...: pyku.visualisation.n_maps(
               ...:     regionalized.isel(time=0).isel(region=0),
               ...:     regionalized.isel(time=0).isel(region=1),
               ...:     regionalized.isel(time=0).isel(region=2),
               ...:     regionalized.isel(time=0).isel(region=3),
               ...:     nrows=2,
               ...:     ncols=2,
-              ...:     crs='HYR-LAEA-5',
               ...:     var='tas'
               ...: )
     """

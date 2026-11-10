@@ -40,67 +40,68 @@ generic `xclim` function embedded as a Python wrapper, which is then linked
 within the YAML configuration file.
 
 .. code-block:: python
-    @declare_units(
-        pr="[precipitation]",
-	tas="[temperature]",
-	pr_thresh="[precipitation]",
-	tas_thresh="[temperature]",
-    )
-    def potsnowday(
-        pr: xr.DataArray,
-	tas: xr.DataArray,
-	pr_thresh: Quantified = "1 mm/d",
-	tas_thresh: Quantified = "2 degC",
-	op_pr: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = ">=",
-	op_tas: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = "<=",
-	freq: str = "YS",
-    ) -> xr.DataArray:
-    """
-    Number of days with precipitation above threshold and temperature
-    below threshold.
+   
+   @declare_units(
+      pr="[precipitation]",
+      tas="[temperature]",
+      pr_thresh="[precipitation]",
+      tas_thresh="[temperature]",
+   )
+   def potsnowday(
+      pr: xr.DataArray,
+   tas: xr.DataArray,
+   pr_thresh: Quantified = "1 mm/d",
+   tas_thresh: Quantified = "2 degC",
+   op_pr: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = ">=",
+   op_tas: Literal[">", "gt", ">=", "ge", "<", "lt", "<=", "le"] = "<=",
+   freq: str = "YS",
+   ) -> xr.DataArray:
+   """
+   Number of days with precipitation above threshold and temperature
+   below threshold.
 
-    Number of days when precipitation is greater or equal to some threshold,
-    and temperatures are colder than some threshold. This can be used for
-    example to identify days with the potential for freezing rain or icing
-    conditions.
+   Number of days when precipitation is greater or equal to some threshold,
+   and temperatures are colder than some threshold. This can be used for
+   example to identify days with the potential for freezing rain or icing
+   conditions.
 
-    Parameters
-    ----------
-    pr : xarray.DataArray
-        Mean daily precipitation flux.
-    tas : xarray.DataArray
-        Daily mean, minimum or maximum temperature.
-    pr_thresh : Quantified
-        Precipitation threshold to exceed.
-    tas_thresh : Quantified
-        Temperature threshold not to exceed.
-    freq : str
+   Parameters
+   ----------
+   pr : xarray.DataArray
+      Mean daily precipitation flux.
+   tas : xarray.DataArray
+      Daily mean, minimum or maximum temperature.
+   pr_thresh : Quantified
+      Precipitation threshold to exceed.
+   tas_thresh : Quantified
+      Temperature threshold not to exceed.
+   freq : str
 
-    Returns
-    -------
-    xarray.DataArray, [time]
-        Count of days with high precipitation and low temperatures.
+   Returns
+   -------
+   xarray.DataArray, [time]
+      Count of days with high precipitation and low temperatures.
 
-    Examples
-    --------
-    To compute the number of days with intense rainfall while minimum
-    temperatures dip below -0.2C:
-    >>> pr = xr.open_dataset(path_to_pr_file).pr
-    >>> tasmin = xr.open_dataset(path_to_tasmin_file).tasmin
-    >>> high_precip_low_temp(pr, tas=tasmin, pr_thresh="10 mm/d",
-    >>>                      tas_thresh="-0.2 degC")
-    """
-    pr_thresh = convert_units_to(pr_thresh, pr, context="hydro")
-    tas_thresh = convert_units_to(tas_thresh, tas)
+   Examples
+   --------
+   To compute the number of days with intense rainfall while minimum
+   temperatures dip below -0.2C:
+   >>> pr = xr.open_dataset(path_to_pr_file).pr
+   >>> tasmin = xr.open_dataset(path_to_tasmin_file).tasmin
+   >>> high_precip_low_temp(pr, tas=tasmin, pr_thresh="10 mm/d",
+   >>>                      tas_thresh="-0.2 degC")
+   """
+   pr_thresh = convert_units_to(pr_thresh, pr, context="hydro")
+   tas_thresh = convert_units_to(tas_thresh, tas)
 
-    constrain = (">", "<", ">=", "<=", "==", "!=")
-    cond = (
-        compare(pr, op_pr, pr_thresh, constrain) &
-        compare(tas, op_tas, tas_thresh, constrain)
-    )
+   constrain = (">", "<", ">=", "<=", "==", "!=")
+   cond = (
+      compare(pr, op_pr, pr_thresh, constrain) &
+      compare(tas, op_tas, tas_thresh, constrain)
+   )
 
-    out = cond.resample(time=freq).sum(dim="time")
-    return to_agg_units(out, pr, "count", deffreq="D")
+   out = cond.resample(time=freq).sum(dim="time")
+   return to_agg_units(out, pr, "count", deffreq="D")
 
 
 .. code-block:: yaml

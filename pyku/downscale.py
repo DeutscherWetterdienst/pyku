@@ -303,6 +303,7 @@ class SVDDownscaler(Downscaler):
         """
 
         import dask.array as dk
+        import pyku.geo as geo
         import xarray as xr
 
         # Gather downscaled DataArrays in a list
@@ -381,6 +382,12 @@ class SVDDownscaler(Downscaler):
 
         ds_downscaled = xr.merge(downscaled_ds_list)
 
+        ds_downscaled = geo._copy_georeferencing_metadata_and_crs(
+            ds_downscaled,
+            self.ds_obs_hr,
+            variables=self.obs_varnames,
+        )
+
         # Copy attributes
         # ---------------
 
@@ -402,9 +409,12 @@ class SVDDownscaler(Downscaler):
         Eigenvectors
 
         Returns:
-            :class:`xarray.Dataset` containing the eigenvectors
+            Tuple[:class:`xarray.Dataset`, :class:`xarray.Dataset`]
+            Containing low‑ and high‑resolution eigenvectors with full
+            georeferencing (CRS variable and ``grid_mapping`` attribute).
         """
 
+        import pyku.geo as geo
         import xarray as xr
 
         # Prepare list of DataArrays for low and high resolution eigenvectors
@@ -437,11 +447,13 @@ class SVDDownscaler(Downscaler):
                 data=lr_eigen.reshape((nsvs_lr, ny_lr, nx_lr)),
                 dims=['nsvs', 'y', 'x'],
                 coords={
-                    'nsvs': (["nsvs"], range(nsvs_lr)),
-                    'y': (["y"], self.ds_obs_lr.coords['y'].values),
-                    'x': (["x"], self.ds_obs_lr.coords['x'].values),
-                    'lat': (["y", "x"], self.ds_obs_lr.coords['lat'].values),
-                    'lon': (["y", "x"], self.ds_obs_lr.coords['lon'].values)
+                    'nsvs': (['nsvs'], range(nsvs_lr)),
+                    'y': (['y'], self.ds_obs_lr.coords['y'].values),
+                    'x': (['x'], self.ds_obs_lr.coords['x'].values),
+                    'lat': (['y', 'x'],
+                            self.ds_obs_lr.coords['lat'].values),
+                    'lon': (['y', 'x'],
+                            self.ds_obs_lr.coords['lon'].values)
                 },
                 attrs={
                     'description': 'low resolution eigenvectors'
@@ -453,11 +465,13 @@ class SVDDownscaler(Downscaler):
                 data=hr_eigen.reshape((nsvs_hr, ny_hr, nx_hr)),
                 dims=['nsvs', 'y', 'x'],
                 coords={
-                    'nsvs': (["nsvs"], range(nsvs_hr)),
-                    'y': (["y"], self.ds_obs_hr.coords['y'].values),
-                    'x': (["x"], self.ds_obs_hr.coords['x'].values),
-                    'lat': (["y", "x"], self.ds_obs_hr.coords['lat'].values),
-                    'lon': (["y", "x"], self.ds_obs_hr.coords['lon'].values)
+                    'nsvs': (['nsvs'], range(nsvs_hr)),
+                    'y': (['y'], self.ds_obs_hr.coords['y'].values),
+                    'x': (['x'], self.ds_obs_hr.coords['x'].values),
+                    'lat': (['y', 'x'],
+                            self.ds_obs_hr.coords['lat'].values),
+                    'lon': (['y', 'x'],
+                            self.ds_obs_hr.coords['lon'].values)
                 },
                 attrs={
                     'description': 'high resolution eigenvectors'
@@ -467,10 +481,24 @@ class SVDDownscaler(Downscaler):
             lr_das.append(lr_da)
             hr_das.append(hr_da)
 
-        # Return list as dataset
-        # ----------------------
+        # Merge low‑ and high‑resolution DataArrays into Datasets
+        # ------------------------------------------------------
 
-        return xr.merge(lr_das), xr.merge(hr_das)
+        ds_lr = xr.merge(lr_das)
+        ds_hr = xr.merge(hr_das)
+
+        ds_lr = geo._copy_georeferencing_metadata_and_crs(
+            ds_lr,
+            self.ds_obs_lr,
+            variables=self.obs_varnames,
+        )
+        ds_hr = geo._copy_georeferencing_metadata_and_crs(
+            ds_hr,
+            self.ds_obs_hr,
+            variables=self.obs_varnames,
+        )
+
+        return ds_lr, ds_hr
 
 
 class SVD:

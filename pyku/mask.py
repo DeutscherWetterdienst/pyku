@@ -31,22 +31,27 @@ def apply_polygon_mask(dat, mask, from_nans=False, tolerance=0.001):
         .. ipython::
            :okwarning:
 
-           @savefig apply_mask.png width=6in
-           In [0]: import pyku, pyku.mask, pyku.analyse
-              ...: import pyku.features
+           @savefig apply_mask.png scale=70
+           In [0]: %%time
+              ...: import pyku
               ...:
               ...: # Load example model data in rotated lon lat projection
               ...: # -----------------------------------------------------
               ...:
               ...: ds1 = (
               ...:     pyku.resources.get_test_data('model_data')
+              ...:     .pyku.sort_georeferencing()
               ...:     .isel(time=0)
               ...: )
               ...:
               ...: # Load example hostrada data over germany in lcc projection
               ...: # ---------------------------------------------------------
               ...:
-              ...: ds2 = pyku.resources.get_test_data('hostrada').isel(time=0)
+              ...: ds2 = (
+              ...:     pyku.resources.get_test_data('hostrada')
+              ...:     .isel(time=0)
+              ...:     .pyku.sort_georeferencing()
+              ...: )
               ...:
               ...: # Polygonize the mask of hostrada and apply to model data
               ...: # -------------------------------------------------------
@@ -59,12 +64,10 @@ def apply_polygon_mask(dat, mask, from_nans=False, tolerance=0.001):
               ...: # Show mask before and after
               ...: # --------------------------
               ...:
-              ...: pyku.analyse.two_maps(
+              ...: pyku.visualisation.two_maps(
               ...:     ds1.assign_attrs({'label': 'Before masking'}),
               ...:     ds1_masked.assign_attrs({'label': 'After masking'}),
               ...:     var='tas',
-              ...:     crs='EUR-44',
-              ...:     size_inches=(10,5)
               ...: )
     """
 
@@ -206,8 +209,9 @@ def apply_raster_mask(dat, mask, from_nans=False, tolerance=0.001):
         .. ipython::
            :okwarning:
 
-           @savefig apply_mask.png width=6in
-           In [0]: import pyku
+           @savefig apply_mask.png scale=70
+           In [0]: %%time
+              ...: import pyku
               ...:
               ...: # Load example model data in rotated lon lat projection
               ...: # -----------------------------------------------------
@@ -234,12 +238,10 @@ def apply_raster_mask(dat, mask, from_nans=False, tolerance=0.001):
               ...: # Show mask before and after
               ...: # --------------------------
               ...:
-              ...: pyku.analyse.two_maps(
+              ...: pyku.visualisation.two_maps(
               ...:     ds1.assign_attrs({'label': 'Before masking'}),
               ...:     ds1_masked.assign_attrs({'label': 'After masking'}),
               ...:     var='tas',
-              ...:     crs='EUR-44',
-              ...:     size_inches=(10,5)
               ...: )
 
     """
@@ -397,15 +399,18 @@ def apply_mask(dat, mask, from_nans=False, tolerance=0.001):
         .. ipython::
            :okwarning:
 
-           @savefig apply_mask.png width=6in
-           In [0]: import pyku, pyku.mask, pyku.analyse
+           @savefig apply_mask.png scale=70
+           In [0]: %%time
+              ...: import pyku, pyku.mask, pyku.visualisation
               ...: import pyku.features
               ...:
               ...: # Load example model data in rotated lon lat projection
               ...: # -----------------------------------------------------
               ...:
-              ...: ds1 = \\
-              ...:    pyku.resources.get_test_data('model_data').isel(time=0)
+              ...: ds1 = (
+              ...:     pyku.resources.get_test_data('model_data')
+              ...:     .isel(time=0)
+              ...: )
               ...:
               ...: # Load example hostrada data over germany in lcc projection
               ...: # ---------------------------------------------------------
@@ -423,12 +428,10 @@ def apply_mask(dat, mask, from_nans=False, tolerance=0.001):
               ...: # Show mask before and after
               ...: # --------------------------
               ...:
-              ...: pyku.analyse.two_maps(
+              ...: pyku.visualisation.two_maps(
               ...:     ds1.assign_attrs({'label': 'Before masking'}),
               ...:     ds1_masked.assign_attrs({'label': 'After masking'}),
               ...:     var='tas',
-              ...:     crs='EUR-44',
-              ...:     size_inches=(10,5)
               ...: )
     """
 
@@ -530,30 +533,43 @@ def combine_masks(*dats):
 def get_mask(dat):
 
     """
-    Get mask from Dataset.
+    Create a mask dataset from missing values in an input dataset.
 
-    Arguments:
-        ds (:class:`xarray.Dataset`): The input dataset.
+    The mask identifies grid cells containing NaN values in any geospatial
+    data variable. The returned dataset contains an integer ``mask`` variable,
+    preserves coordinate attributes, and retains the CRS variable when present.
 
-    Returns:
-        :class:`xarray.Dataset`: The dataset mask.
+    Parameters
+    ----------
+    dat : xarray.Dataset
+        Input dataset from which to create the mask.
 
-    Example:
+    Returns
+    -------
+    xarray.Dataset
+        Dataset containing the integer ``mask`` variable.
 
+    Raises
+    ------
+    Exception
+        If ``dat`` is not an :class:`xarray.Dataset`.
+
+    Examples
+    --------
         .. ipython::
            :okwarning:
 
-           @savefig mask_get_mask.png width=4in
+           @savefig mask_get_mask.png scale=70
            In [0]: import pyku
               ...: ds = pyku.resources.get_test_data('hostrada')
               ...: mask = ds.pyku.get_mask()
-              ...: pyku.analyse.one_map(mask, var='mask')
+              ...: pyku.visualisation.one_map(mask, var='mask')
     """
 
     import numpy as np
 
     import xarray as xr
-    from pyku import meta
+    from pyku import geo, meta
 
     if not isinstance(dat, xr.Dataset):
         message = "Input shall be a xarray.Dataset, not {type(dat)}"
@@ -612,6 +628,12 @@ def get_mask(dat):
     # -----------------------
 
     mask = mask.to_dataset()
+
+    mask = geo._copy_georeferencing_metadata_and_crs(
+        mask,
+        dat,
+        variables=['mask'],
+    )
 
     # Note I had an issue when using the mask in parallel and likely also
     # because the data that where being mask did not have the same chunking.

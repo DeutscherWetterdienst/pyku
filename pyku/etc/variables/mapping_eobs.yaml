@@ -1,0 +1,28 @@
+pr:
+  comment: E-OBS daily precipitation amount
+  names:
+    - rr
+tas:
+  comment: E-OBS daily mean temperature
+  names:
+    - tg
+tasmin:
+  comment: E-OBS daily minimum temperature
+  names:
+    - tn
+tasmax:
+  comment: E-OBS daily maximum temperature
+  names:
+    - tx
+sfcWind:
+  comment: E-OBS daily mean wind speed
+  names:
+    - fg
+rsds:
+  comment: E-OBS daily mean global radiation
+  names:
+    - qq
+psl:
+  comment: E-OBS daily mean sea level pressure
+  names:
+    - pp

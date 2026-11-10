@@ -93,6 +93,10 @@ documentation = [
     "sphinxcontrib-jupyter",
     "sphinxcontrib-napoleon",
     "sphinxcontrib-programoutput",
+    "prettier",
+    "pyright",
+    "rstfmt",
+    "shfmt-py",
 ]
 cdo_bindings = [
     "cdo"
@@ -115,6 +119,10 @@ pyku = [
 [project.scripts]
 pyku = "pyku.pyku:main"
 clixrun = "pyku.clix.core:main"
+
+[tool.opencode.lsp.python]
+command = ["pyright-langserver", "--stdio"]
+extensions = [".py"]
 
 [tool.ruff]
 extend-exclude = ["doc", "_typed_ops.pyi"]

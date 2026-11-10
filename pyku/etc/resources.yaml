@@ -91,7 +91,7 @@ polygons:
   eobs_mask:
     description: >
 
-      Mask for the usage of E-OBS data in anlyses like pyku.ana.mean_vs_time.
+      Mask for the usage of E-OBS data in anlyses like pyku.visualization.mean_vs_time.
       It was generated using E-OBS v27.0 ensemble mean data at 0.1 deg
       resolution. It is the minimum overlap of valid data of all available
       variables, averaged over the year 1979.

@@ -307,7 +307,7 @@ Make sure that the ``savefig`` is in the same cell as the plot:
 
 .. code:: python
 
-   ds.isel(time=0).ana.n_maps(var='tas')
+   ds.isel(time=0).vis.n_maps(var='tas')
    plt.gcf().savefig('dummy.png', bbox_inches='tight')
 
 This is due to a feature of jupyter that clears the current figures after a

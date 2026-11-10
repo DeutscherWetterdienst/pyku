@@ -4,12 +4,15 @@ Package initializer
 
 import logging
 import warnings
-from importlib.metadata import (version as importlib_version,
-                                PackageNotFoundError)
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as importlib_version
+from typing import Any, Literal
+
+import geopandas
+from matplotlib.axes import Axes
 
 import xarray as xr
-
-from pyku.core import PYKU_RESOURCES, PYKU_CONFIG  # noqa
+from pyku.core import PYKU_CONFIG, PYKU_RESOURCES  # noqa
 
 # Set up the logger
 # -----------------
@@ -45,6 +48,7 @@ import pyku.geo as libgeo  # noqa
 import pyku.meta as libmeta  # noqa
 import pyku.mask as libmask  # noqa
 import pyku.check as libcheck  # noqa
+import pyku.visualisation as libvis  # noqa
 import pyku.analyse as libanalyse  # noqa
 import pyku.drs as libdrs  # noqa
 import pyku.timekit as timekit  # noqa
@@ -269,8 +273,12 @@ class pykuDatasetAccessor:
 
     apply_raster_mask.__doc__ = libmask.apply_raster_mask.__doc__
 
-    def combine_masks(self, *args, **kwargs):
-        return libmask.combine_mask(self._obj, *args, **kwargs)
+    def combine_masks(
+        self,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
+        return libmask.combine_masks(self._obj, *args, **kwargs)
 
     combine_masks.__doc__ = libmask.combine_masks.__doc__
 
@@ -653,6 +661,120 @@ class pykuDataArrayAccessor:
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
+
+
+@xr.register_dataset_accessor("vis")
+class visDatasetAccessor:
+
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
+
+    def maps(self, *args, **kwargs):
+        libvis.n_maps(self._obj, *args, **kwargs)
+    maps.__doc__ = libvis.n_maps.__doc__
+
+    def one_map(self, *args, **kwargs):
+        libvis.one_map(self._obj, *args, **kwargs)
+    one_map.__doc__ = libvis.one_map.__doc__
+
+    def two_maps(self, *args, **kwargs):
+        libvis.two_maps(self._obj, *args, **kwargs)
+    two_maps.__doc__ = libvis.two_maps.__doc__
+
+    def n_maps(self, *args, **kwargs):
+        libvis.n_maps(self._obj, *args, **kwargs)
+    n_maps.__doc__ = libvis.n_maps.__doc__
+
+    def pdf(self, *args, **kwargs):
+        libvis.pdf(self._obj, *args, **kwargs)
+    pdf.__doc__ = libvis.pdf.__doc__
+
+    def climatology(
+        self,
+        *datasets: xr.Dataset | None,
+        var: str | None = None,
+        groupby: Literal[
+            "time.dayofyear",
+            "time.month",
+            "time.season",
+        ] = "time.month",
+        ax: Axes | None = None,
+        size_inches: tuple[float, float] | None = None,
+        gca_kwargs: dict[str, Any] | None = None,
+        gcf_kwargs: dict[str, Any] | None = None,
+    ) -> None:
+        libvis.climatology(
+            self._obj,
+            *datasets,
+            var=var,
+            groupby=groupby,
+            ax=ax,
+            size_inches=size_inches,
+            gca_kwargs=gca_kwargs,
+            gcf_kwargs=gcf_kwargs,
+        )
+    climatology.__doc__ = libvis.climatology.__doc__
+
+    def bias_cycle(
+        self,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        libvis.bias_cycle(self._obj, *args, **kwargs)
+    bias_cycle.__doc__ = libvis.bias_cycle.__doc__
+
+    def variability(self, *args: Any, **kwargs: Any) -> None:
+        libvis.variability(self._obj, *args, **kwargs)
+    variability.__doc__ = libvis.variability.__doc__
+
+    def diurnal_cycle(self, *args, **kwargs):
+        libvis.diurnal_cycle(self._obj, *args, **kwargs)
+    diurnal_cycle.__doc__ = libvis.diurnal_cycle.__doc__
+
+    def time_series(
+        self,
+        *datasets: xr.Dataset | None,
+        var: str | None = None,
+        time_resolution: str | None = None,
+        regions: geopandas.GeoDataFrame | None = None,
+        layout: str | None = None,
+        ax: Axes | None = None,
+        ylim: tuple[float, float] | None = None,
+        yscale: str | None = None,
+        size_inches: tuple[float, float] | None = None,
+        gca_kwargs: dict[str, Any] | None = None,
+        gcf_kwargs: dict[str, Any] | None = None,
+    ) -> None:
+        libvis.time_series(
+            self._obj,
+            *datasets,
+            var=var,
+            time_resolution=time_resolution,
+            regions=regions,
+            layout=layout,
+            ax=ax,
+            ylim=ylim,
+            yscale=yscale,
+            size_inches=size_inches,
+            gca_kwargs=gca_kwargs,
+            gcf_kwargs=gcf_kwargs,
+        )
+    time_series.__doc__ = libvis.time_series.__doc__
+
+    def mean_map(self, *args, **kwargs):
+        libvis.mean_map(self._obj, *args, **kwargs)
+    mean_map.__doc__ = libvis.mean_map.__doc__
+
+    def percentile_map(self, *args, **kwargs):
+        libvis.percentile_map(self._obj, *args, **kwargs)
+    percentile_map.__doc__ = libvis.percentile_map.__doc__
+
+    def metric_map(self, *args, **kwargs):
+        libvis.metric_map(self._obj, *args, **kwargs)
+    metric_map.__doc__ = libvis.metric_map.__doc__
+
+# Deprecated dataset accessors that will be removed in the future
+# ---------------------------------------------------------------
 
 
 @xr.register_dataset_accessor("ana")

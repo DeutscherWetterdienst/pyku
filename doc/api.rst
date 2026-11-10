@@ -1,11 +1,12 @@
-API
-===
+#####
+ API
+#####
 
 .. toctree::
    :maxdepth: 4
 
    colormaps.rst
-   analyse.rst
+   visualisation.rst
    meta.rst
    magic.rst
    geo.rst

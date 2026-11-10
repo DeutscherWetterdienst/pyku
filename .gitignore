@@ -8,7 +8,8 @@
 *.mp4
 *.so
 *.nfs*
-build/*
+build.log
+_build/*
 #core.*
 build/*
 doc/_build/*
@@ -17,9 +18,10 @@ uv.lock
 dist/*
 *__pycache__*
 resources/*
-*.egg-info*
 *.egg-info/
 *.egg-info/*
 *.ipynb_checkpoints*
 .vscode
 *~
+graphify-out/
+graphify-out/*

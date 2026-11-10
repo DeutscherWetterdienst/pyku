@@ -9,10 +9,18 @@ __all__ = [
 ]
 
 import warnings
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
 from zarr.errors import ZarrUserWarning
+
+import numpy as np
 
 from pyku import logger
 from pyku import PYKU_RESOURCES, PYKU_CONFIG
+
+if TYPE_CHECKING:
+    import xarray as xr
 
 pyku_resources = PYKU_RESOURCES.load_resource('resources')
 
@@ -49,6 +57,7 @@ def _warn_if_default_data_dir():
     """
 
     from pathlib import Path
+
     from pyku import PYKU_CONFIG
 
     default_data_dir = Path(PYKU_CONFIG.get('_data_dir')).resolve()
@@ -83,6 +92,87 @@ def _warn_of_data_download(pooch_installer):
     )
 
 
+def _source_lock_path(data_dir: Path, filename: str) -> Path:
+    """Return the lock path shared by all users of a source file."""
+
+    return data_dir / f"{Path(filename).name}.source.lock"
+
+
+def _fetch_source(
+    pooch_installer: Any,
+    filename: str,
+    data_dir: Path,
+) -> Any:
+    """Fetch one source file while holding its shared source lock."""
+
+    from filelock import FileLock
+
+    with FileLock(_source_lock_path(data_dir, filename)):
+        return pooch_installer.fetch(filename)
+
+
+def _fetch_sources(
+    pooch_installer: Any,
+    filenames: list[str],
+    data_dir: Path,
+) -> list[Any]:
+    """Fetch source files while serializing each shared source file."""
+
+    return [
+        _fetch_source(pooch_installer, filename, data_dir)
+        for filename in filenames
+    ]
+
+
+def _write_zarr_atomic(
+    ds: Any,
+    zarr_path: Path,
+    **kwargs: Any,
+) -> None:
+    """Write a Zarr store and publish it only after a successful write."""
+
+    import shutil
+    import tempfile
+
+    zarr_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_parent = Path(
+        tempfile.mkdtemp(
+            prefix=f".{zarr_path.name}.",
+            dir=zarr_path.parent,
+        )
+    )
+    temporary_path = temporary_parent / zarr_path.name
+
+    try:
+        ds.to_zarr(temporary_path, mode="w", **kwargs)
+        temporary_path.replace(zarr_path)
+    finally:
+        shutil.rmtree(temporary_parent, ignore_errors=True)
+
+
+def _is_valid_zarr_store(
+    zarr_path: Path,
+    required_names: tuple[str, ...] = ("lon", "lat"),
+) -> bool:
+    """Check that a derived Zarr store has usable required variables."""
+
+    import xarray as xr
+
+    if not zarr_path.is_dir():
+        return False
+
+    try:
+        with xr.open_zarr(zarr_path, consolidated=True) as ds:
+            if not all(name in ds and ds[name].size for name in required_names):
+                return False
+            coordinate_names = ("lon", "lat")
+            return all(
+                np.isfinite(ds[name].values).all() for name in coordinate_names
+            )
+    except (OSError, ValueError, KeyError):
+        return False
+
+
 def _pooch_download(base_url=None, archive_file=None, target_file=None,
                     checksum=None):
 
@@ -96,10 +186,12 @@ def _pooch_download(base_url=None, archive_file=None, target_file=None,
         checksum (str): sha256sum
     """
 
-    import xarray as xr
     from pathlib import Path
+
     import pooch
     from filelock import FileLock
+
+    import xarray as xr
 
     # Get the pyku data directory
     # --------------------------
@@ -117,16 +209,23 @@ def _pooch_download(base_url=None, archive_file=None, target_file=None,
         }
     )
 
+    # Lock download to avoid fetching twice in parallel
+    # -------------------------------------------------
+
+    lock_path = Path(pyku_data_dir) / f"{archive_file}.lock"
+    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+
     # Check if the file is a zip archive
     # ----------------------------------
 
     is_zip = Path(archive_file).suffix in [".zip"]
 
     if is_zip:
-        archive_file_list = pooch_installer.fetch(
-            archive_file,
-            processor=pooch.Unzip(),
-        )
+        with FileLock(lock_path):
+            archive_file_list = pooch_installer.fetch(
+                archive_file,
+                processor=pooch.Unzip(),
+            )
 
         target_file, = [
             file for file in archive_file_list if target_file in file
@@ -169,12 +268,6 @@ def _pooch_download(base_url=None, archive_file=None, target_file=None,
         processor = to_zarr_processor
     else:
         processor = None
-
-    # Lock download to avoid fetching twice in parallel
-    # -------------------------------------------------
-
-    lock_path = Path(pyku_data_dir) / f"{archive_file}.lock"
-    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     # Fetch and return dataset
     # ------------------------
@@ -531,6 +624,10 @@ def _get_registry():
             'aliases': ['hyras_tas'],
             'loader': _get_hyras_tas_data
         },
+        'hyras_tas_lowres_2yr': {
+            'aliases': [],
+            'loader': _get_hyras_tas_lowres_2yr
+        },
         'hyras_pr': {
             'aliases': [],
             'loader': _get_hyras_pr_data
@@ -551,6 +648,10 @@ def _get_registry():
             'aliases': ['cosmo-rea6-daily'],
             'loader': _get_daily_cosmo_rea6_data
         },
+        'low-res-hourly-pr-data': {
+            'aliases': ['low_res_hourly_pr_data'],
+            'loader': _get_low_res_hourly_pr_data
+        },
         'low-res-hourly-tas-data': {
             'aliases': ['low_res_hourly_tas_data'],
             'loader': _get_low_res_hourly_tas_data
@@ -558,6 +659,10 @@ def _get_registry():
         'hourly-tas': {
             'aliases': ['hourly_tas', 'hostrada'],
             'loader': _get_hostrada_data
+        },
+        '7day-low-res-hourly-tas': {
+            'aliases': ['7day_low_res_hourly_tas'],
+            'loader': _get_7day_low_res_hourly_tas_data
         },
         'GCM_CanESM5': {
             'aliases': [],
@@ -776,9 +881,11 @@ def _get_tas_hurs_data():
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Reduce resoltion and write to zarr
             # ----------------------------------
@@ -792,11 +899,7 @@ def _get_tas_hurs_data():
                 ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
 
-            # Remove netCDF files
-            # -------------------
-
-            for f in files:
-                Path(f).unlink(missing_ok=True)
+            # Keep shared source files cached for other derived datasets.
 
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
@@ -840,9 +943,11 @@ def _get_tas_ps_huss_data():
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Reduce resolution and write to zarr
             # -----------------------------------
@@ -856,11 +961,7 @@ def _get_tas_ps_huss_data():
                 ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
 
-            # Remove netCDF files
-            # -------------------
-
-            for f in files:
-                Path(f).unlink(missing_ok=True)
+            # Keep shared source files cached for other derived datasets.
 
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
@@ -870,10 +971,12 @@ def _get_tas_ps_huss_data():
 
 def _get_ps_tdew_data():
 
-    import xarray as xr
     from pathlib import Path
+
     import pooch
     from filelock import FileLock
+
+    import xarray as xr
 
     pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
 
@@ -903,9 +1006,11 @@ def _get_ps_tdew_data():
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Reduce resolution and write to zarr
             # -----------------------------------
@@ -919,11 +1024,7 @@ def _get_ps_tdew_data():
                 ds = ds.pyku.project('HYR-GER-LAEA-12.5')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
 
-            # Remove netCDF files
-            # -------------------
-
-            for f in files:
-                Path(f).unlink(missing_ok=True)
+            # Keep shared source files cached for file-based reuse.
 
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
@@ -931,12 +1032,14 @@ def _get_ps_tdew_data():
     return xr.open_zarr(zarr_path)
 
 
-def _get_low_res_hourly_tas_data():
+def _get_low_res_hourly_pr_data():
 
-    import xarray as xr
     from pathlib import Path
+
     import pooch
     from filelock import FileLock
+
+    import xarray as xr
 
     base_url = (
         "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
@@ -994,7 +1097,7 @@ def _get_low_res_hourly_tas_data():
                 join="override"
             ) as ds:
                 _warn_if_default_data_dir()
-                ds = ds.pyku.project('HYR-GER-LAEA-12.5')
+                ds = ds.pyku.project('HYR-GER-LAEA-50')
                 ds.to_zarr(zarr_path, mode="w", consolidated=True)
 
             # Delete the .tar.gz file
@@ -1135,7 +1238,6 @@ def _get_icon_grib_files():
 def _get_small_tas_dataset():
 
     import xarray as xr
-    from pathlib import Path
     import pooch
     from filelock import FileLock
 
@@ -1168,9 +1270,11 @@ def _get_small_tas_dataset():
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Write to zarr
             # -------------
@@ -1181,13 +1285,11 @@ def _get_small_tas_dataset():
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
                 ds = ds.isel(time=[0, 1, 2, 4]).pyku.project('HYR-GER-LAEA-5')
-                ds.to_zarr(zarr_path, mode="w", consolidated=True)
-
-            # Remove netCDF files
-            # -------------------
-
-            for f in files:
-                Path(f).unlink(missing_ok=True)
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
 
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
@@ -1198,7 +1300,6 @@ def _get_small_tas_dataset():
 def _get_hyras_tas_data():
 
     import xarray as xr
-    from pathlib import Path
     import pooch
     from filelock import FileLock
 
@@ -1236,9 +1337,11 @@ def _get_hyras_tas_data():
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Convert netCDF files to zarr
             # ----------------------------
@@ -1249,13 +1352,68 @@ def _get_hyras_tas_data():
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
                 ds = ds.pyku.project('HYR-GER-LAEA-5')
-                ds.to_zarr(zarr_path, mode="w", consolidated=True)
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
+        else:
+            logger.info(f"{zarr_path} already exists. Skipping download.")
 
-            # Delete the original netCDF files
-            # --------------------------------
+    return xr.open_zarr(zarr_path)
 
-            for f in files:
-                Path(f).unlink()
+
+def _get_hyras_tas_lowres_2yr():
+    """Return a 2-year daily HYR-AS TAS dataset projected to HYR-GER-LAEA-50."""
+    import xarray as xr
+    import pooch
+    from filelock import FileLock
+
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
+
+    pooch_installer = pooch.create(
+        path=pyku_data_dir,
+        base_url=(
+            "https://opendata.dwd.de/climate_environment/CDC/grids_germany/"
+            "daily/hyras_de/air_temperature_mean/"
+        ),
+        registry={
+            "tas_hyras_1_1981_v6-1_de.nc": (
+                "sha256:bfdbf66ba78fe131ea5b6ec3b4de940a0ca5a09b094f571609a990"
+                "4538654acc"
+            ),
+            "tas_hyras_1_1982_v6-1_de.nc": (
+                "sha256:f693fafa8a9ef2173ff12846aff4e99313107e6c2fd7e8d6444655"
+                "b05f8dad36"
+            ),
+        },
+    )
+
+    zarr_path = Path(pyku_data_dir) / "hyras_tas_lowres_2yr.zarr"
+    lock_path = Path(pyku_data_dir) / "hyras_tas_lowres_2yr.lock"
+
+    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+
+    with FileLock(lock_path):
+        if not zarr_path.exists():
+            _warn_of_data_download(pooch_installer)
+
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
+
+            with xr.open_mfdataset(
+                files, data_vars="all"
+            ).chunk(chunks=-1) as ds:
+                _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-50')
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
 
@@ -1302,9 +1460,11 @@ def _get_hyras_pr_data():
             # Download netCDF files
             # ---------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Convert netCDF files to zarr
             # ----------------------------
@@ -1365,16 +1525,22 @@ def _get_monthly_hyras_data():
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     with FileLock(lock_path):
-        if not zarr_path.exists():
+        if not _is_valid_zarr_store(zarr_path):
+            import shutil
+
+            if zarr_path.exists():
+                shutil.rmtree(zarr_path)
 
             _warn_of_data_download(pooch_installer)
 
             # Fetch netCDF files
             # ------------------
 
-            files = [
-                pooch_installer.fetch(f) for f in pooch_installer.registry
-            ]
+            files = _fetch_sources(
+                pooch_installer,
+                list(pooch_installer.registry),
+                pyku_data_dir,
+            )
 
             # Write to zarr
             # -------------
@@ -1384,13 +1550,13 @@ def _get_monthly_hyras_data():
                 data_vars='all'
             ).chunk(chunks=-1) as ds:
                 _warn_if_default_data_dir()
-                ds.to_zarr(zarr_path, mode="w", consolidated=True)
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
 
-            # Remove netCDF files
-            # -------------------
-
-            for f in files:
-                Path(f).unlink(missing_ok=True)
+            # Keep shared source files cached for file-based reuse.
 
         else:
             logger.info(f"{zarr_path} already exists. Skipping download.")
@@ -1437,9 +1603,11 @@ def _get_monthly_hyras_files():
             _warn_of_data_download(pooch_installer)
             _warn_if_default_data_dir()
 
-        files = [
-            pooch_installer.fetch(f) for f in pooch_installer.registry
-        ]
+        files = _fetch_sources(
+            pooch_installer,
+            list(pooch_installer.registry),
+            pyku_data_dir,
+        )
 
     return files
 
@@ -1516,12 +1684,93 @@ def _get_daily_cosmo_rea6_data():
     return xr.open_zarr(zarr_path)
 
 
-def _get_hostrada_data():
+def _get_low_res_hourly_tas_data() -> "xr.Dataset":
 
-    import xarray as xr
     from pathlib import Path
+
     import pooch
     from filelock import FileLock
+
+    import xarray as xr
+
+    base_url = (
+      "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
+      "hostrada/air_temperature_mean/"
+    )
+    file = "tas_1hr_HOSTRADA-v1-0_BE_gn_1995010100-1995013123.nc"
+    checksum = \
+        "8d69fe00d339025e15ea6dacf16950dc0dec4867e3a2992a7837d381cf79e364"
+
+    # Get the pyku data directory
+    # --------------------------
+
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
+
+    # Create pooch installer
+    # ----------------------
+
+    pooch_installer = pooch.create(
+        path=pyku_data_dir,
+        base_url=base_url,
+        registry={
+            file: checksum,
+        }
+    )
+
+    def to_zarr_processor(fname, action, pooch):
+
+        if not zarr_path.exists():
+
+            # Warn of download
+            # ----------------
+
+            _warn_of_data_download(pooch_installer)
+
+            # Write to zarr
+            # -------------
+
+            with xr.open_dataset(fname) as ds:
+                _warn_if_default_data_dir()
+                ds = ds.pyku.project('HYR-GER-LAEA-50')
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
+
+        return zarr_path
+
+    # Lock download to avoid fetching twice in parallel
+    # -------------------------------------------------
+
+    lock_path = _source_lock_path(pyku_data_dir, file)
+    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+    zarr_path = Path(pyku_data_dir) / f"{Path(file).stem}_low_res.zarr"
+
+    # Fetch and return dataset
+    # ------------------------
+
+    with FileLock(lock_path):
+
+        if zarr_path.exists():
+            return xr.open_dataset(zarr_path, engine="zarr")
+
+        file_path = pooch_installer.fetch(
+            file,
+            processor=to_zarr_processor,
+        )
+
+    return xr.open_dataset(file_path)
+
+
+def _get_hostrada_data() -> "xr.Dataset":
+
+    from pathlib import Path
+
+    import pooch
+    from filelock import FileLock
+
+    import xarray as xr
 
     base_url = (
       "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
@@ -1561,21 +1810,20 @@ def _get_hostrada_data():
             # -------------
 
             with xr.open_dataset(fname) as ds:
-                ds.to_zarr(zarr_path, mode="w", consolidated=True)
-
-            # Remove netCDF files
-            # -------------------
-
-            Path(fname).unlink(missing_ok=True)
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
 
         return zarr_path
 
     # Lock download to avoid fetching twice in parallel
     # -------------------------------------------------
 
-    lock_path = Path(pyku_data_dir) / f"{file}.lock"
+    lock_path = _source_lock_path(pyku_data_dir, file)
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
-    zarr_path = Path(pyku_data_dir) / f"{Path(file).stem}.zarr"
+    zarr_path = Path(pyku_data_dir) / f"{Path(file).stem}_native.zarr"
 
     # Fetch and return dataset
     # ------------------------
@@ -1589,6 +1837,89 @@ def _get_hostrada_data():
             file,
             processor=to_zarr_processor,
         )
+
+    return xr.open_dataset(file_path)
+
+
+def _get_7day_low_res_hourly_tas_data():
+
+    from pathlib import Path
+
+    import pooch
+    from filelock import FileLock
+
+    import xarray as xr
+
+    base_url = (
+        "https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/"
+        "hostrada/air_temperature_mean/"
+    )
+    file = "tas_1hr_HOSTRADA-v1-0_BE_gn_1995010100-1995013123.nc"
+    checksum = \
+        "8d69fe00d339025e15ea6dacf16950dc0dec4867e3a2992a7837d381cf79e364"
+
+    # Get the pyku data directory
+    # --------------------------
+
+    pyku_data_dir = Path(PYKU_CONFIG.get('data_dir'))
+
+    # Create pooch installer
+    # ----------------------
+
+    pooch_installer = pooch.create(
+        path=pyku_data_dir,
+        base_url=base_url,
+        registry={
+            file: checksum,
+        }
+    )
+
+    def to_zarr_processor(fname, action, pooch):
+        """
+        Pooch processor: Subsets to 7 days, projects to HYR-GER-LAEA-50,
+        and converts to Zarr.
+        """
+
+        zarr_path = Path(pyku_data_dir) / "7day_low_res_hourly_tas.zarr"
+
+        if not zarr_path.exists():
+
+            _warn_of_data_download(pooch_installer)
+            _warn_if_default_data_dir()
+
+            with xr.open_dataset(fname) as ds:
+                # Subset to first 7 days (168 hours)
+                ds = ds.isel(time=slice(0, 24*7))
+                # Project to HYR-GER-LAEA-50
+                ds = ds.pyku.project('HYR-GER-LAEA-50')
+                _write_zarr_atomic(
+                    ds,
+                    zarr_path,
+                    consolidated=True,
+                )
+
+        return zarr_path
+
+    # Lock download to avoid fetching twice in parallel
+    # -------------------------------------------------
+
+    lock_path = Path(pyku_data_dir) / "7day_low_res_hourly_tas.lock"
+    Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
+    zarr_path = Path(pyku_data_dir) / "7day_low_res_hourly_tas.zarr"
+
+    # Fetch and return dataset
+    # ------------------------
+
+    with FileLock(lock_path):
+
+        if zarr_path.exists():
+            return xr.open_dataset(zarr_path, engine="zarr")
+
+        with FileLock(_source_lock_path(pyku_data_dir, file)):
+            file_path = pooch_installer.fetch(
+                file,
+                processor=to_zarr_processor,
+            )
 
     return xr.open_dataset(file_path)
 
@@ -1672,6 +2003,16 @@ def _get_MPI_ESM1_2_HR_tas_data():
     Path(pyku_data_dir).mkdir(parents=True, exist_ok=True)
 
     with FileLock(lock_path):
+        required_names = ("lon", "lat", "time", "tas")
+        if zarr_path.exists() and not _is_valid_zarr_store(
+            zarr_path,
+            required_names=required_names,
+        ):
+            warnings.warn(f"Removing invalid Zarr store: {zarr_path}")
+            import shutil
+
+            shutil.rmtree(zarr_path)
+
         if not zarr_path.exists():
 
             warnings.warn(f"Downloading NetCDF: {s3_path} to {pyku_data_dir}")
@@ -1686,9 +2027,11 @@ def _get_MPI_ESM1_2_HR_tas_data():
                         ds[var].encoding.clear()
 
                     _warn_if_default_data_dir()
-                    ds.to_zarr(zarr_path)
+                    _write_zarr_atomic(ds, zarr_path)
 
-    return xr.open_dataset(zarr_path)
+    # Load before returning so the Zarr backend is closed.  Keeping this
+    # backend open causes a native-library abort during interpreter cleanup.
+    return xr.load_dataset(zarr_path, engine="zarr")
 
 
 def _get_MPI_ESM1_2_HR_pr_data():

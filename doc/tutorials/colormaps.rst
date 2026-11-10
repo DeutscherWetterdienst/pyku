@@ -159,8 +159,8 @@ xarray
       ...:     cmap=colormaps.get_cmap('temp_ano', kind='original')
       ...: )
 
-pyku.analyse
-''''''''''''
+pyku.visualisation
+------------------
 
 .. ipython::
    :okwarning:
@@ -174,7 +174,7 @@ pyku.analyse
       ...: # Plot
       ...: # ----
       ...:
-      ...: airtemps.isel(time=0).ana.one_map(
+      ...: airtemps.isel(time=0).vis.one_map(
       ...:     var='air',
       ...:     cmap=colormaps.get_cmap('temp_ano', kind='segmented', nbins=11)
       ...: )

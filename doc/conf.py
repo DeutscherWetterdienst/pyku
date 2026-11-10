@@ -94,11 +94,36 @@ nbsphinx_thumbnails = {
      'tutorials/customize_plots': '_static/pyku_customize.jpg',
 }
 
+# Strip type hints from the function header and keep them in the parameter
+# descriptions
+autodoc_typehints = "description"
+
+# Show short type names (e.g., 'Dataset' instead of
+# 'xarray.core.dataset.Dataset')
+python_use_unqualified_type_names = True
+
+# Optional: Simplify default values if they are lengthy
+autodoc_typehints_format = "short"
+
 # For testing only
 # ----------------
 
 # include_patterns = [
 #     "index.rst",
 #     "api.rst",
-#     "analyse.rst"
+#     "visualisation/index.rst",
+#     "visualisation/bias.rst",
+#     "visualisation/distributions.rst",
+#     "visualisation/error_maps.rst",
+#     "visualisation/helpers.rst",
+#     "visualisation/index.rst",
+#     "visualisation/map_plotting.rst",
+#     "visualisation/mean.rst",
+#     "visualisation/regional.rst",
+#     "visualisation/statistical_maps.rst",
+#     "visualisation/time_series.rst",
+#     "visualisation/variability.rst",
+#     "tutorials/index.rst",
+#     "tutorials/customize_plots.ipynb",
+#     "tutorials/geographic_projections.ipynb",
 # ]

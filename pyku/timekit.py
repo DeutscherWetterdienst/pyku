@@ -4,7 +4,8 @@
 Functions for dealing with time
 """
 
-from pyku import logger, PYKU_RESOURCES
+import xarray as xr
+from pyku import PYKU_RESOURCES, logger
 
 
 def date_range(*args, **kwargs):
@@ -25,71 +26,61 @@ def date_range(*args, **kwargs):
     return xr.date_range(*args, **kwargs)
 
 
-def resample_datetimes(ds, how=None, frequency=None, complete=False):
+def resample_datetimes(
+    ds: xr.Dataset,
+    how: str | None = None,
+    frequency: str | None = None,
+    complete: bool = False,
+    data_frequency: str | None = None,
+) -> xr.Dataset:
+    """Resample along the time dimension.
 
-    """
-    Resample along the time dimension.
+    During resampling, the time labels are set to the lower time bound when
+    applicable. This differs from the CMOR convention, which sets labels to
+    the middle of the time bounds. Use
+    :func:`pyku.timekit.set_time_labels_from_time_bounds()` with
+    ``how='middle'`` to reset the labels.
 
-    During resampling, the time labels are set to the lower time bound if
-    applicable. This behavior differs from the CMOR convention, which sets the
-    time labels to the middle of the time bounds.
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input dataset.
+    how : str, optional
+        Resampling method: ``mean``, ``max``, ``min``, or ``sum``.
+    frequency : str, optional
+        Output frequency, e.g. ``1H``, ``1D``, or ``2MS``.
+    complete : bool, default False
+        Filter groups with incomplete datetimes when True.
+    data_frequency : str, optional
+        Source data frequency. If omitted, infer it from the dataset.
 
-    If needed, the time labels can be reset using the
-    :func:`pyku.timekit.set_time_labels_from_time_bounds()` function by passing
-    the parameter ``how='middle'``.
+    Notes
+    -----
+    Use ``YS`` for yearly, ``MS`` for monthly, and ``QS-DEC`` for seasonal
+    output. ``2QS-MAY`` produces two half-year periods per year.
 
-    Parameters:
+    Returns
+    -------
+    xarray.Dataset
+        Dataset resampled along the time dimension.
 
-        ds (:class:`xarray.Dataset`): The input dataset.
+    Examples
+    --------
+    .. ipython::
+       :okwarning:
 
-        how (str): The resampling method (*mean*, *max*, *min*, *sum*).
-
-        frequency (str): The resampling frequency, e.g. *1H*, *1D*, *2MS*. For
-            seasonal outputs, use *QS-DEC*. The hydrological year divided into
-            to two periods of 6 months periods (winter half year Nov-Apr and
-            summer half year Mai-Oct) can be obtained with *2QS-MAY*
-
-        complete (bool): If True, filter groups of data with incomplete
-            datetimes at the resampling frequency.
-
-    Returns:
-
-        :class:`xarray.Dataset`: The dataset resampled along the time
-        dimension.
-
-    References:
-
-        https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-
-        * For yearly resampling, use **YS** (Year Start).
-        * For monthly resampling, use **MS** (Month Start).
-        * For seasonal resampling, use **QS-DEC**.
-        * For half year outputs, use **2QS-MAY** (Nov-Apr/Mai-Oct)
-        * The use of **M** for month end is deprecated in the pandas library.
-
-    Example:
-
-        .. ipython::
-           :okwarning:
-
-           In [0]: %%time
-              ...: import pyku
-              ...:
-              ...: ds = pyku.resources.get_test_data('low-res-hourly-tas-data')
-              ...:
-              ...: print('First 10 timesteps before:')
-              ...: print(ds.time.values[0:10])
-              ...:
-              ...: ds = ds.pyku.resample_datetimes(frequency='1D', how='mean')
-              ...:
-              ...: print('\\nFirst 10 timesteps after:')
-              ...: print(ds.time.values[0:10])
+       In [0]: %%time
+          ...: import pyku
+          ...:
+          ...: ds = pyku.resources.get_test_data('low-res-hourly-tas-data')
+          ...:
+          ...: ds = ds.pyku.resample_datetimes(frequency='1D', how='mean')
     """
 
     from metpy.units import units
-    import pyku.meta as meta
-    import xarray as xr
     from pandas.tseries.frequencies import to_offset
+
+    import pyku.meta as meta
 
     # Check function inputs
     # ---------------------
@@ -100,12 +91,19 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
     # Get data frequency
     # ------------------
 
-    data_frequency = meta.get_frequency(ds, dtype='freqstr')
+    if data_frequency is None:
+        data_frequency = meta.get_frequency(ds, dtype='freqstr')
+        data_frequency_offset = meta.get_frequency(
+            ds,
+            dtype='DateOffset',
+        )
+    else:
+        data_frequency_offset = to_offset(data_frequency)
 
     # Edge case
     # ---------
 
-    if to_offset(frequency) == meta.get_frequency(ds, dtype='DateOffset'):
+    if (to_offset(frequency) == data_frequency_offset and how != 'sum'):
         logger.debug("Dataset already at resampling frequency. Doing nothing")
         return ds
 
@@ -167,7 +165,10 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
     # ---------------------------------------------------
 
     if meta.get_time_bounds(ds_out) is None:
-        ds_out = set_time_bounds_from_time_labels(ds_out)
+        ds_out = set_time_bounds_from_time_labels(
+            ds_out,
+            frequency=data_frequency,
+        )
 
     time_bnds_lower = meta.get_time_bounds(ds_out, which='lower')
     ds_out = ds_out.assign_coords({"time": time_bnds_lower})
@@ -206,8 +207,6 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
                     dimensionality['[time]'] == -1:
 
                 da = da * intervals.interval * units.seconds
-            else:
-                da = da * intervals.interval
 
             # Dequantify, rename, replace old var with new variable
             # -----------------------------------------------------
@@ -218,7 +217,7 @@ def resample_datetimes(ds, how=None, frequency=None, complete=False):
                 compat='no_conflicts'
             )
 
-        ds_out = ds_out.resample(time=frequency).sum()
+        ds_out = ds_out.resample(time=frequency).sum(min_count=1)
 
     else:
         raise Exception(f"{how} is not defined")
@@ -572,7 +571,8 @@ def to_calendar(ds, calendar=None, add_missing=False):
     Example:
         .. ipython::
 
-           In [0]: import xarray, pyku
+           In [0]: %%time
+              ...: import pyku
               ...: ds = pyku.resources.get_test_data('hyras')
               ...: ds.pyku.to_calendar(calendar='noleap')
     """
@@ -971,38 +971,41 @@ def set_time_labels_from_time_bounds(ds, how='lower'):
     return ds
 
 
-def set_time_bounds_from_time_labels(ds, offset=None):
+def set_time_bounds_from_time_labels(
+    ds: xr.Dataset,
+    offset: str | None = None,
+    frequency: str | None = None,
+) -> xr.Dataset:
+    """Infer time bounds from time labels.
 
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input dataset.
+    offset : str, optional
+        Offset used to adjust the inferred time bounds. For example, shift a
+        noon label by ``-12h`` to make the bounds start at midnight.
+    frequency : str, optional
+        Source data frequency. If omitted, infer it from the dataset.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset including time bounds.
+
+    Examples
+    --------
+    .. ipython::
+       :okwarning:
+
+       In [0]: import pyku
+          ...: ds = pyku.resources.get_test_data('hostrada')
+          ...: ds.pyku.set_time_bounds_from_time_labels()
     """
-    Infer time bounds from time labels.
 
-    Arguments:
-
-        ds (:class:`xarray.Dataset`): The input dataset.
-
-        offset (str): Optional, default to None. Specifies an offset to adjust
-            the time bounds, given as a frequency string. This is useful when
-            the timestamp is, for example, `1986-01-01T12:00:00`, and the
-            desired time bounds are `[1986-01-01T00:00:00,
-            1986-01-02T00:00:00]`. For available offset aliases, refer to the
-            Pandas documentation:
-            https://pandas.pydata.org/docs/user_guide/timeseries.html#offset-aliases
-
-    Returns:
-        :class:`xarray.Dataset`: Dataset including time bounds.
-
-    Example:
-        .. ipython::
-           :okwarning:
-
-           In [0]: import pyku
-              ...: ds = pyku.resources.get_test_data('hostrada')
-              ...: ds.pyku.set_time_bounds_from_time_labels()
-    """
+    from pandas.tseries.frequencies import to_offset
 
     import pyku.meta as meta
-    import xarray as xr
-    from pandas.tseries.frequencies import to_offset
 
     # Sanity checks
     # -------------
@@ -1036,7 +1039,31 @@ def set_time_bounds_from_time_labels(ds, offset=None):
     # Get the data frequency
     # ----------------------
 
-    frequency = meta.get_frequency(ds, dtype='freqstr')
+    if frequency is None:
+        frequency = meta.get_frequency(ds, dtype='freqstr')
+
+    import numpy as np
+
+    first_datetime = ds.coords['time'].values[0]
+    expected_start = first_datetime
+    if offset is not None:
+        expected_start = expected_start + to_offset(offset)
+
+    expected_time_bounds = xr.date_range(
+        start=expected_start,
+        freq=frequency,
+        periods=len(ds.coords['time']),
+        calendar=ds.time.dt.calendar,
+    )
+    if offset is not None:
+        expected_time_labels = expected_time_bounds - to_offset(offset)
+    else:
+        expected_time_labels = expected_time_bounds
+    if not np.array_equal(ds.coords['time'].values, expected_time_labels):
+        raise ValueError(
+            "Time labels do not match the specified frequency; check for "
+            "missing or irregular timestamps."
+        )
 
     # Get the first time label
     # ------------------------

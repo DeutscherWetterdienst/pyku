@@ -1,24 +1,24 @@
 Developers
-==========
+##########
 
 This page describes the workflow to contribute to pyku.
 
 Design philosophy
------------------
+=================
 
 pyku functions should take in :class:`xarray.Dataset` and output
-:class:`xarray.Datasets`. :class:`xarray.DataArray` should not be used in the
-interface, since essential climate metadata would be lost (e.g. the crs
-variable).
+:class:`xarray.Datasets`. :class:`xarray.DataArray` should not be used
+in the interface, since essential climate metadata would be lost (e.g.
+the crs variable).
 
-Alternatively use :class:`geopandas.GeoDataFrame` for the input and outputs
-where polyons or point data are needed.
+Alternatively use :class:`geopandas.GeoDataFrame` for the input and
+outputs where polyons or point data are needed.
 
 Write independent functions for simplicity, and only use objects where
 necessary.
 
 Developer installation
-----------------------
+======================
 
 First, create a new virtual environment and install pyku:
 
@@ -43,10 +43,11 @@ Create a fork, a feature branch, clone and ``cd`` to the pyku directory:
 
 .. tip::
 
-   If you installed pyku in development mode on one branch or master, but the
-   ``pyproject.toml`` was modified on the other feature branch you are trying
-   or want to work on, you will need to run ``pip install --editable .`` again.
-   Also, maybe run ``pip uninstall pyku`` first to keep it tidy.
+   If you installed pyku in development mode on one branch or master,
+   but the ``pyproject.toml`` was modified on the other feature branch
+   you are trying or want to work on, you will need to run ``pip install
+   --editable .`` again. Also, maybe run ``pip uninstall pyku`` first to
+   keep it tidy.
 
 Now pyku can be installed in development mode. All changes made are then
 immediately available so that you can debug:
@@ -56,10 +57,10 @@ immediately available so that you can debug:
    pip install -e .
 
 Reload in jupyter
------------------
+=================
 
-If you are working in jupyter or in ipython, you will likely need to reload the
-part of *pyku* that you are working on with ``importlib``:
+If you are working in jupyter or in ipython, you will likely need to
+reload the part of *pyku* that you are working on with ``importlib``:
 
 .. code:: python
 
@@ -77,16 +78,17 @@ part of *pyku* that you are working on with ``importlib``:
    meta.get_frequency(ds, dtype='freqstr')
 
 Doctests
---------
+========
 
 The efficacy of testing is greatly enhanced through the integration of
-documentation, which not only elucidates the code's functionality but also
-serves as a pivotal testing resource. Leveraging doctests, developers can
-seamlessly embed executable code snippets within the documentation, thereby
-facilitating both understanding and validation of the software's behavior. This
-dual-purpose approach ensures that documentation not only elucidates the
-intricacies of the codebase but also serves as a robust testing suite,
-enhancing the overall quality and reliability of the software.
+documentation, which not only elucidates the code's functionality but
+also serves as a pivotal testing resource. Leveraging doctests,
+developers can seamlessly embed executable code snippets within the
+documentation, thereby facilitating both understanding and validation of
+the software's behavior. This dual-purpose approach ensures that
+documentation not only elucidates the intricacies of the codebase but
+also serves as a robust testing suite, enhancing the overall quality and
+reliability of the software.
 
 Concretely and as an example, the docstring of the function
 :func:`pyku.check.check_units` serves as executable code within the
@@ -94,42 +96,43 @@ documentation.
 
 .. code:: python
 
-    """
-    Check units
+   """
+   Check units
 
-    Arguments:
-        ds (:class:`xarray.Dataset`): The input dataset.
+   Arguments:
+       ds (:class:`xarray.Dataset`): The input dataset.
 
-    Returns:
-        :class:`pandas.DataFrame`: Dataframe containing checks and issues.
+   Returns:
+       :class:`pandas.DataFrame`: Dataframe containing checks and issues.
 
-    Example:
-        .. ipython::
+   Example:
+       .. ipython::
 
-           In [0]: import xarray, pyku
-              ...: ds = pyku.resources.get_test_data('hyras')
-              ...: ds.pyku.check_units()
-    """
+          In [0]: import xarray, pyku
+             ...: ds = pyku.resources.get_test_data('hyras')
+             ...: ds.pyku.check_units()
+   """
 
-During documentation build, this code is automatically executed, and any errors
-encountered will cause the pipeline to fail, signaling issues. This also serves
-to automatically generate the function documentation from the docstring:
+During documentation build, this code is automatically executed, and any
+errors encountered will cause the pipeline to fail, signaling issues.
+This also serves to automatically generate the function documentation
+from the docstring:
 
 .. autofunction:: pyku.check.check_units
    :no-index:
 
 Unit testing
-------------
+============
 
-Unit testing is set up and configured. You can run unit tests outside the
-pipeline with:
+Unit testing is set up and configured. You can run unit tests outside
+the pipeline with:
 
 .. code:: bash
 
    python3 -m unittest discover -v -s ./testing -p "*_test.py"
 
 Logging
--------
+=======
 
 The logging level for debugging can be set like so:
 
@@ -146,19 +149,20 @@ The logging level for debugging can be set like so:
    geo.sort_georeferencing(ds)
 
 Building the documentation
---------------------------
+==========================
 
-The documentation is built with sphinx. Go the the ``doc`` directory and you
-will have the following options. Mostly all options are usefull depending on
-context.
+The documentation is built with sphinx. Go the the ``doc`` directory and
+you will have the following options. Mostly all options are usefull
+depending on context.
 
-Building the documentation is resource intensive due to the amount of testing
-that runs. To work only on part of the documentation, you can specify in
-``doc/conf.py`` the ``input_patterns`` variable which consist of the list of
-files that will be build. This permits to build only the part of the
-documentation you are working on.
+Building the documentation is resource intensive due to the amount of
+testing that runs. To work only on part of the documentation, you can
+specify in ``doc/conf.py`` the ``input_patterns`` variable which consist
+of the list of files that will be build. This permits to build only the
+part of the documentation you are working on.
 
-.. rubric:: ``make html``
+make html
+---------
 
 The ``make html`` is very simple and outputs clear errors:
 
@@ -174,19 +178,20 @@ The ``make html`` is very simple and outputs clear errors:
 
    python -m http.server --directory _build/html/ --bind=$HOSTNAME
 
-You can then access the documentation from your web browser. For example, if my
-machine is oflws261, the documentation will be available at
-http://oflws261.dwd.de:8000
+You can then access the documentation from your web browser. For
+example, if my machine is oflws261, the documentation will be available
+at http://oflws261.dwd.de:8000
 
-You can also build a pdf with ``make latexpdf`` or push directly to confluence
-if you configured it so and installed the dependencies with ``make
-confluence``.
+You can also build a pdf with ``make latexpdf`` or push directly to
+confluence if you configured it so and installed the dependencies with
+``make confluence``.
 
-.. rubric:: ``sphinx-build``
+sphinx-build
+------------
 
-The ``sphinx-build`` method is usefull because you can set up multiprocessing
-with the ``-j`` option and specify the output directory. However the error
-output is hidden due to multiprocessing:
+The ``sphinx-build`` method is usefull because you can set up
+multiprocessing with the ``-j`` option and specify the output directory.
+However the error output is hidden due to multiprocessing:
 
 .. code:: bash
 
@@ -195,22 +200,88 @@ output is hidden due to multiprocessing:
 
    sphinx-build -j 8 ./ _build/html/
 
+sphinx-build (partial build)
+----------------------------
+
+Build only a subset of the docs:
+
+.. code:: bash
+
+   sphinx-build -j 10 -T -D include_patterns=index.rst,api.rst,visualisation/* ./ _build/html
+
    # Serve the documentation
    # -----------------------
 
    python -m http.server --directory _build/html/ --bind=$HOSTNAME
 
-.. rubric:: ``sphinx-autobuild``
+sphinx-autobuild
+----------------
 
-``sphinx-autobuild`` also permits to set up multiprocessing with the ``-j``
-option, specify the output directory and changes are tracked in real time as
-you make your changes. However again the error output is mostly hidden due to
-multiprocessing.
+``sphinx-autobuild`` also permits to set up multiprocessing with the
+``-j`` option, specify the output directory and changes are tracked in
+real time as you make your changes. However again the error output is
+mostly hidden due to multiprocessing.
 
 .. code:: bash
 
    # Build documentation
    # -------------------
 
-   sphinx-autobuild -j 8 ./ _build/html/ --host $HOSTNAME
+    sphinx-autobuild -j 8 ./ _build/html/ --host $HOSTNAME
 
+Set up for AI
+=============
+
+Installation of npm tools
+-------------------------
+
+.. code:: bash
+
+   # Install Prettier globally (or with a custom prefix)
+   npm config set prefix ~/.local
+   npm install -g prettier
+
+   # Verify
+   prettier --version
+
+Additional formatters (installed via pip)
+-----------------------------------------
+
+.. code:: bash
+
+   # In your Python virtual environment
+   pip install shfmt-py rstfmt pyright isort mypy
+
+   # Verify
+   shfmt --version
+   rstfmt --version
+   pyright --version
+   isort --version
+   mypy --version
+
+LSP server
+----------
+
+The repository uses **pyright** as the Python LSP server. After
+installing the ``pyright`` package, the language server binary is
+available at:
+
+``$VENV/bin/pyright-langserver``
+
+You can configure your editor to use this executable.
+
+Formatting
+----------
+
+File formatting is handled by opencode AI, which uses the following
+tools:
+
+-  **prettier** for Markdown and YAML files
+-  **shfmt** for shell scripts
+-  **rstfmt** for reStructuredText files
+-  **ruff**, **flake8**, **black**, **isort**, and **mypy** for Python
+   files
+
+This provides consistent formatting across the codebase without
+requiring git hooks. Formatting can be applied on demand by requesting
+it through opencode.

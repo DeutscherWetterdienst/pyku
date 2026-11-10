@@ -21,12 +21,6 @@ Welcome to pyku's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: DWD Standards
-
-   standards/climatic_regions.rst
-
-.. toctree::
-   :maxdepth: 2
    :caption: API Reference
 
    api.rst

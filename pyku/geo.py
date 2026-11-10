@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from os import PathLike
 from typing import TYPE_CHECKING
 
@@ -9,6 +10,7 @@ if TYPE_CHECKING:
     from pyresample.geometry import AreaDefinition
 
     import xarray as xr
+
 
 __all__ = [
     'list_standard_areas',
@@ -786,6 +788,51 @@ def get_georeferencing(ds: xr.Dataset) -> xr.Dataset:
     return ds_georeferencing
 
 
+def _copy_georeferencing_metadata_and_crs(
+    ds: xr.Dataset,
+    ref: xr.Dataset,
+    variables: Sequence[str],
+) -> xr.Dataset:
+    """Copy georeferencing metadata and CRS information from a reference.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset receiving the georeferencing metadata.
+    ref : xarray.Dataset
+        Dataset providing coordinate attributes and the CRS variable.
+    variables : collections.abc.Sequence[str]
+        Output variables or coordinates that should reference the copied CRS
+        through the ``grid_mapping`` attribute.
+
+    Returns
+    -------
+    xarray.Dataset
+        A copy of ``ds`` with coordinate attributes, the CRS variable, and
+        ``grid_mapping`` attributes added where available.
+    """
+
+    from pyku import meta
+
+    out = ds.copy()
+
+    for coord in out.coords:
+        if coord in ref.coords:
+            out[coord].attrs = ref[coord].attrs.copy()
+
+    crs_name = meta.get_crs_varname(ref)
+    if crs_name is None or crs_name not in ref.data_vars:
+        return out
+
+    out = out.assign({crs_name: ref[crs_name]})
+
+    for name in variables:
+        if name in out:
+            out[name].attrs['grid_mapping'] = crs_name
+
+    return out
+
+
 def get_yx(ds, dtype='ndarray'):
     """
     Return y x projection coordinates in dataset.
@@ -1331,41 +1378,46 @@ def set_spatial_weights(
     """
     Set area weights for a dataset.
 
-    Arguments:
-        ds (:class:`xarray.Dataset`): Dataset which should contain latitude
-            ('lat') as a coordinate.
-        how (str): Method to determine weights. Default is set to 'area'.
-            The gridcell areas will be calculated according to the lat and lon
-            bounds. Optionally one can select weighting by cosinus of latitude
-            how='cos'.
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset containing latitude ('lat') as a coordinate.
+    how : str, default 'area'
+        Calculate gridcell areas from latitude and longitude bounds with
+        ``'area'``, or weight by cosine of latitude with ``'cos'``.
 
-    Returns:
-        :class:`xarray.Dataset`: Dataset with an added 'weights' variable
-        containing the calculated area weights.
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with an added 'weights' coordinate containing the calculated
+        area weights.
 
-    Example:
+    Examples
+    --------
 
         .. ipython::
            :okwarning:
 
-           @savefig geo_spatial_weights1.png width=4in
+           @savefig geo_spatial_weights1.png scale=70
            In [0]: import xarray, pyku
-              ...: import pyku.analyse as analyse
               ...: ds = pyku.resources.get_test_data('global_data')
               ...: ds = ds.pyku.project('world_360x180')
               ...: ds = ds.pyku.set_spatial_weights(how='area')
-              ...: analyse.one_map(ds.weights)
+              ...: ds = ds.reset_coords('weights')
+              ...: ds.vis.one_map(var='weights')
 
         .. ipython::
            :okwarning:
 
-           @savefig geo_spatial_weights2.png width=4in
-           In [0]: import xarray, pyku
-              ...: import pyku.analyse as analyse
+           @savefig geo_spatial_weights2.png scale=70
+           In [0]: %%time
+              ...: import pyku
               ...: ds = pyku.resources.get_test_data('global_data')
               ...: ds = ds.pyku.project('EUR-44')
               ...: ds = ds.pyku.set_spatial_weights(how='area')
-              ...: analyse.one_map(ds.weights, crs='EUR-44')
+              ...: ds = ds.reset_coords('weights')
+              ...: ds['weights'].attrs['grid_mapping'] = 'rotated_pole'
+              ...: ds.vis.one_map(var='weights')
     """
 
     # Summary
@@ -1551,7 +1603,11 @@ def set_spatial_weights(
 
         out_ds.coords['weights'] = ([y_name, x_name], weights)
 
-    return out_ds
+    return _copy_georeferencing_metadata_and_crs(
+        out_ds,
+        ds,
+        variables=['weights'],
+    )
 
 
 def are_longitudes_wrapped(ds: xr.Dataset) -> bool:
@@ -2203,7 +2259,7 @@ def select_area_extent(
               ...:     upper_right_lon=15.0,
               ...: )
               ...:
-              ...: ds.isel(time=0).ana.one_map(var='tas')
+              ...: ds.isel(time=0).vis.one_map(var='tas')
     """
 
     import pyproj
@@ -2346,7 +2402,7 @@ def select_neighborhood(ds, lat, lon, roi=10000, neighbours=1000, crop=False):
               ...:     neighbours=1000,
               ...:     crop=False
               ...: )
-              ...: selection.ana.mean_map(var='tas')
+              ...: selection.vis.mean_map(var='tas')
     """
 
     import numpy as np
@@ -3161,7 +3217,7 @@ def project(
               ...: projected = ds.pyku.project(area_def='EUR-44')
               ...:
               ...: # Plot
-              ...: projected.ana.one_map(var='tas', crs='EUR-44')
+              ...: projected.vis.one_map(var='tas')
 
         .. ipython::
            :okwarning:
@@ -3182,7 +3238,7 @@ def project(
               ...: )
               ...:
               ...: # Plot
-              ...: projected.ana.one_map(var='tas', crs='HYR-LAEA-5')
+              ...: projected.vis.one_map(var='tas')
 
         .. ipython::
            :okwarning:
@@ -3205,7 +3261,7 @@ def project(
               ...: )
               ...:
               ...: # Plot
-              ...: projected.ana.one_map(var='tas', crs='DWD_RADOLAN_900x900')
+              ...: projected.vis.one_map(var='tas')
     """
 
     # This is an unusually long function. It is not split because I do not

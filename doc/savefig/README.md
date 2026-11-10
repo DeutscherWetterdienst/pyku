@@ -5,5 +5,5 @@ when using e.g.:
 .. ipython::
    :okwarning:
 
-   @savefig matplotlib_colormap_usage.png width=4in
+   @savefig matplotlib_colormap_usage.png scale=70
 ````
