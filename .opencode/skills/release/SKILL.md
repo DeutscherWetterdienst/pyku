@@ -24,8 +24,8 @@ with this skill whenever the process changes. For synchronization checks, see
    changes.
 3. Create and push a release branch to GitLab, then open an MR targeting
    `main`. Review the staged diff, wait for required checks, and merge the MR.
-4. Manually fast-forward GitHub `main` from GitLab using
-   `.opencode/skills/sync/SKILL.md`; verify both refs match before tagging.
+4. After the changelog MR merges, run the repository release helper as
+   described below. It safely synchronizes `main` to GitHub before tagging.
 
 Example release branch commands (replace `X.Y.Z`):
 
@@ -47,41 +47,39 @@ publishing if the changelog is stale or empty.
 Heading-only and comment-only sections are empty. A tag-validation job gates
 publishing and Pages, and renders the notes as HTML for the GitLab Release.
 
-## Tag and verify
+## Run the release helper
 
-Use the next semantic version and confirm the tag is unused on both hosts:
-
-```bash
-git ls-remote --tags gitlab refs/tags/vX.Y.Z
-git ls-remote --tags github refs/tags/vX.Y.Z
-```
-
-After merging the release MR, refresh the refs and verify GitLab and GitHub
-`main` match. Create one annotated tag on GitLab `main` first:
+The helper is `scripts/release.sh`; it requires Bash and Git and does not use
+`glab`. Its help is available with:
 
 ```bash
-git fetch --prune --tags gitlab
-git fetch --prune --tags github
-git switch main
-git pull --ff-only gitlab main
-git ls-remote gitlab refs/heads/main
-git ls-remote github refs/heads/main
-git tag -a vX.Y.Z -m "pyku vX.Y.Z"
-git push gitlab vX.Y.Z
+bash scripts/release.sh --help
 ```
 
-Wait for the GitLab release pipeline to succeed. If GitHub lacks this tag,
-push only this tag. If it already has the same tag object, no push is needed;
-stop if it differs. Never delete or replace a tag, and do not push all tags.
-Check the GitHub Actions run and verify both hosts have the expected refs:
+After the changelog MR merges and its GitLab `main` pipeline passes, run:
 
 ```bash
-git ls-remote --tags gitlab refs/tags/vX.Y.Z
-git ls-remote --tags github refs/tags/vX.Y.Z
-git push github vX.Y.Z
-git ls-remote gitlab refs/heads/main refs/tags/vX.Y.Z
-git ls-remote github refs/heads/main refs/tags/vX.Y.Z
+bash scripts/release.sh tag --release-version vX.Y.Z
 ```
+
+The helper requires a clean worktree and `gitlab`/`github` remotes pointing to
+the pyku repositories. It checks that the requested version is the newest
+changelog heading, the tag is unused, and GitHub `main` can be fast-forwarded
+to GitLab `main`. It asks the maintainer to confirm the GitLab `main` pipeline
+passed, then syncs `main` and creates an annotated tag on GitLab. It never
+force-pushes or replaces refs.
+
+Wait for the GitLab tag pipeline to pass, then run:
+
+```bash
+bash scripts/release.sh sync-tag --release-version vX.Y.Z
+```
+
+Confirm the tag pipeline succeeded when prompted. The helper pushes only that
+tag to GitHub, verifies its tag object and target commit, and stops if GitHub
+has a different tag. It does not delete or replace tags or push all tags.
+After the GitHub tag workflow passes, that workflow creates a GitHub Release
+from the same changelog notes. GitLab remains the canonical release host.
 
 GitLab publishes to the pyku project's package registry, updates the
 `pyku.latest` module, deploys GitLab Pages, and creates a GitLab Release using

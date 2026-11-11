@@ -56,30 +56,24 @@ git ls-remote gitlab refs/heads/main
 git ls-remote github refs/heads/main
 ```
 
-## Synchronize one release tag
+## Synchronize a release tag
 
-Create and push the annotated tag on GitLab first, after confirming the release
-commit is the synchronized `main` commit. Check the exact tag ref on both hosts.
-Push only the existing GitLab tag object to GitHub; do not create a second tag
-or push all tags because historical refs can differ between hosts.
-
-```bash
-git ls-remote --tags gitlab refs/tags/vX.Y.Z
-git ls-remote --tags github refs/tags/vX.Y.Z
-```
-
-Push only if GitLab has the intended tag and GitHub does not have that name.
-If GitHub already has the same tag object, no push is needed. If refs differ,
-stop; never delete or replace a tag. When GitHub lacks the tag, fetch the
-canonical GitLab object to a separate local ref, then push that exact object
-and verify:
+Use `scripts/release.sh` for release tagging and synchronization. Follow
+`.opencode/skills/release/SKILL.md` for the full release sequence. After the
+GitLab tag pipeline succeeds, run this from the repository checkout:
 
 ```bash
-git fetch gitlab refs/tags/vX.Y.Z:refs/pyku-sync/tags/vX.Y.Z
-git push github refs/pyku-sync/tags/vX.Y.Z:refs/tags/vX.Y.Z
-git ls-remote --tags gitlab refs/tags/vX.Y.Z
-git ls-remote --tags github refs/tags/vX.Y.Z
+bash scripts/release.sh sync-tag --release-version vX.Y.Z
 ```
+
+The helper verifies that GitLab and GitHub `main` match, fetches the exact
+annotated tag object from GitLab, and asks the maintainer to confirm the tag
+pipeline passed before pushing. It pushes only the requested tag. If GitHub
+already has the same tag object, no push is needed; if it differs, stop. Never
+delete or replace a tag, force-push, or push all tags. If the helper stops,
+report the observed refs and ask the maintainer to resolve the discrepancy.
+After GitHub Actions validates the synchronized tag, its release job creates
+the matching GitHub Release. GitLab remains canonical.
 
 Do not touch the deprecated `master` branch. Report any divergence, denied
 access, or ambiguous result instead of attempting a destructive recovery.

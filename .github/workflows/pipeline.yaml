@@ -110,3 +110,34 @@ jobs:
       - name: Deploy to GitHub pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  create-github-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build-and-test
+      - deploy
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+
+      - name: Generate release notes
+        run: >-
+          uv run --no-project --with docutils --python 3.12
+          python scripts/changelog_release_notes.py
+          "$GITHUB_REF_NAME" --format html > release-notes.html
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          --verify-tag
+          --title "$GITHUB_REF_NAME"
+          --notes-file release-notes.html
