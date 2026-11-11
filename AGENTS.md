@@ -30,6 +30,20 @@
   it.
 * Briefly explain why each new branch or abstraction is needed.
 
+### Reuse Scientific Libraries
+
+* Before implementing scientific or geospatial functionality, check whether
+  the project already depends on a library that provides it. Prefer Pint and
+  pint-xarray for unit-aware quantities, cf-xarray for CF metadata and axis
+  selection, MetPy for meteorological calculations, and xclim for climate
+  indicators and related climate operations when they fit the use case.
+* Prefer composing established library APIs over duplicating conversions,
+  metadata interpretation, algorithms, or validation. Preserve pyku's public
+  interfaces and metadata requirements when integrating them.
+* Check `pyproject.toml` before relying on a library. Do not assume a
+  transitive or optional dependency is always available; justify and declare
+  any new direct dependency rather than introducing it implicitly.
+
 ### Visualisation Metrics
 
 * Evaluation maps are provided by `pyku.visualisation.metric_map`.
@@ -170,16 +184,36 @@ sphinx-build -j 10 -T -D include_patterns=index.rst,api.rst,visualisation/* ./ _
 python -m http.server --directory _build/html/ --bind=$HOSTNAME
 ```
 
+## Merge request issue tracking
+
+- Before opening or updating a GitLab MR, search GitLab issues/work items for
+  candidates that match the change and check their scope and status.
+- Add `Closes #<iid>` to the MR description only when the MR fully resolves
+  that open issue; GitLab closes it when the MR is merged. Use `Related to
+  #<iid>` for partial work or follow-up issues, not a closing keyword.
+- If the match or completion is unclear, do not guess. Ask the user which issue
+  to link. If no matching issue is found, say so and ask whether they want one
+  linked.
+- When discussing a merge, remind the user which issues will close
+  automatically. Do not close issues manually.
+
 ## Release workflow
 
-- Pyku supports GitLab and GitHub as source hosts. Choose one source for each
-  change or release, then synchronize `main` and version tags to the other
-  host. Do not make independent changes on both hosts at the same time.
+- GitLab is the canonical repository for changes, `main`, releases, and
+  version tags. Merge MRs on GitLab; GitLab's push mirror updates GitHub.
+- GitHub PRs may run checks, but must not be merged on GitHub. Import their
+  head branches into GitLab and review them through MRs targeting GitLab
+  `main`.
+- Never push directly to GitHub `main` or push release tags to GitHub during
+  normal operation. Use the sync skill only for explicitly requested mirror
+  diagnosis or recovery; never force-push.
 - The `master` branch is deprecated. Do not merge changes into it or use it for
   releases.
-- Follow `doc/contribute/maintainers.rst` for the human release runbook and
-  `.opencode/skills/release/SKILL.md` for the OpenCode release skill.
-- Keep the human runbook and skill synchronized whenever release steps,
-  commands, or host behavior change.
-- Release tags are pushed to both hosts. Their tag pipelines publish/deploy
-  host-specific artifacts; pushing a tag does not create a Release page entry.
+- Follow `doc/contribute/maintainers.rst` for the human contribution and
+  release runbook. Use `.opencode/skills/gitlab-contribution/SKILL.md` when
+  asked to submit changes to GitLab and `.opencode/skills/release/SKILL.md`
+  for releases. Keep the runbook and skills synchronized when the workflow
+  changes.
+- Release tags are created on GitLab and mirrored to GitHub. GitLab CI
+  publishes/deploys GitLab artifacts and creates the GitLab Release; GitHub
+  Actions checks the mirrored tag and deploys GitHub Pages.

@@ -64,6 +64,9 @@ html_theme = 'sphinx_book_theme'
 html_static_path = ['_static', 'savefig']
 
 nbsphinx_kernel_name = 'python3'
+# Keep the expected ipykernel TCP notice out of docs-build logs without
+# changing Sphinx's warning handling.
+nbsphinx_execute_arguments = ['--IPKernelApp.log_level=ERROR']
 
 html_favicon = '_static/pyku_logo.jpg'
 

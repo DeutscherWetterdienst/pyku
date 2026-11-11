@@ -687,7 +687,7 @@ def n_maps(
 
     for ax in axs:
         ax.add_feature(cartopy.feature.BORDERS)
-        ax.add_feature(cartopy.feature.LAKES)
+        ax.add_feature(cartopy.feature.LAKES.with_scale("50m"))
         ax.add_feature(cartopy.feature.RIVERS)
         ax.add_feature(cartopy.feature.COASTLINE)
 

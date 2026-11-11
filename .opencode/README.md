@@ -4,8 +4,13 @@
 - `skills/DOCSTRINGS.md` – doc‑string style guide used by the `docstrings`
   skill.
 - `skills/TESTING.md` – test execution with pytest in the active environment.
-- `skills/release/SKILL.md` – dual-source GitLab/GitHub maintenance and release
-  workflow; keep it synchronized with `doc/contribute/maintainers.rst`.
+- `skills/gitlab-contribution/SKILL.md` – submit pyku changes through GitLab
+  merge requests, including importing GitHub pull requests.
+- `skills/release/SKILL.md` – canonical GitLab release workflow and GitHub
+  mirror verification; keep it synchronized with
+  `doc/contribute/maintainers.rst`.
+- `skills/sync/SKILL.md` – guarded diagnosis and recovery of the GitLab-to-
+  GitHub push mirror.
 - Graphify data lives in `../graphify-out`; the agent can query it
   automatically.
 

@@ -50,7 +50,7 @@ variables:
     - module use $PYKU_CI_MODULEDIR/modulesfiles
     - module purge
     - module load envs
-    - module load base/durian-cake
+    - module load base/eclair-cake
     - module load uv
 
 install-wheel:
@@ -58,6 +58,10 @@ install-wheel:
   extends: .load_modules
   tags:
     - ku1
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
   script:
     - echo "Create python virtual environment, build and install wheel"
     - uv venv $PYKU_ENVIRONMENT/venv
@@ -102,7 +106,7 @@ unit-testing:
     - ku1
   parallel:
     matrix:
-      - cake_module: ['cheese-cake', 'durian-cake']
+      - cake_module: ['durian-cake', 'eclair-cake']
   before_script:
     - module use $PYKU_CI_MODULEDIR/modulesfiles
     - module purge
@@ -135,23 +139,37 @@ unit-testing:
     - source $PYKU_ENVIRONMENT/venv/bin/activate
     - echo "Build documentation"
     - sphinx-build -j 10 ./doc/ documentation/
-
-docu_build:
-  extends: .documentation
-  rules:
-    - if: '$CI_COMMIT_TAG'
-      when: never
-    - when: always   
+    - |
+      if [ ! -s ./doc/savefig/mask_get_mask.png ]; then
+        echo "Missing generated documentation image: mask_get_mask.png" >&2
+        exit 1
+      fi
 
 documentation:
   extends: .documentation
-  rules:
-    - if: '$CI_COMMIT_TAG'
-      when: always
-    - when: never
   artifacts:
     paths:
       - documentation
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
+verify-release-notes:
+  stage: test
+  extends: .load_modules
+  tags:
+    - ku1
+  script:
+    - source $PYKU_ENVIRONMENT/venv/bin/activate
+    - >-
+      python scripts/changelog_release_notes.py "$CI_COMMIT_TAG"
+      --format html > release-notes.html
+  artifacts:
+    paths:
+      - release-notes.html
+  rules:
+    - if: '$CI_COMMIT_TAG'
 
 
 pypi-deploy:
@@ -170,7 +188,26 @@ pypi-deploy:
     - echo "Deploy to ku-pypi"
     - uv publish --publish-url $CI_API_V4_URL/projects/${PYPI_PROJECT_ID}/packages/pypi dist/*.whl    
   rules:
-    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+
+create-gitlab-release:
+  stage: deploy
+  extends: .load_modules
+  tags:
+    - ku1
+  needs:
+    - pypi-deploy
+    - verify-release-notes
+  script:
+    - >-
+      curl --fail --show-error --request POST
+      --header "JOB-TOKEN: ${CI_JOB_TOKEN}"
+      --form-string "name=${CI_COMMIT_TAG}"
+      --form-string "tag_name=${CI_COMMIT_TAG}"
+      --form-string "description=$(cat release-notes.html)"
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
 
 create-module-latest:
   stage: deploy
@@ -180,7 +217,7 @@ create-module-latest:
   needs: 
     - pypi-deploy
   rules:
-    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
   script:
    - | 
       rm -rf ${PYKU_CI_MODULE}/pyku.latest/.venv 
@@ -190,8 +227,14 @@ create-module-latest:
 
 pages:
   stage: deploy
+  resource_group: pages
+  environment:
+    name: pages
+    url: $CI_PAGES_URL
   needs:
     - documentation
+    - job: verify-release-notes
+      optional: true
   tags:
     - ku1
   script:
@@ -201,6 +244,7 @@ pages:
     paths:
       - public
   rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_COMMIT_TAG'
 
 cleanup:

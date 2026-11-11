@@ -1,98 +1,34 @@
 ---
 name: release
 description: >-
-  Use when preparing a pyku release, reviewing the release workflow, or
-  synchronizing GitLab and GitHub main branches and version tags.
+  Prepare a pyku release on canonical GitLab, including the changelog MR,
+  release tag, and checks of the GitHub push mirror.
 ---
 
 # Pyku release workflow
 
-Pyku supports GitLab and GitHub as source hosts. For each change or release,
-choose one source host, then synchronize its `main` branch and release tags to
-the other host. Do not make independent changes on both hosts at the same time.
+GitLab is the source of truth for pyku. Prepare and merge the changelog MR,
+create the release, and push version tags on GitLab only. GitLab's push mirror
+updates GitHub; never merge directly to GitHub `main` or push a release tag to
+GitHub by hand during normal operation.
 
-The human maintainer runbook is `doc/contribute/maintainers.rst`. Keep this
-skill and that document synchronized whenever the process changes.
+The human runbook is `doc/contribute/maintainers.rst`. Keep it synchronized
+with this skill whenever the process changes. For mirror failure recovery, see
+`.opencode/skills/sync/SKILL.md`.
 
-## Merge a change
+## Prepare the release
 
-1. Choose GitLab or GitHub as the source host.
-2. Open an MR or PR targeting `main` on that host.
-3. Review the change and wait for that host's required checks to pass.
-4. Merge the request.
-5. Fast-forward the other host's `main` to the merged commit.
+1. Check out the latest GitLab `main` and confirm GitLab CI passed.
+2. Review MRs merged since the previous release and update `CHANGELOG.rst`
+   with the next `vX.Y.Z` heading and applicable sections: New Features,
+   Breaking changes, Deprecations, Bug fixes, Documentation, and Internal
+   changes.
+3. Create and push a release branch to GitLab, then open an MR targeting
+   `main`. Review the staged diff, wait for required checks, and merge the MR.
+4. Wait for GitLab's push mirror to update GitHub `main`; verify both refs
+   identify the same commit before tagging.
 
-Use a clean checkout with remotes named `gitlab` and `github`. From GitLab:
-
-```bash
-git clone https://gitlab.dwd.de/ku/libraries/pyku.git pyku-sync
-cd pyku-sync
-git remote rename origin gitlab
-git remote add github git@github.com:DeutscherWetterdienst/pyku.git
-```
-
-Or clone from GitHub and configure the remotes in reverse:
-
-```bash
-git clone git@github.com:DeutscherWetterdienst/pyku.git pyku-sync
-cd pyku-sync
-git remote rename origin github
-git remote add gitlab https://gitlab.dwd.de/ku/libraries/pyku.git
-```
-
-Fetch both hosts and check out `main`:
-
-```bash
-git fetch --prune --tags gitlab
-git fetch --prune --tags github
-git switch main
-```
-
-For a GitLab-sourced change:
-
-```bash
-git pull --ff-only gitlab main
-git merge-base --is-ancestor github/main main
-git push github main:main
-```
-
-For a GitHub-sourced change:
-
-```bash
-git pull --ff-only github main
-git merge-base --is-ancestor gitlab/main main
-git push gitlab main:main
-```
-
-The ancestry check must succeed before pushing. If it fails or the push is
-rejected, stop and ask maintainers to reconcile the branch histories. Resume
-only when the source commit can be fast-forwarded onto the other host. Never
-force-push. Verify both remote branch refs point to the same commit:
-
-```bash
-git ls-remote gitlab refs/heads/main
-git ls-remote github refs/heads/main
-```
-
-The `master` branch is deprecated. Do not merge changes into it or use it as a
-release branch.
-
-## Prepare a release
-
-1. Choose GitLab or GitHub as the release's source host. Avoid independent
-   changes on the other host during the release.
-2. Start from the source host's current `main`; confirm its MR/PR checks passed.
-3. Create a release branch from `main` and update `CHANGELOG.rst` with the next
-   version and applicable sections:
-   New Features, Breaking changes, Deprecations, Bug fixes, Documentation,
-   and Internal changes.
-4. Stage, review, commit, and push the release branch. Open an MR or PR
-   targeting `main`, wait for checks, and merge it.
-5. Fetch both hosts again, update local `main` from the source host, then
-   synchronize it to the other host. Both `main` branches must identify the same
-   commit before tagging.
-
-For a GitLab-sourced release, create and push the release branch:
+Example release branch commands (replace `X.Y.Z`):
 
 ```bash
 git switch main
@@ -106,61 +42,54 @@ git commit -m "Update changelog for vX.Y.Z"
 git push gitlab release/vX.Y.Z
 ```
 
-For a GitHub-sourced release, use `github` as the remote:
+The tag pipeline requires the tag to match the newest `vX.Y.Z` heading in
+`CHANGELOG.rst` and the section to contain release notes. It fails before
+publishing if the changelog is stale or empty.
+Heading-only and comment-only sections are empty. A tag-validation job gates
+publishing and Pages, and renders the notes as HTML for the GitLab Release.
+
+## Tag and verify
+
+Use the next semantic version and confirm the tag is unused on GitLab:
 
 ```bash
-git switch main
-git pull --ff-only github main
-git switch -c release/vX.Y.Z
-# Edit CHANGELOG.rst for vX.Y.Z.
-git add CHANGELOG.rst
-git diff --cached --check
-git diff --cached
-git commit -m "Update changelog for vX.Y.Z"
-git push github release/vX.Y.Z
+git ls-remote --tags gitlab refs/tags/vX.Y.Z
 ```
 
-After merging the MR or PR, fetch both hosts again and switch back to `main`
-before running the source-specific synchronization commands above:
+After merging the release MR, refresh the refs, verify GitLab and GitHub
+`main` match, and create one annotated tag on GitLab `main`:
 
 ```bash
 git fetch --prune --tags gitlab
 git fetch --prune --tags github
 git switch main
-```
-
-Use the next version according to semantic versioning and existing `v*` tags.
-`setuptools_scm` derives the package version from Git tags. Confirm the tag is
-unused on both remotes:
-
-```bash
-git ls-remote --tags gitlab refs/tags/vX.Y.Z
-git ls-remote --tags github refs/tags/vX.Y.Z
-```
-
-Create the annotated tag once on the selected source's synchronized `main`,
-then push the same tag to both remotes. For a GitLab-sourced release:
-
-```bash
+git pull --ff-only gitlab main
+git ls-remote gitlab refs/heads/main
+git ls-remote github refs/heads/main
 git tag -a vX.Y.Z -m "pyku vX.Y.Z"
 git push gitlab vX.Y.Z
-git push github vX.Y.Z
 ```
 
-For a GitHub-sourced release:
-
-```bash
-git tag -a vX.Y.Z -m "pyku vX.Y.Z"
-git push github vX.Y.Z
-git push gitlab vX.Y.Z
-```
-
-Pushing a tag starts each host's tag pipeline; it does not create a GitLab or
-GitHub Release page entry. GitLab publishes to the internal PyPI, updates the
-`pyku.latest` module, and deploys GitLab Pages. GitHub builds and tests the
-package and deploys GitHub Pages. Check both pipelines and verify the refs:
+GitLab's push mirror propagates the tag to GitHub. Do not push it there
+separately. Check the GitLab release pipeline and GitHub Actions run, and
+confirm both hosts have the expected refs:
 
 ```bash
 git ls-remote gitlab refs/heads/main refs/tags/vX.Y.Z
 git ls-remote github refs/heads/main refs/tags/vX.Y.Z
 ```
+
+GitLab publishes to the internal PyPI, updates the `pyku.latest` module,
+deploys GitLab Pages, and creates a GitLab Release using the changelog section.
+GitHub Actions tests the mirrored commit and deploys GitHub Pages. Pushes to
+`main` also deploy the current documentation on both hosts; a tag deployment
+replaces that same current site. Versioned documentation is tracked in GitLab
+work item [#343](https://gitlab.dwd.de/ku/libraries/pyku/-/work_items/343).
+
+GitLab Pages uses the shared `pages` resource group and environment. In
+**Settings > CI/CD > General pipelines**, keep **Prevent outdated deployment
+jobs** enabled and **Allow job retries for rollback deployments** disabled so
+older pipelines and retries cannot replace newer documentation.
+
+If the mirror fails or refs diverge, do not force-push or create a second tag.
+Stop and follow `.opencode/skills/sync/SKILL.md` to diagnose and recover safely.

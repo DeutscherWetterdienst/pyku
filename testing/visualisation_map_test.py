@@ -62,6 +62,16 @@ def test_n_maps_does_not_mutate_plot_options(
     plt.close("all")
 
 
+def test_one_map_draws_hostrada_mask() -> None:
+    mask = pyku.resources.get_test_data("hostrada").pyku.get_mask()
+
+    visualisation.one_map(mask, var="mask")
+    try:
+        plt.gcf().canvas.draw()
+    finally:
+        plt.close("all")
+
+
 def test_map_spatial_dims_reorder_transposed_variable(
     small_dataset: xr.Dataset,
 ) -> None:

@@ -2107,7 +2107,15 @@ def _get_global_data():
     return xr.open_dataset(zarr_path)
 
 
-def _get_monthly_eurocordex_data():
+def _close_s3_session(fs: Any) -> None:
+    s3 = getattr(fs, "_s3creator", None)
+    if s3 is not None:
+        from zarr.core.sync import sync
+
+        sync(s3.__aexit__(None, None, None), timeout=10)
+
+
+def _get_monthly_eurocordex_data() -> "xr.Dataset":
 
     import xarray as xr
     from pathlib import Path
@@ -2130,18 +2138,25 @@ def _get_monthly_eurocordex_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             warnings.warn(f"Downloading zarr: {s3_path} to {pyku_data_dir}")
-            fs = s3fs.S3FileSystem(anon=True)
-            store = s3fs.S3Map(root=s3_path, s3=fs, check=False)
-            with xr.open_zarr(store, consolidated=True) as ds:
-                for var in ds.variables:
-                    ds[var].encoding.clear()
-                _warn_if_default_data_dir()
-                ds.to_zarr(zarr_path)
+            fs = s3fs.S3FileSystem(
+                anon=True,
+                asynchronous=True,
+                skip_instance_cache=True,
+            )
+            try:
+                store = s3fs.S3Map(root=s3_path, s3=fs, check=False)
+                with xr.open_zarr(store, consolidated=True) as ds:
+                    for var in ds.variables:
+                        ds[var].encoding.clear()
+                    _warn_if_default_data_dir()
+                    ds.to_zarr(zarr_path)
+            finally:
+                _close_s3_session(fs)
 
     return xr.open_zarr(zarr_path)
 
 
-def _get_GCM_CanESM5_data():
+def _get_GCM_CanESM5_data() -> "xr.Dataset":
 
     import xarray as xr
     from pathlib import Path
@@ -2164,13 +2179,20 @@ def _get_GCM_CanESM5_data():
     with FileLock(lock_path):
         if not zarr_path.exists():
             warnings.warn(f"Downloading zarr: {s3_path} to {pyku_data_dir}")
-            fs = s3fs.S3FileSystem(anon=True)
-            store = s3fs.S3Map(root=s3_path, s3=fs, check=False)
-            with xr.open_zarr(store, consolidated=True) as ds:
-                for var in ds.variables:
-                    ds[var].encoding.clear()
-                _warn_if_default_data_dir()
-                ds.to_zarr(zarr_path)
+            fs = s3fs.S3FileSystem(
+                anon=True,
+                asynchronous=True,
+                skip_instance_cache=True,
+            )
+            try:
+                store = s3fs.S3Map(root=s3_path, s3=fs, check=False)
+                with xr.open_zarr(store, consolidated=True) as ds:
+                    for var in ds.variables:
+                        ds[var].encoding.clear()
+                    _warn_if_default_data_dir()
+                    ds.to_zarr(zarr_path)
+            finally:
+                _close_s3_session(fs)
 
     return xr.open_zarr(zarr_path)
 
