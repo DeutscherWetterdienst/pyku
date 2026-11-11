@@ -1,3 +1,18 @@
+v1.2.1
+------
+
+Documentation
+~~~~~~~~~~~~~
+
+* Document the manual synchronization of GitLab ``main`` and release tags
+  to GitHub.
+
+Internal changes
+~~~~~~~~~~~~~~~~
+
+* Publish releases to pyku's project package registry and authenticate
+  ``pyku.latest`` installs with the GitLab CI job token.
+
 v1.2.0
 ------
 
