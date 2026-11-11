@@ -1,85 +1,85 @@
 ---
 name: sync
 description: >-
-  Diagnose or perform explicitly requested recovery for pyku's one-way
-  GitLab-to-GitHub push mirror. GitLab is always canonical.
+  Manually synchronize pyku's canonical GitLab branches and release tags to
+  GitHub, with guarded ref and ancestry checks.
 ---
 
-# Recover GitLab-to-GitHub synchronization
+# Synchronize GitLab to GitHub
 
-Use this skill only when a maintainer explicitly requests mirror diagnosis or
-recovery. GitLab is the only source of truth. Routine branch and tag
-synchronization is handled by GitLab's push mirror; do not make independent
-changes on GitHub, merge a GitHub pull request there, or push to GitLab from
-GitHub. Never force-push or rewrite history.
+GitLab is the canonical repository. GitHub is updated manually after GitLab
+changes. Use this skill for routine one-way synchronization of merged `main`
+and individual release tags. Never force-push, delete refs, push all tags, or
+make independent changes on GitHub.
 
 The human runbook is `doc/contribute/maintainers.rst`. GitHub pull requests
 must be imported as branches for review in GitLab; see
 `.opencode/skills/gitlab-contribution/SKILL.md`.
 
-## Diagnose the mirror
+## Before synchronizing
 
-1. Check the working tree and remotes. Do not overwrite or discard local work.
-   Use a clean checkout if the current one has unrelated changes.
-2. Fetch both remotes and inspect the exact refs:
+1. Check the working tree, current branch, and remote URLs. Do not overwrite or
+   discard local work. Use a clean checkout if unrelated changes are present.
+2. Fetch and inspect the exact refs to be synchronized:
 
    ```bash
-   git fetch --prune --tags gitlab
-   git fetch --prune --tags github
-   git status --short --branch
-   git ls-remote gitlab refs/heads/main refs/tags/vX.Y.Z
-   git ls-remote github refs/heads/main refs/tags/vX.Y.Z
+   git fetch gitlab refs/heads/main:refs/remotes/gitlab/main
+   git fetch github refs/heads/main:refs/remotes/github/main
+   git ls-remote gitlab refs/heads/main
+   git ls-remote github refs/heads/main
    ```
 
-   Replace `vX.Y.Z` with the tag being investigated. A tag may be omitted
-   when investigating only `main`.
-3. Check GitLab's **Settings > Repository > Mirroring repositories** status.
-   Review the reported error and fix mirror credentials or configuration there;
-   never expose tokens in chat, logs, or repository files.
-4. If the refs match after the mirror runs, stop. No manual push is needed.
-   If GitHub contains commits or a tag that is absent from GitLab, stop and
-   ask the maintainer to resolve the unexpected GitHub-side change. Do not
-   import it into canonical GitLab `main` automatically.
+3. Stop if access is denied, a ref is missing unexpectedly, or the remote URLs
+   are not the expected pyku repositories. GitLab remains canonical.
 
-## Explicit manual recovery
+## Synchronize `main`
 
-Only proceed with an explicit maintainer request to manually update GitHub
-while the built-in mirror is unavailable. Confirm GitLab's `main` and tag are
-the intended canonical refs and that the maintainer understands GitHub will be
-updated. Do not disable the configured mirror unless asked.
-
-For `main`, fetch both remote refs, prove GitHub's `main` is an ancestor of
-GitLab's `main`, and push that exact GitLab ref. This prevents local commits
-from being published to GitHub. Stop if the ancestry test fails or the push is
-rejected:
+After a GitLab MR is merged, prove that GitHub `main` is an ancestor of GitLab
+`main`. This permits a fast-forward only and prevents overwriting commits on
+GitHub. If the check fails, stop and ask the maintainer to resolve the
+divergence; never force-push or merge GitHub changes into canonical `main`
+automatically.
 
 ```bash
-git fetch gitlab refs/heads/main:refs/remotes/gitlab/main
-git fetch github refs/heads/main:refs/remotes/github/main
-git merge-base --is-ancestor refs/remotes/github/main refs/remotes/gitlab/main
-git push github refs/remotes/gitlab/main:refs/heads/main
+git merge-base --is-ancestor \
+  refs/remotes/github/main refs/remotes/gitlab/main
 ```
 
-For a release tag, first confirm the tag exists on GitLab and GitHub does not
-have a different object with the same name. Push the existing GitLab tag
-object only:
+Proceed with the push only when the ancestry check succeeds. If both refs
+already match, no push is needed. After a successful push, verify the `main`
+object IDs on both hosts match. If a push is rejected or refs do not match,
+stop and report the observed refs.
+
+```bash
+git push github refs/remotes/gitlab/main:refs/heads/main
+git ls-remote gitlab refs/heads/main
+git ls-remote github refs/heads/main
+```
+
+## Synchronize one release tag
+
+Create and push the annotated tag on GitLab first, after confirming the release
+commit is the synchronized `main` commit. Check the exact tag ref on both hosts.
+Push only the existing GitLab tag object to GitHub; do not create a second tag
+or push all tags because historical refs can differ between hosts.
 
 ```bash
 git ls-remote --tags gitlab refs/tags/vX.Y.Z
 git ls-remote --tags github refs/tags/vX.Y.Z
-git push github vX.Y.Z
 ```
 
-Never create a replacement tag or use `--force`. Afterward verify the refs on
-both hosts:
+Push only if GitLab has the intended tag and GitHub does not have that name.
+If GitHub already has the same tag object, no push is needed. If refs differ,
+stop; never delete or replace a tag. When GitHub lacks the tag, fetch the
+canonical GitLab object to a separate local ref, then push that exact object
+and verify:
 
 ```bash
-git ls-remote gitlab refs/heads/main refs/tags/vX.Y.Z
-git ls-remote github refs/heads/main refs/tags/vX.Y.Z
+git fetch gitlab refs/tags/vX.Y.Z:refs/pyku-sync/tags/vX.Y.Z
+git push github refs/pyku-sync/tags/vX.Y.Z:refs/tags/vX.Y.Z
+git ls-remote --tags gitlab refs/tags/vX.Y.Z
+git ls-remote --tags github refs/tags/vX.Y.Z
 ```
 
-If either check is ambiguous, a ref is divergent, or access is denied, stop
-and report what was observed. Do not attempt bidirectional reconciliation or
-touch the deprecated `master` branch. GitHub pull requests are imported
-manually into GitLab using `.opencode/skills/gitlab-contribution/SKILL.md`;
-GitLab's push mirror is the one-way path for updates from GitLab to GitHub.
+Do not touch the deprecated `master` branch. Report any divergence, denied
+access, or ambiguous result instead of attempting a destructive recovery.

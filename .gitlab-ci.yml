@@ -185,8 +185,10 @@ pypi-deploy:
     - source $PYKU_ENVIRONMENT/venv/bin/activate
     - echo "Build wheel"
     - uv build
-    - echo "Deploy to ku-pypi"
-    - uv publish --publish-url $CI_API_V4_URL/projects/${PYPI_PROJECT_ID}/packages/pypi dist/*.whl    
+    - echo "Deploy to pyku package registry"
+    - >-
+      uv publish --publish-url
+      $CI_API_V4_URL/projects/${CI_PROJECT_ID}/packages/pypi dist/*.whl
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
 
@@ -223,7 +225,10 @@ create-module-latest:
       rm -rf ${PYKU_CI_MODULE}/pyku.latest/.venv 
       uv venv ${PYKU_CI_MODULE}/pyku.latest/.venv 
       source ${PYKU_CI_MODULE}/pyku.latest/.venv/bin/activate
-      uv pip install pyku --upgrade --index-url $CI_API_V4_URL/projects/${PYPI_PROJECT_ID}/packages/pypi/simple
+      index_url="https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}"
+      index_url+="/api/v4/projects/${CI_PROJECT_ID}/packages/pypi/simple"
+      uv pip install pyku --upgrade \
+        --index-url "$index_url"
 
 pages:
   stage: deploy

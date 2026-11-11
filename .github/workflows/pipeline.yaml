@@ -1,8 +1,8 @@
 name: CI/CD Pipeline
 
 on:
-  # GitHub PRs get checks only; merged main branches and release tags arrive
-  # from the canonical GitLab repository through its push mirror.
+  # GitHub PRs get checks only; maintainers manually sync merged main
+  # branches and release tags from the canonical GitLab repository.
   pull_request:
     branches:
       - main

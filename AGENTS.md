@@ -200,13 +200,14 @@ python -m http.server --directory _build/html/ --bind=$HOSTNAME
 ## Release workflow
 
 - GitLab is the canonical repository for changes, `main`, releases, and
-  version tags. Merge MRs on GitLab; GitLab's push mirror updates GitHub.
+  version tags. Merge MRs on GitLab; manually synchronize the merged `main`
+  commit to GitHub after checking ancestry and remote refs.
 - GitHub PRs may run checks, but must not be merged on GitHub. Import their
   head branches into GitLab and review them through MRs targeting GitLab
   `main`.
-- Never push directly to GitHub `main` or push release tags to GitHub during
-  normal operation. Use the sync skill only for explicitly requested mirror
-  diagnosis or recovery; never force-push.
+- Create release tags on GitLab first, then manually push only that tag to
+  GitHub. Do not push all tags, overwrite divergent refs, or force-push. Use
+  `.opencode/skills/sync/SKILL.md` for the safe procedure.
 - The `master` branch is deprecated. Do not merge changes into it or use it for
   releases.
 - Follow `doc/contribute/maintainers.rst` for the human contribution and
@@ -214,6 +215,6 @@ python -m http.server --directory _build/html/ --bind=$HOSTNAME
   asked to submit changes to GitLab and `.opencode/skills/release/SKILL.md`
   for releases. Keep the runbook and skills synchronized when the workflow
   changes.
-- Release tags are created on GitLab and mirrored to GitHub. GitLab CI
-  publishes/deploys GitLab artifacts and creates the GitLab Release; GitHub
-  Actions checks the mirrored tag and deploys GitHub Pages.
+- Release jobs publish to the pyku project's package registry and create the
+  GitLab Release. GitHub Actions and Pages run after the relevant refs are
+  manually synchronized to GitHub.

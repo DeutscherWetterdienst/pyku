@@ -8,16 +8,16 @@ description: >-
 # Contribute to pyku on GitLab
 
 Use this skill when asked to submit pyku changes to GitLab. GitLab is the
-canonical repository: merge requests target GitLab `main`, and GitHub is
-updated by the configured GitLab push mirror. Never push directly to either
-host's `main`, merge a request, force-push, or create a GitHub release tag.
+canonical repository: merge requests target GitLab `main`; maintainers
+manually synchronize merged GitLab refs to GitHub. Do not merge GitHub PRs,
+force-push, or make independent changes on GitHub.
 Do not install missing CLIs or expose credentials; report blockers and give the
 maintainer the next step.
 
 The human contribution and release runbook is
 `doc/contribute/maintainers.rst`. Use `.opencode/skills/release/SKILL.md` for
-release preparation and `.opencode/skills/sync/SKILL.md` only for explicitly
-requested mirror recovery.
+release preparation and `.opencode/skills/sync/SKILL.md` for manual
+GitLab-to-GitHub synchronization.
 
 ## Submit changes from the current checkout
 
@@ -99,6 +99,6 @@ MR against `main`:
    PR with a link to it.
 
 If importing or pushing is rejected, stop and report the exact branch/ref
-conflict. Never resolve it with a force-push. GitLab's push mirror updates
-GitHub `main` and release tags after GitLab merges; do not synchronize them
-manually as part of the contribution workflow.
+conflict. Never resolve it with a force-push. After a GitLab MR is merged,
+the maintainer manually synchronizes GitHub `main` using
+`.opencode/skills/sync/SKILL.md`.
