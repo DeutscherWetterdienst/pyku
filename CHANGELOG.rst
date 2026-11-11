@@ -1,3 +1,21 @@
+v1.2.2
+------
+
+Documentation
+~~~~~~~~~~~~~
+
+* Update the maintainer runbook and release guidance to use the release
+  helper for tagging and GitLab-to-GitHub synchronization.
+
+Internal changes
+~~~~~~~~~~~~~~~~
+
+* Add a parameterized release helper with pipeline confirmations and guarded
+  synchronization of ``main`` and individual release tags. Keep unrelated
+  local tags private even when ``push.followTags`` is enabled.
+* Create GitHub Releases from changelog notes after tag checks and Pages
+  deployment pass.
+
 v1.2.1
 ------
 
