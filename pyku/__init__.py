@@ -4,6 +4,7 @@ Package initializer
 
 import logging
 import warnings
+from collections.abc import Callable, Hashable
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as importlib_version
 from typing import Any, Literal
@@ -616,6 +617,26 @@ class pykuDatasetAccessor:
 
     # compute
     # -------
+
+    def calc_loess(
+        self: "pykuDatasetAccessor",
+        var: Hashable | None = None,
+        spatial_reduce: (
+            Literal[True] | list[str] | Callable[..., Any] | None
+        ) = None,
+        frequency: str | None = '1YS',
+        time_reduce: str | Callable[..., Any] = 'mean',
+        **loess_kwargs: Any,
+    ) -> xr.Dataset:
+        return libcompute.calc_loess(
+            self._obj,
+            var=var,
+            spatial_reduce=spatial_reduce,
+            frequency=frequency,
+            time_reduce=time_reduce,
+            **loess_kwargs,
+        )
+    calc_loess.__doc__ = libcompute.calc_loess.__doc__
 
     def calc(self, *args, **kwargs):
         return libcompute.calc(self._obj, *args, **kwargs)

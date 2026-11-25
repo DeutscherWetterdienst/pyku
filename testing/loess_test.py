@@ -4,7 +4,10 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
-from pyku.loess import loess, Loess, calc_loess
+import xarray as xr
+from pyku.compute import calc_loess
+from pyku.loess import Loess, loess
+from pyku.loess import calc_loess as legacy_calc_loess
 from pyku.resources import generate_fake_cmip6_data
 
 DELTA = 0.01
@@ -162,6 +165,193 @@ class TestLoessDataset(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             calc_loess(self.ds)
+
+    def test_annual_resampling_is_default(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(
+            ntime=43, freq='MS', nlat=1, nlon=1
+        )
+        filtered_ds = calc_loess(ds, var='tas')
+        annual_mean = ds['tas'].resample(time='1YS').mean(
+            dim='time', keep_attrs=True
+        )
+        expected_ds = xr.Dataset({'tas': annual_mean}, attrs=ds.attrs)
+        expected = calc_loess(
+            expected_ds, var='tas', frequency=None
+        )
+        xr.testing.assert_allclose(filtered_ds, expected)
+
+    def test_custom_frequency_and_reduction_through_accessor(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(
+            ntime=5, freq='D', nlat=1, nlon=1
+        )
+        filtered_ds = ds.pyku.calc_loess(
+            var='tas', frequency='MS', time_reduce='median'
+        )
+        self.assertEqual(filtered_ds.sizes['time'], 60)
+
+        monthly_ds = generate_fake_cmip6_data(
+            ntime=5, freq='MS', nlat=1, nlon=1
+        )
+        unresampled_ds = calc_loess(
+            monthly_ds, var='tas', frequency=None
+        )
+        self.assertEqual(
+            unresampled_ds.sizes['time'], monthly_ds.sizes['time']
+        )
+
+    def test_legacy_calc_loess_import(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(
+            ntime=43, freq='YS', nlat=1, nlon=1
+        )
+        with self.assertLogs('pyku.loess', level='WARNING') as log:
+            filtered_ds = legacy_calc_loess(ds, var='tas')
+
+        self.assertIn('will be removed in a future release', log.output[0])
+        self.assertIn('pyku.compute.calc_loess', log.output[0])
+        self.assertEqual(filtered_ds.sizes['time'], 43)
+
+    def test_time_reductions_match_explicit_resampling(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(
+            ntime=43, freq='MS', nlat=1, nlon=1
+        )
+        reductions = ('mean', 'median', 'sum', 'min', 'max', np.nanmedian)
+
+        for time_reduce in reductions:
+            with self.subTest(time_reduce=time_reduce):
+                resampled = ds['tas'].resample(time='1YS')
+                if isinstance(time_reduce, str):
+                    reduced = getattr(resampled, time_reduce)(
+                        dim='time', keep_attrs=True
+                    )
+                else:
+                    reduced = resampled.reduce(
+                        time_reduce, dim='time', keep_attrs=True
+                    )
+                expected_ds = xr.Dataset(
+                    {'tas': reduced},
+                    attrs=ds.attrs,
+                )
+                expected = calc_loess(
+                    expected_ds, var='tas', frequency=None
+                )
+                actual = calc_loess(
+                    ds,
+                    var='tas',
+                    frequency='1YS',
+                    time_reduce=time_reduce,
+                )
+                xr.testing.assert_allclose(actual, expected)
+
+    def test_nonstandard_calendar_preserves_time_coordinates(
+        self: "TestLoessDataset",
+    ) -> None:
+        for calendar in ("noleap", "360_day"):
+            with self.subTest(calendar=calendar):
+                time = xr.date_range(
+                    start="2000-01-01",
+                    periods=50,
+                    freq="12h",
+                    calendar=calendar,
+                    use_cftime=True,
+                )
+                ds = generate_fake_cmip6_data(
+                    ntime=50, freq="YS", nlat=1, nlon=1
+                ).assign_coords(time=time)
+
+                result = calc_loess(ds, var="tas", frequency=None)
+                numeric_time, _, _ = xr.coding.times.encode_cf_datetime(
+                    time.values,
+                    units=f"days since {time.values[0]}",
+                    calendar=calendar,
+                    dtype=np.float64,
+                )
+                numeric_ds = ds.assign_coords(time=numeric_time)
+                numeric_result = calc_loess(
+                    numeric_ds,
+                    var="tas",
+                    frequency=None,
+                )
+
+                self.assertIsInstance(result.indexes["time"], xr.CFTimeIndex)
+                self.assertEqual(result.indexes["time"].calendar, calendar)
+                xr.testing.assert_equal(result.time, ds.time)
+                self.assertTrue(np.isfinite(result["tas_loess"]).all())
+                np.testing.assert_allclose(
+                    result["tas_loess"].values,
+                    numeric_result["tas_loess"].values,
+                )
+
+    def test_chunked_time_series_is_rechunked_for_loess(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(ntime=50, freq="YS", nlat=2, nlon=2)
+        chunked = ds.chunk({"time": 10, "lat": 1, "lon": 1})
+
+        for frequency in (None, "1YS"):
+            with self.subTest(frequency=frequency):
+                result = calc_loess(chunked, var="tas", frequency=frequency)
+
+                self.assertIsNotNone(result["tas_loess"].chunks)
+                xr.testing.assert_allclose(
+                    result.compute(),
+                    calc_loess(ds, var="tas", frequency=frequency),
+                )
+
+    def test_grid_mapping_is_preserved(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(ntime=50, freq="YS", nlat=2, nlon=2)
+        ds["crs"] = xr.DataArray(
+            0,
+            attrs={"crs_wkt": "test CRS"},
+        )
+        ds["tas"].attrs["grid_mapping"] = "crs"
+
+        result = calc_loess(ds, var="tas", frequency=None)
+
+        self.assertIn("crs", result)
+        self.assertEqual(result["crs"].attrs["crs_wkt"], "test CRS")
+        for name in ("tas_loess", "tas_loess_lower", "tas_loess_upper"):
+            self.assertEqual(result[name].attrs["grid_mapping"], "crs")
+
+    def test_spatial_reduction_drops_grid_mapping(
+        self: "TestLoessDataset",
+    ) -> None:
+        ds = generate_fake_cmip6_data(ntime=50, freq="YS", nlat=2, nlon=2)
+        ds["crs"] = xr.DataArray(
+            0,
+            attrs={"crs_wkt": "test CRS"},
+        )
+        ds["tas"].attrs["grid_mapping"] = "crs"
+
+        decoded_ds = xr.decode_cf(ds, decode_coords="all")
+        self.assertIn("crs", decoded_ds.coords)
+
+        for source in (ds, decoded_ds):
+            with self.subTest(decoded="crs" in source.coords):
+                result = calc_loess(
+                    source,
+                    var="tas",
+                    frequency=None,
+                    spatial_reduce=True,
+                )
+
+                self.assertNotIn("crs", result)
+                for name in (
+                    "tas_loess",
+                    "tas_loess_lower",
+                    "tas_loess_upper",
+                ):
+                    self.assertNotIn("grid_mapping", result[name].attrs)
+                    self.assertEqual(result[name].dims, ("time",))
 
     def test_loess_filter_spatial_mean(self):
         self.ds = generate_fake_cmip6_data(

@@ -23,5 +23,6 @@ resources/*
 *.ipynb_checkpoints*
 .vscode
 *~
+.glab-token
 graphify-out/
 graphify-out/*

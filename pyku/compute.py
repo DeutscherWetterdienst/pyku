@@ -4,8 +4,16 @@
 Processing library
 """
 
+from collections.abc import Callable, Hashable
+from typing import Any, Literal
+
+import numpy as np
+
 import xarray as xr
 from pyku import logger
+from xarray.coding.times import encode_cf_datetime
+
+_SpatialReduce = Literal[True] | list[str] | Callable[..., Any] | None
 
 
 def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
@@ -144,6 +152,186 @@ def inpainting(ds_in, roi=3, method="INPAINT_TELEA"):
         ds_out[varname].values = out_np
 
     return ds_out
+
+
+def calc_loess(
+    ds: xr.Dataset,
+    var: Hashable | None = None,
+    spatial_reduce: _SpatialReduce = None,
+    frequency: str | None = "1YS",
+    time_reduce: str | Callable[..., Any] = "mean",
+    **loess_kwargs: Any,
+) -> xr.Dataset:
+    """Apply a LOESS filter to a time series variable in an xarray Dataset.
+
+    By default, data are resampled to annual frequency (``1YS``) and averaged
+    over time before fitting. Set ``frequency=None`` to fit the original time
+    series, or provide another xarray resampling frequency and a temporal
+    reduction. Time values are converted to elapsed days in their native
+    calendar for fitting, while the output retains the original time
+    coordinate. Dask-backed data are rechunked to a single time chunk because
+    each LOESS fit uses the complete time series. This may increase memory use
+    for long series.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Input dataset with a time dimension.
+    var : Hashable or None, default None
+        Variable to filter. If omitted, the sole georeferenced data variable
+        is selected automatically.
+    spatial_reduce : True, list of str, callable, or None, default None
+        If ``True``, average over geographic latitude and longitude. A list of
+        dimensions averages over those dimensions. A callable receives the
+        resampled variable and ``dim`` keyword; ``None`` leaves spatial
+        dimensions unchanged.
+    frequency : str or None, default '1YS'
+        Time resampling frequency. ``'1YS'`` is annual, year-start. ``None``
+        disables resampling and temporal reduction.
+    time_reduce : str or callable, default 'mean'
+        Resample reduction. Supported strings are ``'mean'``, ``'median'``,
+        ``'sum'``, ``'min'``, and ``'max'``. A callable is passed to xarray's
+        resample ``reduce`` method. Ignored when ``frequency`` is ``None``.
+    **loess_kwargs : Any
+        Options passed to :func:`pyku.loess.loess`, including its confidence
+        interval method (``conf``: ``'wald'`` [default], ``'bootstrap'``, or
+        ``'internal'``) and fitting parameters such as ``span`` and
+        ``degree``. By default, ``span`` covers 42 observations, so at least
+        43 time points are required unless ``span`` is provided explicitly.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset containing ``{var}_loess``, ``{var}_loess_lower``, and
+        ``{var}_loess_upper``.
+
+    Raises
+    ------
+    ValueError
+        If no sole georeferenced variable can be inferred, a reduction option
+        is invalid, or LOESS cannot fit the available time series.
+    """
+    from pyku import geo, meta
+    from pyku.loess import _wrap_loess
+
+    if var is None:
+        geodata_variables = meta.get_geodata_varnames(ds)
+        if len(geodata_variables) != 1:
+            variable_names = ", ".join(map(str, geodata_variables))
+            raise ValueError(
+                "There are multiple/no variables within the dataset "
+                f"{variable_names}. Please choose the variable to apply the "
+                "LOESS filter by providing its name."
+            )
+        var = geodata_variables[0]
+
+    if frequency is None:
+        ts = ds[var]
+    else:
+        resampled = ds[var].resample(time=frequency)
+        if isinstance(time_reduce, str):
+            if time_reduce not in {"mean", "median", "sum", "min", "max"}:
+                raise ValueError(
+                    "time_reduce must be 'mean', 'median', 'sum', 'min', "
+                    "'max', or a callable."
+                )
+            ts = getattr(resampled, time_reduce)(dim="time", keep_attrs=True)
+        elif callable(time_reduce):
+            ts = resampled.reduce(time_reduce, dim="time", keep_attrs=True)
+        else:
+            raise ValueError(
+                "time_reduce must be 'mean', 'median', 'sum', 'min', "
+                "'max', or a callable."
+            )
+
+    if spatial_reduce is None:
+        ts_in = ts
+    elif spatial_reduce is True:
+        coords = meta.get_geographic_latlon_varnames(ds)
+        ts_in = ts.mean(dim=coords, keep_attrs=True)
+    elif isinstance(spatial_reduce, list):
+        ts_in = ts.mean(dim=spatial_reduce, keep_attrs=True)
+    elif callable(spatial_reduce):
+        coords = meta.get_geographic_latlon_varnames(ds)
+        ts_in = spatial_reduce(ts, dim=coords)
+    else:
+        raise ValueError(
+            "spatial_reduce must be None, True, a list of dimension names, "
+            "or a callable returning such a list."
+        )
+
+    time = ts.time
+    time_values = time.values
+    if np.issubdtype(time_values.dtype, np.number):
+        numeric_time = time_values.astype(float)
+    else:
+        numeric_time, _, _ = encode_cf_datetime(
+            time_values,
+            units=f"days since {time_values[0]}",
+            calendar=time.dt.calendar,
+            dtype=np.float64,
+        )
+    fit_time = xr.DataArray(
+        numeric_time,
+        dims=time.dims,
+        coords=time.coords,
+    )
+
+    if ts_in.chunks is not None and len(ts_in.chunksizes["time"]) > 1:
+        ts_in = ts_in.chunk({"time": -1})
+
+    loess_ds = xr.apply_ufunc(
+        _wrap_loess,
+        fit_time,
+        ts_in,
+        input_core_dims=[["time"], ["time"]],
+        output_core_dims=[["stat", "time"]],
+        vectorize=True,
+        dask="parallelized",
+        output_dtypes=[float],
+        dask_gufunc_kwargs={"output_sizes": {"stat": 3, "time": len(time)}},
+        kwargs=loess_kwargs,
+    )
+
+    output = xr.Dataset(
+        {
+            f"{var}_loess": loess_ds.sel(stat=0).assign_attrs(ts.attrs),
+            f"{var}_loess_lower": loess_ds.sel(stat=1).assign_attrs(ts.attrs),
+            f"{var}_loess_upper": loess_ds.sel(stat=2).assign_attrs(ts.attrs),
+        },
+        coords={"time": time},
+        attrs=ds.attrs,
+    )
+    spatial_coordinates = (
+        meta.get_geographic_latlon_varnames(ds)
+        + meta.get_projection_yx_varnames(ds)
+    )
+    spatial_dimensions = {
+        dimension
+        for coordinate in spatial_coordinates
+        if coordinate is not None and coordinate in ds.coords
+        for dimension in ds[coordinate].dims
+    }
+    if spatial_dimensions.intersection(output.dims):
+        return geo._copy_georeferencing_metadata_and_crs(
+            output,
+            ds,
+            variables=[
+                f"{var}_loess",
+                f"{var}_loess_lower",
+                f"{var}_loess_upper",
+            ],
+        )
+
+    # A spatially reduced result has no grid to reference.
+    grid_mapping = ds[var].attrs.get("grid_mapping")
+    if grid_mapping is None:
+        grid_mapping = ds[var].encoding.get("grid_mapping")
+    if isinstance(grid_mapping, str) and grid_mapping in output.coords:
+        output = output.drop_vars(grid_mapping)
+    for output_var in output.data_vars:
+        output[output_var].attrs.pop("grid_mapping", None)
+    return output
 
 
 def _computable_varnames(available_varnames, wanted_varnames):

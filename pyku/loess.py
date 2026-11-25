@@ -1,18 +1,21 @@
 """ Module for LOESS smoothing of time series data
 """
 import logging
-from types import SimpleNamespace
+from collections.abc import Callable, Hashable
 from dataclasses import dataclass
+from types import SimpleNamespace
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 import skmisc.loess
 from skmisc.loess import loess as skloess
 
-import pyku.meta as meta
+import xarray as xr
 
 logger = logging.getLogger(__name__)
+
+_SpatialReduce = Literal[True] | list[str] | Callable[..., Any] | None
 
 
 @dataclass
@@ -214,94 +217,26 @@ def _wrap_loess(x, y, conf='wald', **loess_kwargs):
                     axis=0)
 
 
-def calc_loess(ds, var=None, spatial_reduce=None, **loess_kwargs):
-    """
-    Applies a LOESS filter to a time series variable in an xarray Dataset
-    using scikit-misc.
-
-    Arguments:
-        ds (:class:`xarray.Dataset`): Input dataset containing a time
-            dimension and the target variable.
-        var (str, optional): The name of the variable in `ds` to which the
-            LOESS filter should be applied. Automatically select variable,
-            if only one is given within the dataset.
-        spatial_reduce (list, optional): List of spatial dimensions to
-            average over before applying the LOESS filter. If True, the
-            function will attempt to identify and average over georeferenced
-            dimensions (e.g., latitude and longitude).
-        **loess_kwargs :
-            Additional keyword arguments to pass to the `loess` function
-            (e.g., span, degree).
-
-    Returns
-    -------
-    loess_ds : xarray.Dataset
-        A dataset containing:
-        - '{var}_loess': Smoothed values
-        - '{var}_loess_lower': Lower bound of confidence interval
-        - '{var}_loess_upper': Upper bound of confidence interval
-    """
-
-    # Find georeferenced variable if variable name is not provided
-    if var is None:
-        geodata_variables = meta.get_geodata_varnames(ds)
-
-        if len(geodata_variables) != 1:
-            raise ValueError("There are multiple/no variables within the"
-                             f"dataset {','.join(geodata_variables)}. "
-                             "Please choose the variable to apply the "
-                             " LOESS-filter providing the variable name.")
-        else:
-            var = geodata_variables[0]
-
-    # Resample annually and average spatially
-    ts = (
-        ds[var].resample(time='1YS')
-        .mean(dim='time', keep_attrs=True)
+def calc_loess(
+    ds: xr.Dataset,
+    var: Hashable | None = None,
+    spatial_reduce: _SpatialReduce = None,
+    frequency: str | None = '1YS',
+    time_reduce: str | Callable[..., Any] = 'mean',
+    **loess_kwargs: Any,
+) -> xr.Dataset:
+    """Backward-compatible forwarding to :func:`pyku.compute.calc_loess`."""
+    logger.warning(
+        "`pyku.loess.calc_loess` will be removed in a future release because "
+        "it has moved to `pyku.compute.calc_loess`; use that function instead."
     )
+    from pyku.compute import calc_loess as compute_calc_loess
 
-    # Return projection names for averaging
-    if spatial_reduce is None:
-        ts_in = ts
-    else:
-        if spatial_reduce is True:
-            coords = meta.get_geographic_latlon_varnames(ds)
-            ts_in = ts.mean(dim=coords, keep_attrs=True)
-        elif isinstance(spatial_reduce, list):
-            ts_in = ts.mean(dim=spatial_reduce, keep_attrs=True)
-        elif callable(spatial_reduce):
-            coords = meta.get_geographic_latlon_varnames(ds)
-            ts_in = spatial_reduce(ts, dim=coords)
-        else:
-            raise ValueError("spatial_reduce must be None, True, a list of "
-                             "dimension names, or a callable returning such a"
-                             " list.")
-
-    time = ts.time
-
-    loess_ds = xr.apply_ufunc(
-        _wrap_loess,
-        time,
-        ts_in,
-        input_core_dims=[['time'], ['time']],
-        output_core_dims=[['stat', 'time']],
-        vectorize=True,
-        dask='parallelized',
-        dask_gufunc_kwargs={'output_sizes': {
-                                'stat': ['value', 'lower', 'upper'],
-                                'time': len(time)
-                                }
-                            },
-        kwargs=loess_kwargs
+    return compute_calc_loess(
+        ds,
+        var=var,
+        spatial_reduce=spatial_reduce,
+        frequency=frequency,
+        time_reduce=time_reduce,
+        **loess_kwargs
     )
-
-    out = xr.Dataset(
-        {
-            f"{var}_loess": loess_ds.sel(stat=0),
-            f"{var}_loess_lower": loess_ds.sel(stat=1),
-            f"{var}_loess_upper": loess_ds.sel(stat=2),
-        },
-        coords={'time': time},
-        attrs=ds.attrs
-    )
-    return out
