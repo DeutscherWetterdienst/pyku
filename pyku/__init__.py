@@ -519,6 +519,23 @@ class pykuDatasetAccessor:
 
     regionalize.__doc__ = libfeatures.regionalize.__doc__
 
+    def aggregate_by_region(
+        self,
+        gdf: geopandas.GeoDataFrame,
+        area_def: Any | None = None,
+        statistic: str = "mean",
+        cell_selection: str = "centroid",
+    ) -> xr.Dataset:
+        return libfeatures.aggregate_by_region(
+            self._obj,
+            gdf,
+            area_def=area_def,
+            statistic=statistic,
+            cell_selection=cell_selection,
+        )
+
+    aggregate_by_region.__doc__ = libfeatures.aggregate_by_region.__doc__
+
     # drs
     # ---
 

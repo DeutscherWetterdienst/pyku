@@ -72,6 +72,7 @@ dependencies = [
     "xarray",
     "xclim>=0.59.1,<1.0",
     "xskillscore",
+    "xvec",
     "zarr",
     "s3fs",
     "ipywidgets",

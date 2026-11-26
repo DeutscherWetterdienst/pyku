@@ -1,6 +1,5 @@
-####################
- pyku.visualisation
-####################
+pyku.visualisation
+##################
 
 .. currentmodule:: pyku.visualisation
 
@@ -17,6 +16,8 @@
 .. autofunction:: percentile_map
 
 .. autofunction:: regions
+
+.. autofunction:: regional_value_map
 
 .. autofunction:: pdf
 

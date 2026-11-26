@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import Mock
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
@@ -70,6 +71,32 @@ def test_one_map_draws_hostrada_mask() -> None:
         plt.gcf().canvas.draw()
     finally:
         plt.close("all")
+
+
+def test_regional_value_map_plots_geometry_indexed_values(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import xvec
+
+    ds = xr.Dataset({"tas": ("geometry", [1.0])})
+    axis = Mock()
+    plot_calls = []
+
+    def fake_plot(self: Any, **kwargs: Any) -> tuple[None, Mock]:
+        plot_calls.append(kwargs)
+        return None, axis
+
+    monkeypatch.setattr(xvec.XvecAccessor, "plot", fake_plot)
+    monkeypatch.setattr(visualisation.plt, "clf", lambda: None)
+
+    class Area:
+        def to_cartopy_crs(self) -> str:
+            return "test-crs"
+
+    visualisation.regional_value_map(ds, "tas", Area())
+
+    assert plot_calls == [{"subplot_kws": {"projection": "test-crs"}}]
+    assert axis.add_feature.call_count == 4
 
 
 def test_map_spatial_dims_reorder_transposed_variable(

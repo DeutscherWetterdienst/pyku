@@ -433,8 +433,62 @@ def get_geodataframe(identifier):
     return polygons
 
 
-def _get_natural_areas_of_germany_merged4():
+def get_geometry_dataset(
+    identifier: str,
+    area_def: str | None = None,
+) -> "xr.Dataset":
+    """Return polygon resources as an xvec-indexed xarray Dataset.
 
+    Parameters
+    ----------
+    identifier : str
+        Name of the polygon resource.
+    area_def : str, optional
+        Default is None. Standard area definition used to reproject the
+        geometry index.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset containing the resource attributes and indexed geometries.
+    """
+    import xvec  # noqa: F401
+
+    import xarray as xr
+    from pyku import geo
+
+    _gdf = get_geodataframe(identifier)
+
+    # Convert the GeoDataFrame to an xvec object
+    ds = xr.Dataset(
+        data_vars={
+            col: ("geometry", _gdf[col].to_numpy())
+            for col in _gdf.columns
+            if col != "geometry"
+        },
+        coords={
+            "geometry": _gdf["geometry"],
+        },
+    )
+
+    ds = ds.xvec.set_geom_indexes(
+        "geometry",
+        crs=_gdf.crs,
+    )
+
+    if area_def is None:
+        return ds
+
+    if area_def not in geo.list_standard_areas():
+        raise ValueError(
+            f"Area definition '{area_def}' is not a standard area."
+        )
+
+    _area_def = geo.load_area_def(area_def)
+    return ds.xvec.to_crs(geometry=_area_def.crs_wkt)
+
+
+def _get_natural_areas_of_germany_merged4():
     """
     Return polygons with german western, northern, eastern and southern states.
 

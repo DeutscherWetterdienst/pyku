@@ -4,7 +4,17 @@
 Functions for dealing with features (polygons, points).
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
 from pyku import logger
+
+if TYPE_CHECKING:
+    import geopandas as gpd
+    import pyresample
+
+    import xarray as xr
 
 
 def rasterize_points(features, area_def, reference_datetime=None):
@@ -617,7 +627,9 @@ def polygonize(
     return gdfs
 
 
-def regionalize(ds, gdf=None, area_def=None, **kwargs):
+def _regionalize(ds, gdf=None,
+                 area_def=None,
+                 **kwargs):
 
     """
     Group data into the regions given in the GeoDataFrame
@@ -721,3 +733,408 @@ def regionalize(ds, gdf=None, area_def=None, **kwargs):
     out_ds = xr.merge([ds_grouped_regions, ds[other_varnames]])
 
     return out_ds
+
+
+# Reduce grid values to one value per polygon.
+def aggregate_by_region(
+    ds: xr.Dataset,
+    gdf: gpd.GeoDataFrame,
+    area_def: pyresample.geometry.AreaDefinition | str | None = None,
+    statistic: str = "mean",
+    cell_selection: str = "centroid",
+) -> xr.Dataset:
+    """
+    Reduce gridded data to one value per polygon.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The input dataset to be regionalized.
+    gdf : geopandas.GeoDataFrame
+        The polygons for regionalization.
+    area_def : pyresample.geometry.AreaDefinition or str, optional, default None
+        The area definition to use for the regionalization. If None, it will be
+        inferred from the dataset.
+    statistic : str, optional, default "mean"
+        Reduction to apply: ``mean``, ``sum``, ``min``, ``max``, ``median``,
+        ``std``, or ``weighted_sum``. The default is ``mean``. With
+        ``cell_selection="area"``, area fractions weight the mean. The other
+        statistics reduce the selected cells without area weighting.
+        ``weighted_sum`` uses per-region normalized weights and is not a
+        conservative area integral.
+    cell_selection : str, optional, default "centroid"
+        ``centroid`` selects cells whose centers are covered by each polygon.
+        ``area`` selects cells with positive-area overlap and computes area
+        weights. The default is ``centroid``.
+
+    Returns
+    -------
+    xarray.Dataset
+        The regionalized dataset.
+    """
+    import geopandas
+    import pyresample
+    import xvec  # noqa: F401
+
+    import xarray as xr
+    from pyku import geo, meta
+
+    if not isinstance(gdf, geopandas.GeoDataFrame):
+        raise TypeError("gdf must be a geopandas.GeoDataFrame")
+
+    if area_def is None:
+        _area_def = geo.get_area_def(ds)
+    elif isinstance(area_def, str):
+        _area_def = geo.load_area_def(area_def)
+    elif isinstance(area_def, pyresample.geometry.AreaDefinition):
+        _area_def = area_def
+    else:
+        raise TypeError("area_def must be an AreaDefinition, string, or None")
+
+    gdf = gdf.to_crs(_area_def.crs_wkt)
+    gdf = _repair_invalid_polygons(gdf)
+
+    weights = _gen_weights(
+        ds,
+        gdf.geometry.to_numpy(),
+        how=cell_selection,
+        area_def=_area_def,
+    )
+
+    geodata_varnames = meta.get_geodata_varnames(ds)
+    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    if y_name is None or x_name is None:
+        raise ValueError("Regionalization requires projected y and x axes")
+
+    other_varnames = [el for el in ds.data_vars if el not in geodata_varnames]
+    grid_mapping_names = {
+        ds[var].attrs["grid_mapping"]
+        for var in geodata_varnames
+        if "grid_mapping" in ds[var].attrs
+    }
+    other_varnames = [
+        name for name in other_varnames if name not in grid_mapping_names
+    ]
+
+    reduced_vars = {}
+    for var in geodata_varnames:
+        reduced = _apply_weights(
+            ds[var],
+            weights,
+            method=statistic,
+            y_name=y_name,
+            x_name=x_name,
+        )
+        reduced.attrs = {
+            key: value
+            for key, value in ds[var].attrs.items()
+            if key != "grid_mapping"
+        }
+        reduced_vars[var] = reduced.assign_coords(
+            geometry=("geometry", gdf.geometry.to_numpy())
+        )
+
+    out_ds = xr.Dataset(reduced_vars, attrs=ds.attrs.copy())
+    if other_varnames:
+        out_ds = xr.merge([out_ds, ds[other_varnames]])
+
+    return out_ds.xvec.set_geom_indexes("geometry", crs=gdf.crs)
+
+
+def regionalize(
+    ds: xr.Dataset,
+    gdf: gpd.GeoDataFrame | None = None,
+    area_def: pyresample.geometry.AreaDefinition | str | None = None,
+    **kwargs: Any,
+) -> xr.Dataset:
+    """Mask the gridded dataset independently for each polygon.
+
+    This preserves the input spatial dimensions, adding a ``region`` dimension
+    (typically ``region × time × y × x``). Use
+    :func:`aggregate_by_region` for reduced polygon values.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Gridded dataset to mask.
+    gdf : geopandas.GeoDataFrame, optional
+        Polygon regions.
+    area_def : pyresample.geometry.AreaDefinition or str, optional, default None
+        Area definition for the input grid.
+    **kwargs
+        Additional legacy keyword arguments forwarded to the masking
+        implementation.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with a ``region`` dimension and the original grid dimensions.
+    """
+    return _regionalize(ds, gdf=gdf, area_def=area_def, **kwargs)
+
+
+def _grid_to_polytree(
+    ds: Any,
+    area_def: Any | None = None,
+) -> tuple[Any, Any, Any]:
+    import shapely
+    from shapely.strtree import STRtree
+
+    if area_def is None:
+        area_def = ds.pyku.get_area_def()
+    x, y = area_def.get_proj_coords()
+
+    dx = abs(area_def.pixel_size_x)
+    dy = abs(area_def.pixel_size_y)
+
+    xr = x.ravel()
+    yr = y.ravel()
+
+    gridpoints = shapely.box(
+        xr - dx / 2,
+        yr - dy / 2,
+        xr + dx / 2,
+        yr + dy / 2,
+    )
+
+    gridcenters = shapely.points(xr, yr)
+
+    tree = STRtree(gridpoints)
+    return tree, gridpoints, gridcenters
+
+
+def _gen_weights(
+    ds: Any,
+    polygons: Any,
+    how: str = "area",
+    area_def: Any | None = None,
+) -> list[tuple[Any, Any]]:
+    import numpy as np
+    import shapely
+
+    tree, gridpoints, gridcenters = _grid_to_polytree(ds, area_def)
+
+    weights = []
+    if how == "area":
+        for poly in polygons:
+            candidates = tree.query(poly)
+            areas = np.asarray(
+                [
+                    poly.intersection(gridpoints[cell]).area
+                    for cell in candidates
+                ]
+            )
+            positive = areas > 0
+            candidates = candidates[positive]
+            areas = areas[positive]
+            total_area = sum(areas)
+            if total_area > 0:
+                areas = [a / total_area for a in areas]
+            weights.append((candidates, areas))
+    elif how == "centroid":
+        for poly in polygons:
+            candidates = tree.query(poly)
+            mask = shapely.covers(poly, gridcenters[candidates])
+            selected_idx = candidates[mask]
+            areas = [1.0 / len(selected_idx) for _ in selected_idx]
+            weights.append((selected_idx, areas))
+    else:
+        raise ValueError(f"Unsupported method: {how}")
+    return weights
+
+
+def _repair_invalid_polygons(gdf):
+    # How to deal with holes and invalid geometries in the polygons?
+    # // this is just a fix of the symptom, not a cure of the defect
+    # //TODO it might lead to unexpected geometries or topological errors
+    import shapely
+
+    geom = gdf.geometry.values.copy()
+    bad = ~shapely.is_valid(geom)
+    geom[bad] = shapely.make_valid(
+        geom[bad],
+        method="structure",
+    )
+    gdf.geometry = geom
+    return gdf
+
+
+def _apply_weights(
+    da: Any,
+    weights: list[tuple[Any, Any]],
+    method: str = "mean",
+    y_name: str | None = None,
+    x_name: str | None = None,
+) -> Any:
+    import numpy as np
+
+    import xarray as xr
+
+    if method not in {
+        "mean",
+        "weighted_sum",
+        "sum",
+        "min",
+        "max",
+        "median",
+        "std",
+    }:
+        raise ValueError(f"Unsupported method: {method}")
+    if y_name is None or x_name is None:
+        from pyku import meta
+
+        y_name, x_name = meta.get_projection_yx_varnames(da)
+    if y_name is None or x_name is None:
+        raise ValueError("Regionalization requires projected y and x axes")
+    if y_name not in da.dims or x_name not in da.dims:
+        raise ValueError(
+            f"Data variable {da.name!r} must have dimensions "
+            f"{y_name!r} and {x_name!r}"
+        )
+
+    stacked = da.stack(_cell=(y_name, x_name))
+    reduced = []
+    for candidates, raw_weights in weights:
+        selected = stacked.isel(_cell=candidates)
+        if len(candidates) == 0:
+            result = selected.sum("_cell") * np.nan
+        elif method in {"mean", "weighted_sum"}:
+            values = selected.where(np.isfinite(selected))
+            weights_da = xr.DataArray(
+                np.asarray(raw_weights),
+                dims=("_cell",),
+                coords={"_cell": selected.coords["_cell"]},
+            )
+            numerator = (values.fillna(0) * weights_da).sum("_cell")
+            if method == "mean":
+                denominator = weights_da.where(values.notnull(), 0).sum("_cell")
+                result = numerator / denominator.where(denominator > 0)
+            else:
+                result = numerator.where(values.notnull().any("_cell"))
+        elif method == "sum":
+            result = selected.sum("_cell", skipna=True, min_count=1)
+        elif method == "min":
+            result = selected.min("_cell", skipna=True)
+        elif method == "max":
+            result = selected.max("_cell", skipna=True)
+        elif method == "median":
+            result = selected.median("_cell", skipna=True)
+        else:
+            result = selected.std("_cell", skipna=True)
+        reduced.append(result)
+
+    geometry = np.arange(len(reduced))
+    return xr.concat(
+        reduced,
+        dim=xr.IndexVariable("geometry", geometry),
+    )
+
+
+def clip_to_geometry(
+    ds: xr.Dataset,
+    polygon: Any,
+    method: str = "intersects",
+) -> xr.Dataset:
+    """
+    Clip an xarray dataset to the area covered by a given polygon.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The dataset to be clipped.
+    polygon : shapely.geometry.base.BaseGeometry
+        The polygon to clip the dataset to.
+    method : str, optional
+        The method to use for clipping. ``intersects`` (the default) includes
+        every grid cell touching the polygon. ``cover`` includes cells fully
+        covered by the polygon, ``envelope`` uses its bounding box, and
+        ``centroid`` includes cells whose centers are covered by the polygon.
+
+    Returns
+    -------
+    xarray.Dataset
+        The clipped dataset.
+    """
+    import numpy as np
+    import shapely
+
+    import xarray as xr
+
+    area_def = ds.pyku.get_area_def()
+    x, y = area_def.get_proj_coords()
+
+    dx = abs(area_def.pixel_size_x)
+    dy = abs(area_def.pixel_size_y)
+
+    gridpoints = shapely.box(
+        x.ravel() - dx / 2,
+        y.ravel() - dy / 2,
+        x.ravel() + dx / 2,
+        y.ravel() + dy / 2,
+    )
+
+    if method == "cover":
+        mask = shapely.covers(polygon, gridpoints)
+    elif method == "intersects":
+        mask = shapely.intersects(polygon, gridpoints)
+    elif method == "envelope":
+        hull = polygon.envelope
+        mask = shapely.intersects(hull, gridpoints)
+    elif method == "centroid":
+        gridcenters = shapely.points(x.ravel(), y.ravel())
+        mask = shapely.covers(polygon, gridcenters)
+    else:
+        raise ValueError(f"Unsupported clipping method: {method}")
+
+    from pyku import meta
+
+    y_name, x_name = meta.get_projection_yx_varnames(ds)
+    if y_name is None or x_name is None:
+        raise ValueError("Clipping requires projected y and x axes")
+    mask = xr.DataArray(
+        np.reshape(mask, (len(ds[y_name]), len(ds[x_name]))),
+        dims=[y_name, x_name],
+        coords={y_name: ds[y_name], x_name: ds[x_name]},
+    )
+
+    clipped_vars = {}
+    for name, variable in ds.data_vars.items():
+        has_y = y_name in variable.dims
+        has_x = x_name in variable.dims
+
+        if has_y and has_x:
+            clipped = variable.where(mask, drop=True)
+        elif has_y:
+            clipped = variable.where(mask.any(x_name), drop=True)
+        elif has_x:
+            clipped = variable.where(mask.any(y_name), drop=True)
+        else:
+            clipped = variable
+
+        clipped.attrs = variable.attrs.copy()
+        clipped.encoding = variable.encoding.copy()
+        clipped_vars[name] = clipped
+
+    if not any(
+        y_name in variable.dims or x_name in variable.dims
+        for variable in ds.data_vars.values()
+    ):
+        return ds.copy()
+
+    non_spatial_coords = {
+        name: coordinate
+        for name, coordinate in ds.coords.items()
+        if y_name not in coordinate.dims and x_name not in coordinate.dims
+    }
+    result = xr.Dataset(
+        data_vars=clipped_vars,
+        coords=non_spatial_coords,
+        attrs=ds.attrs.copy(),
+    )
+    result.encoding = ds.encoding.copy()
+
+    for name, variable in ds.variables.items():
+        if name in result.variables:
+            result[name].encoding = variable.encoding.copy()
+
+    return result

@@ -191,3 +191,11 @@ polygons:
       archive_file: KliNat-DWD.geojson.zip
       target_file: "KliNat-DWD.geojson"
       query: null
+  ipcc_wg1_reference_regions_v4:
+    description: >
+        IPCC WG1 Reference Regions v4 as described in
+        https://essd.copernicus.org/articles/12/2959/2020/
+    base_url: https://raw.githubusercontent.com/IPCC-WG1/Atlas/refs/heads/main/reference-regions/
+    archive_file: IPCC-WGI-reference-regions-v4.geojson
+    target_file: "IPCC-WGI-reference-regions-v4.geojson"
+    query: null

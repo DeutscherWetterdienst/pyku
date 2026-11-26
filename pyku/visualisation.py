@@ -24,7 +24,7 @@ from matplotlib.axes import Axes
 
 import xarray as xr
 
-logger = logging.getLogger('visualisation')
+logger = logging.getLogger("visualisation")
 
 
 def _get_map_spatial_dims(
@@ -506,9 +506,7 @@ def n_maps(
                 f"[{idx}]."
             )
 
-    plot_datasets = [
-        meta.get_geodataset(ds, var=var) for ds in plot_datasets
-    ]
+    plot_datasets = [meta.get_geodataset(ds, var=var) for ds in plot_datasets]
 
     for idx, ds in enumerate(plot_datasets):
         if ds[var].ndim != 2:
@@ -529,12 +527,18 @@ def n_maps(
         pcolormesh_vmin = pcolormesh_kwargs.pop("vmin", None)
         pcolormesh_vmax = pcolormesh_kwargs.pop("vmax", None)
         vmin = (
-            vmin if vmin is not None else
-            pcolormesh_vmin if pcolormesh_vmin is not None else data_vmin
+            vmin
+            if vmin is not None
+            else pcolormesh_vmin
+            if pcolormesh_vmin is not None
+            else data_vmin
         )
         vmax = (
-            vmax if vmax is not None else
-            pcolormesh_vmax if pcolormesh_vmax is not None else data_vmax
+            vmax
+            if vmax is not None
+            else pcolormesh_vmax
+            if pcolormesh_vmax is not None
+            else data_vmax
         )
         if vmin is not None and vmax is not None and vmin > vmax:
             raise ValueError("'vmin' must not be greater than 'vmax'.")
@@ -587,8 +591,7 @@ def n_maps(
     nx = geo.get_nx(plot_datasets[0])
     ny = geo.get_ny(plot_datasets[0])
     map_ratios = [
-        float(geo.get_nx(ds)) / float(geo.get_ny(ds))
-        for ds in plot_datasets
+        float(geo.get_nx(ds)) / float(geo.get_ny(ds)) for ds in plot_datasets
     ]
 
     map_layout = _get_map_layout(
@@ -892,8 +895,8 @@ def _get_map_layout(
     )
     map_sizes = [
         (
-            map_diagonal * ratio / math.sqrt(1 + ratio ** 2),
-            map_diagonal / math.sqrt(1 + ratio ** 2),
+            map_diagonal * ratio / math.sqrt(1 + ratio**2),
+            map_diagonal / math.sqrt(1 + ratio**2),
         )
         for ratio in map_ratios
     ]
@@ -948,12 +951,14 @@ def _get_map_layout(
             )
             + label_height
         )
-        map_axes.append((
-            x / figure_width,
-            y / figure_height,
-            map_width / figure_width,
-            map_height / figure_height,
-        ))
+        map_axes.append(
+            (
+                x / figure_width,
+                y / figure_height,
+                map_width / figure_width,
+                map_height / figure_height,
+            )
+        )
 
     colorbar_axes = None
 
@@ -1036,10 +1041,10 @@ def _ensure_single_time_chunk(
         Data with the time dimension in a single chunk, if present.
     """
 
-    chunks = dict.fromkeys(da.dims, 'auto')
+    chunks = dict.fromkeys(da.dims, "auto")
 
-    if 'time' in da.dims:
-        chunks['time'] = -1
+    if "time" in da.dims:
+        chunks["time"] = -1
 
     return da.chunk(chunks=chunks)
 
@@ -1162,18 +1167,28 @@ def _validate_metric_grid(
     model_projection_coords = meta.get_projection_yx_varnames(model)
     reference_projection_coords = meta.get_projection_yx_varnames(reference)
     model_geographic_coords = meta.get_geographic_latlon_varnames(model)
-    reference_geographic_coords = meta.get_geographic_latlon_varnames(
-        reference
-    )
+    reference_geographic_coords = meta.get_geographic_latlon_varnames(reference)
     coordinate_pairs = [
-        ("projection y", model_projection_coords[0],
-         reference_projection_coords[0]),
-        ("projection x", model_projection_coords[1],
-         reference_projection_coords[1]),
-        ("latitude", model_geographic_coords[0],
-         reference_geographic_coords[0]),
-        ("longitude", model_geographic_coords[1],
-         reference_geographic_coords[1]),
+        (
+            "projection y",
+            model_projection_coords[0],
+            reference_projection_coords[0],
+        ),
+        (
+            "projection x",
+            model_projection_coords[1],
+            reference_projection_coords[1],
+        ),
+        (
+            "latitude",
+            model_geographic_coords[0],
+            reference_geographic_coords[0],
+        ),
+        (
+            "longitude",
+            model_geographic_coords[1],
+            reference_geographic_coords[1],
+        ),
     ]
     for axis, model_name, reference_name in coordinate_pairs:
         if model_name is None and reference_name is None:
@@ -1287,8 +1302,8 @@ def regions(
     crs = area_def.to_cartopy_crs()
 
     identifiers = range(gdf.shape[0])
-    gdf['idx'] = identifiers
-    cmap = 'tab20b'
+    gdf["idx"] = identifiers
+    cmap = "tab20b"
 
     gdf.columns = [c.lower() for c in gdf.columns]
 
@@ -1300,22 +1315,17 @@ def regions(
 
     ax.set_extent(crs.bounds, crs=crs)
 
-    gdf.plot(
-        column='idx',
-        cmap=cmap,
-        edgecolor="red",
-        ax=ax
-    )
+    gdf.plot(column="idx", cmap=cmap, edgecolor="red", ax=ax)
 
-    if 'name' in gdf.columns:
+    if "name" in gdf.columns:
         gdf.apply(
             lambda x: ax.annotate(
-                text=textwrap.fill(x['name'], 20),
+                text=textwrap.fill(x["name"], 20),
                 xy=x.geometry.centroid.coords[0],
-                ha='center',
-                wrap=True
+                ha="center",
+                wrap=True,
             ),
-            axis=1
+            axis=1,
         )
 
     ax.axes.add_feature(cartopy.feature.BORDERS)
@@ -1324,10 +1334,56 @@ def regions(
     ax.axes.add_feature(cartopy.feature.BORDERS)
     ax.axes.add_feature(cartopy.feature.COASTLINE)
     ax.axes.gridlines(
-        draw_labels=True, dms=True, x_inline=False, y_inline=False)
+        draw_labels=True, dms=True, x_inline=False, y_inline=False
+    )
 
     if gcf_kwargs:
         plt.setp(plt.gcf(), **gcf_kwargs)
+
+
+def regional_value_map(
+    ds: xr.Dataset,
+    var: str,
+    area_def: str | pyresample.geometry.AreaDefinition,
+    **kwargs: Any,
+) -> None:
+    """Plot variable values associated with polygon geometries.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset with an xvec geometry index and the variable to plot.
+    var : str
+        Name of the variable to plot.
+    area_def : str or pyresample.geometry.AreaDefinition
+        Area definition, or its name for loading with
+        :func:`pyku.geo.load_area_def`.
+    **kwargs
+        Additional keyword arguments passed to the xvec plot method.
+
+    Returns
+    -------
+    None
+        Displays a matplotlib map.
+    """
+    import cartopy
+
+    from pyku import geo
+
+    if isinstance(area_def, str):
+        area_def = geo.load_area_def(area_def)
+
+    crs = area_def.to_cartopy_crs()
+    plt.clf()
+    _, ax = ds[var].xvec.plot(
+        subplot_kws={"projection": crs},
+        **kwargs,
+    )
+
+    ax.add_feature(cartopy.feature.BORDERS)
+    ax.add_feature(cartopy.feature.LAKES)
+    ax.add_feature(cartopy.feature.RIVERS)
+    ax.add_feature(cartopy.feature.COASTLINE)
 
 
 def _pdf_histogram(
@@ -1351,7 +1407,7 @@ def _pdf_histogram(
             raise ValueError("'range' minimum must be less than its maximum.")
 
     selected = da
-    data_size_gb = da.size * 4 / (1024 ** 3)
+    data_size_gb = da.size * 4 / (1024**3)
     max_data_size_gb = 32
 
     if data_size_gb > max_data_size_gb:
@@ -1360,9 +1416,7 @@ def _pdf_histogram(
         )
         times = copy.deepcopy(da.coords["time"].values)
         n_times = len(times)
-        n_times_selected = int(
-            n_times * max_data_size_gb / data_size_gb
-        )
+        n_times_selected = int(n_times * max_data_size_gb / data_size_gb)
         np.random.shuffle(times)
         selected = da.sel(time=np.sort(times[:n_times_selected]))
 
@@ -1520,8 +1574,7 @@ def pdf(
             dat = dat.squeeze()
         else:
             squeeze_dims = [
-                dim for dim in dat.dims
-                if dim != "time" and dat.sizes[dim] == 1
+                dim for dim in dat.dims if dim != "time" and dat.sizes[dim] == 1
             ]
             dat = dat.squeeze(dim=squeeze_dims)
 
@@ -1538,16 +1591,15 @@ def pdf(
             da = dat[var].copy(deep=False)
             das.append(da)
 
-            if dat.attrs.get('label') is not None:
-                da.attrs['label'] = dat.attrs['label']
+            if dat.attrs.get("label") is not None:
+                da.attrs["label"] = dat.attrs["label"]
 
         elif isinstance(dat, xr.DataArray):
             das.append(dat)
 
         else:
             raise TypeError(
-                f"Data must be a Dataset or DataArray, not "
-                f"{type(dat).__name__}"
+                f"Data must be a Dataset or DataArray, not {type(dat).__name__}"
             )
 
     if groupby is not None:
@@ -1576,9 +1628,7 @@ def pdf(
         nsamples=nsamples,
         xlim=xlim,
         yscale=yscale,
-        size_inches=(
-            size_inches if size_inches is not None else (10, 5)
-        ),
+        size_inches=(size_inches if size_inches is not None else (10, 5)),
         gca_kwargs=gca_kwargs,
         gcf_kwargs=gcf_kwargs,
     )
@@ -1657,8 +1707,15 @@ def _pdf_plot_single(
         Additional figure kwargs.
     """
 
-    linestyles = itertools.cycle(["-", ":", "--", "-.",])
-    colors = itertools.cycle(['black', 'blue', 'red', 'orange', 'green'])
+    linestyles = itertools.cycle(
+        [
+            "-",
+            ":",
+            "--",
+            "-.",
+        ]
+    )
+    colors = itertools.cycle(["black", "blue", "red", "orange", "green"])
 
     if ax is None:
         plt.clf()
@@ -1674,22 +1731,22 @@ def _pdf_plot_single(
 
         all_finites = np.isfinite(hist).all()
 
-        if not all_finites and yscale == 'log':
-            current_yscale = 'linear'
+        if not all_finites and yscale == "log":
+            current_yscale = "linear"
         else:
             current_yscale = yscale
 
         plt.plot(
             bins,
             hist,
-            label=da.attrs.get('label', f'Dataset {idx}'),
+            label=da.attrs.get("label", f"Dataset {idx}"),
             linestyle=next(linestyles),
             color=next(colors),
         )
         plt.legend()
 
     if var is not None:
-        if 'long_name' in das[0].attrs and 'units' in das[0].attrs:
+        if "long_name" in das[0].attrs and "units" in das[0].attrs:
             xlabel = f"{das[0].attrs['long_name']} [{das[0].attrs['units']}]"
         else:
             print(
@@ -1699,7 +1756,7 @@ def _pdf_plot_single(
             xlabel = f"{var}"
 
         plt.xlabel(xlabel)
-        plt.ylabel('Probability')
+        plt.ylabel("Probability")
 
     if xlim is not None:
         plt.xlim(xlim)
@@ -1763,9 +1820,7 @@ def _pdf_grouped_mode(
     plt.clf()
 
     if groupby not in {"time.month", "time.season"}:
-        raise ValueError(
-            "groupby must be 'time.month' or 'time.season'."
-        )
+        raise ValueError("groupby must be 'time.month' or 'time.season'.")
     if not das:
         raise ValueError(
             "At least one data array is required for grouped PDFs."
@@ -1958,38 +2013,37 @@ def mean_map(
         raise ValueError("At least one dataset must be provided.")
 
     for ds in datasets:
-
         if var not in meta.get_geodata_varnames(ds):
             raise KeyError(f"Variable '{var}' missing from dataset.")
 
-    if cmap is None and var == 'pr':
-        cmap = colormaps.get_cmap('precip_abs')
+    if cmap is None and var == "pr":
+        cmap = colormaps.get_cmap("precip_abs")
 
     das_mean = []
 
     for ds in datasets:
-
         ds_mean = (
-            ds.isel(time=0).copy(deep=True)
+            ds.isel(time=0)
+            .copy(deep=True)
             .drop_vars(ds.pyku.get_geodata_varnames())
         )
 
-        da_mean = ds[var].mean('time', keep_attrs=True).compute()
+        da_mean = ds[var].mean("time", keep_attrs=True).compute()
 
-        da_mean.attrs['long_name'] = f'mean {var}'
-        da_mean.attrs['units'] = ds[var].attrs.get('units', None)
+        da_mean.attrs["long_name"] = f"mean {var}"
+        da_mean.attrs["units"] = ds[var].attrs.get("units", None)
 
         ds_mean = xr.merge(
             [ds_mean, da_mean.to_dataset(name="mean")],
             combine_attrs="override",
-            compat='no_conflicts'
+            compat="no_conflicts",
         )
 
         das_mean.append(ds_mean)
 
     n_maps(
         *das_mean,
-        var='mean',
+        var="mean",
         colorbar=colorbar,
         cmap=cmap,
         norm=norm,
@@ -2147,7 +2201,7 @@ def metric_map(
 
     from pyku import meta
 
-    valid_metrics = ['mae', 'bias', 'mse', 'rmse', 'pcc']
+    valid_metrics = ["mae", "bias", "mse", "rmse", "pcc"]
     if metric not in valid_metrics:
         raise ValueError(
             f"Invalid metric '{metric}'. Must be one of: {valid_metrics}"
@@ -2180,7 +2234,7 @@ def metric_map(
         raise KeyError(f"Variable '{var}' missing from reference dataset.")
 
     if cmap is None:
-        cmap = 'bwr' if metric == 'bias' else 'viridis'
+        cmap = "bwr" if metric == "bias" else "viridis"
 
     if groupby is not None:
         _metric_grouped_mode(
@@ -2214,8 +2268,7 @@ def metric_map(
     for ds in datasets:
         if "time" not in ds.dims or ds.sizes["time"] == 0:
             raise ValueError(
-                "Every model dataset must have a non-empty 'time' "
-                "dimension."
+                "Every model dataset must have a non-empty 'time' dimension."
             )
         sel_ds, sel_ref = _select_metric_pair(ds, ref, var)
 
@@ -2279,10 +2332,10 @@ def _metric_grouped_mode(
 ) -> None:
     """Plot evaluation metrics grouped by time (monthly/seasonal)."""
 
-    if groupby == 'time.month':
+    if groupby == "time.month":
         n_plots = 12
         default_layout = (6, 2)
-    elif groupby == 'time.season':
+    elif groupby == "time.season":
         n_plots = 4
         default_layout = (2, 2)
     else:
@@ -2292,9 +2345,7 @@ def _metric_grouped_mode(
         )
 
     if layout is not None and (nrows is not None or ncols is not None):
-        raise ValueError(
-            "'layout' cannot be combined with 'nrows' or 'ncols'."
-        )
+        raise ValueError("'layout' cannot be combined with 'nrows' or 'ncols'.")
     if layout is None and nrows is None and ncols is None:
         ncols = default_layout[1]
         nrows = math.ceil(n_plots * len(datasets) / ncols)
@@ -2311,7 +2362,7 @@ def _metric_grouped_mode(
     gcf_kwargs = gcf_kwargs or {}
 
     if cmap is None:
-        cmap = 'bwr' if metric == 'bias' else 'viridis'
+        cmap = "bwr" if metric == "bias" else "viridis"
 
     if not datasets:
         raise ValueError("At least one model dataset must be provided.")
@@ -2321,8 +2372,7 @@ def _metric_grouped_mode(
     for ds in datasets:
         if "time" not in ds.dims or ds.sizes["time"] == 0:
             raise ValueError(
-                "Every model dataset must have a non-empty 'time' "
-                "dimension."
+                "Every model dataset must have a non-empty 'time' dimension."
             )
         sel_ds, sel_ref = _select_metric_pair(ds, ref, var)
 
@@ -2352,7 +2402,6 @@ def _metric_grouped_mode(
             )
 
         for key in groups:
-
             da = grp_ds[key][var]
             da_ref_group = grp_ref[key][var]
             if da.chunks or da_ref_group.chunks:
@@ -2519,9 +2568,7 @@ def bias_cycle(
     from pyku import features, timekit
 
     if groupby not in {"time.month", "time.season"}:
-        raise ValueError(
-            "groupby must be 'time.month' or 'time.season'."
-        )
+        raise ValueError("groupby must be 'time.month' or 'time.season'.")
     if gdf is not None and ax is not None:
         raise ValueError("ax cannot be supplied when plotting regions.")
     if layout is not None and gdf is None:
@@ -2748,9 +2795,7 @@ def diurnal_cycle(
     if groupby is not None and ax is not None:
         raise ValueError("ax cannot be supplied when plotting grouped cycles.")
     if layout is not None and (groupby is None or variability):
-        raise ValueError(
-            "layout can only be used for grouped diurnal cycles."
-        )
+        raise ValueError("layout can only be used for grouped diurnal cycles.")
 
     if var is None:
         raise ValueError("Specify a variable with var='variable_name'.")
@@ -2761,17 +2806,23 @@ def diurnal_cycle(
             )
         if "time" not in dataset.dims or dataset.sizes["time"] == 0:
             raise ValueError(
-                "Every input dataset must have a non-empty 'time' "
-                "dimension."
+                "Every input dataset must have a non-empty 'time' dimension."
             )
 
     if variability:
         _diurnal_cycle_variability(
-            datasets[0], datasets[1] if len(datasets) == 2 else None,
-            var=var, ax=ax, size_inches=size_inches,
-            ylim=ylim, yscale=yscale, gca_kwargs=gca_kwargs,
-            gcf_kwargs=gcf_kwargs, fig_kwargs=fig_kwargs,
-            ax_kwargs=ax_kwargs, title_kwargs=title_kwargs,
+            datasets[0],
+            datasets[1] if len(datasets) == 2 else None,
+            var=var,
+            ax=ax,
+            size_inches=size_inches,
+            ylim=ylim,
+            yscale=yscale,
+            gca_kwargs=gca_kwargs,
+            gcf_kwargs=gcf_kwargs,
+            fig_kwargs=fig_kwargs,
+            ax_kwargs=ax_kwargs,
+            title_kwargs=title_kwargs,
         )
         return
 
@@ -2812,8 +2863,7 @@ def diurnal_cycle(
 
         dat = dat.squeeze(
             dim=[
-                dim for dim in dat.dims
-                if dim != "time" and dat.sizes[dim] == 1
+                dim for dim in dat.dims if dim != "time" and dat.sizes[dim] == 1
             ]
         )
 
@@ -2827,38 +2877,45 @@ def diurnal_cycle(
             da = dat[var].copy(deep=False)
             das.append(da)
 
-            if dat.attrs.get('label') is not None:
-                da.attrs['label'] = dat.attrs['label']
+            if dat.attrs.get("label") is not None:
+                da.attrs["label"] = dat.attrs["label"]
 
         else:
-            raise TypeError(
-                f"Expected xr.Dataset, got {type(dat).__name__}"
-            )
+            raise TypeError(f"Expected xr.Dataset, got {type(dat).__name__}")
 
     if not das:
         return
 
-    linestyles = itertools.cycle(["-", ":", "--", "-.",])
-    markers = itertools.cycle(["s", "o", "D", "v", "^",])
+    linestyles = itertools.cycle(
+        [
+            "-",
+            ":",
+            "--",
+            "-.",
+        ]
+    )
+    markers = itertools.cycle(
+        [
+            "s",
+            "o",
+            "D",
+            "v",
+            "^",
+        ]
+    )
     fillstyles = itertools.cycle(["none", "full", "left"])
-    colors = itertools.cycle(['black', 'blue', 'red', 'orange', 'green'])
+    colors = itertools.cycle(["black", "blue", "red", "orange", "green"])
 
     for idx, da in enumerate(das):
-
         p = (
-            da
-            .groupby('time.hour')
-            .mean(
-                dim=tuple(da.dims),
-                keep_attrs=True,
-                method="cohorts"
-            )
+            da.groupby("time.hour")
+            .mean(dim=tuple(da.dims), keep_attrs=True, method="cohorts")
             .compute()
         )
 
         p.plot.line(
             add_legend=True,
-            label=da.attrs.get('label', f'Dataset {idx}'),
+            label=da.attrs.get("label", f"Dataset {idx}"),
             color=next(colors),
             linewidth=0.75,
             linestyle=next(linestyles),
@@ -2868,22 +2925,22 @@ def diurnal_cycle(
 
     plt.gca().set_xticks(ticks=list(np.arange(0, 24)))
     plt.gca().set_xticklabels(list(np.arange(0, 24)))
-    plt.gca().tick_params(axis='x', which='both', length=0)
+    plt.gca().tick_params(axis="x", which="both", length=0)
     plt.xticks(rotation=0)
     plt.gca().set_xlabel(None)
 
-    ylabel = ''
+    ylabel = ""
 
     if var is not None:
-        ylabel = f'{var}'
+        ylabel = f"{var}"
 
-    if das[0].attrs.get('standard_name') is not None:
-        ylabel = das[0].attrs.get('standard_name')
+    if das[0].attrs.get("standard_name") is not None:
+        ylabel = das[0].attrs.get("standard_name")
 
-    if das[0].attrs.get('long_name') is not None:
-        ylabel = das[0].attrs.get('long_name')
+    if das[0].attrs.get("long_name") is not None:
+        ylabel = das[0].attrs.get("long_name")
 
-    if das[0].attrs.get('units') is not None:
+    if das[0].attrs.get("units") is not None:
         ylabel = f"{ylabel} [{das[0].attrs.get('units')}]"
 
     plt.ylabel(ylabel)
@@ -2893,9 +2950,9 @@ def diurnal_cycle(
     if yscale is not None:
         plt.yscale(yscale)
 
-    plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
+    plt.legend(loc="best", ncol=1, shadow=True, fancybox=True)
 
-    plt.gca().set_title('Diurnal cycle', **(title_kwargs or {}))
+    plt.gca().set_title("Diurnal cycle", **(title_kwargs or {}))
 
     if ax_kwargs:
         current_ax = plt.gca()
@@ -2904,7 +2961,7 @@ def diurnal_cycle(
         )
         plt.setp(
             current_ax,
-            **{k: v for k, v in ax_kwargs.items() if k in valid_props}
+            **{k: v for k, v in ax_kwargs.items() if k in valid_props},
         )
 
     if gca_kwargs:
@@ -3006,10 +3063,7 @@ def _diurnal_cycle_by_period(
     validated_ds = []
     for ds in datasets:
         ds_squeezed = ds.squeeze(
-            dim=[
-                dim for dim in ds.dims
-                if dim != "time" and ds.sizes[dim] == 1
-            ]
+            dim=[dim for dim in ds.dims if dim != "time" and ds.sizes[dim] == 1]
         )
         if not isinstance(ds_squeezed, xr.Dataset):
             raise TypeError(
@@ -3022,8 +3076,7 @@ def _diurnal_cycle_by_period(
             )
         if "time" not in ds_squeezed.dims or ds_squeezed.sizes["time"] == 0:
             raise ValueError(
-                "Every input dataset must have a non-empty 'time' "
-                "dimension."
+                "Every input dataset must have a non-empty 'time' dimension."
             )
         validated_ds.append(ds_squeezed)
 
@@ -3055,9 +3108,7 @@ def _diurnal_cycle_by_period(
     _fig, axs = plt.subplots(nrows, ncols, **sub_kwargs)
     flat_axs = axs.reshape(-1)
 
-    all_group_keys = set().union(
-        *(set(grouped.groups) for grouped in groups)
-    )
+    all_group_keys = set().union(*(set(grouped.groups) for grouped in groups))
     ordered_group_keys = _ordered_group_keys(group_key, all_group_keys)
 
     for idx, key in enumerate(ordered_group_keys):
@@ -3171,9 +3222,7 @@ def variability(
     if gdf is not None and not isinstance(gdf, geopandas.GeoDataFrame):
         raise TypeError("gdf must be a geopandas.GeoDataFrame.")
     if groupby not in ("time.month", "time.season"):
-        raise ValueError(
-            "groupby must be 'time.month' or 'time.season'."
-        )
+        raise ValueError("groupby must be 'time.month' or 'time.season'.")
     if gdf is not None and groupby != "time.month":
         raise ValueError(
             "gdf and non-monthly grouping cannot be used together."
@@ -3428,10 +3477,7 @@ def _diurnal_cycle_variability(
     plt.gcf().set_size_inches(size_inches)
 
     ds = ds.squeeze(
-        dim=[
-            dim for dim in ds.dims
-            if dim != "time" and ds.sizes[dim] == 1
-        ]
+        dim=[dim for dim in ds.dims if dim != "time" and ds.sizes[dim] == 1]
     )
     if var is None:
         raise ValueError("Specify variable with var='variable_name'")
@@ -3441,14 +3487,13 @@ def _diurnal_cycle_variability(
                 f"{list(ds.data_vars)}"
             )
     da_mod = ds[var].copy(deep=False)
-    if ds.attrs.get('label') is not None:
-        da_mod.attrs['label'] = ds.attrs['label']
+    if ds.attrs.get("label") is not None:
+        da_mod.attrs["label"] = ds.attrs["label"]
 
     if ref is not None:
         ref = ref.squeeze(
             dim=[
-                dim for dim in ref.dims
-                if dim != "time" and ref.sizes[dim] == 1
+                dim for dim in ref.dims if dim != "time" and ref.sizes[dim] == 1
             ]
         )
         if var not in ref.data_vars:
@@ -3457,14 +3502,14 @@ def _diurnal_cycle_variability(
                 f"{list(ref.data_vars)}"
             )
         da_obs = ref[var].copy(deep=False)
-        if ref.attrs.get('label') is not None:
-            da_obs.attrs['label'] = ref.attrs['label']
+        if ref.attrs.get("label") is not None:
+            da_obs.attrs["label"] = ref.attrs["label"]
     else:
         da_obs = None
 
     patches = []
 
-    dims_mod = [dim for dim in da_mod.dims if dim != 'time']
+    dims_mod = [dim for dim in da_mod.dims if dim != "time"]
     if dims_mod:
         # Average spatial dimensions to retain one value per hour.
         da_mod = da_mod.mean(dims_mod, keep_attrs=True)
@@ -3472,55 +3517,53 @@ def _diurnal_cycle_variability(
     hourly_mod = ts_mod.groupby(lambda value: value.hour)[[da_mod.name]]
     hours_mod = np.asarray(list(hourly_mod.groups.keys()))
 
-    patches.append(mpatches.Patch(
-        color='blue',
-        label=ds.attrs.get('label', "Dataset"),
-    ))
+    patches.append(
+        mpatches.Patch(
+            color="blue",
+            label=ds.attrs.get("label", "Dataset"),
+        )
+    )
 
     ax1 = hourly_mod.boxplot(
         subplots=False,
         rot=90,
-        color='blue',
-        flierprops={'markeredgecolor': 'blue'},
+        color="blue",
+        flierprops={"markeredgecolor": "blue"},
         positions=hours_mod - (0.25 if da_obs is not None else 0),
-        widths=0.25
+        widths=0.25,
     )
 
     if da_obs is not None:
-
-        dims_obs = [dim for dim in da_obs.dims if dim != 'time']
+        dims_obs = [dim for dim in da_obs.dims if dim != "time"]
         if dims_obs:
             da_obs = da_obs.mean(dims_obs, keep_attrs=True)
         ts_obs = da_obs.compute().to_dataframe()
-        hourly_obs = ts_obs.groupby(
-            lambda value: value.hour
-        )[[da_obs.name]]
+        hourly_obs = ts_obs.groupby(lambda value: value.hour)[[da_obs.name]]
         hours_obs = np.asarray(list(hourly_obs.groups.keys()))
 
-        patches.append(mpatches.Patch(
-            color='black',
-            label=ref.attrs.get('label', "Reference")
-        ))
+        patches.append(
+            mpatches.Patch(
+                color="black", label=ref.attrs.get("label", "Reference")
+            )
+        )
 
         hourly_obs.boxplot(
             subplots=False,
             rot=90,
             ax=ax1,
-            color='black',
-            flierprops={'markeredgecolor': 'black'},
+            color="black",
+            flierprops={"markeredgecolor": "black"},
             positions=hours_obs + 0.25,
             widths=0.25,
         )
 
-    if 'long_name' in da_mod.attrs.keys() and 'units' in da_mod.attrs.keys():
-        ax1.set_ylabel(
-            f"{da_mod.attrs['long_name']} ({da_mod.attrs['units']})"
-        )
+    if "long_name" in da_mod.attrs.keys() and "units" in da_mod.attrs.keys():
+        ax1.set_ylabel(f"{da_mod.attrs['long_name']} ({da_mod.attrs['units']})")
 
     ax1.grid(False)
     ax1.set_xticks(ticks=list(range(24)))
     ax1.set_xticklabels(list(range(24)))
-    ax1.tick_params(axis='x', which='both', length=0)
+    ax1.tick_params(axis="x", which="both", length=0)
 
     if ylim is not None:
         ax1.set_ylim(ylim)
@@ -3534,11 +3577,7 @@ def _diurnal_cycle_variability(
 
     if ax_kwargs:
         valid_props = set(matplotlib.artist.Artist.properties(ax1).keys())
-        props = {
-            k: v
-            for k, v in ax_kwargs.items()
-            if k in valid_props
-        }
+        props = {k: v for k, v in ax_kwargs.items() if k in valid_props}
         plt.setp(ax1, **props)
 
     if gca_kwargs:
@@ -3574,14 +3613,13 @@ def _time_plot_data(
 
         da = dataset[var].squeeze(
             dim=[
-                dim for dim in dataset[var].dims
+                dim
+                for dim in dataset[var].dims
                 if dim != "time" and dataset[var].sizes[dim] == 1
             ]
         )
         if "time" not in da.dims or da.sizes["time"] == 0:
-            raise ValueError(
-                "Time plots require a non-empty 'time' dimension."
-            )
+            raise ValueError("Time plots require a non-empty 'time' dimension.")
         da.attrs = da.attrs.copy()
         if dataset.attrs.get("label") is not None:
             da.attrs["label"] = dataset.attrs["label"]
@@ -3628,11 +3666,15 @@ def _plot_time_series(
             ).compute()
         else:
             with xr.set_options(use_flox=False):
-                series = da.resample(time=time_resolution).mean(
-                    dim=list(da.dims),
-                    skipna=True,
-                    keep_attrs=True,
-                ).compute()
+                series = (
+                    da.resample(time=time_resolution)
+                    .mean(
+                        dim=list(da.dims),
+                        skipna=True,
+                        keep_attrs=True,
+                    )
+                    .compute()
+                )
             if "time" not in series.dims:
                 series = series.expand_dims("time")
 
@@ -3870,8 +3912,7 @@ def climatology(
         "time.season",
     }:
         raise ValueError(
-            "groupby must be 'time.dayofyear', 'time.month', or "
-            "'time.season'."
+            "groupby must be 'time.dayofyear', 'time.month', or 'time.season'."
         )
 
     das = _time_plot_data(*datasets, var=var)
@@ -3918,9 +3959,7 @@ def climatology(
                 keep_attrs=True,
             )
         if groupby == "time.season":
-            climatology_da = climatology_da.reindex(
-                {component: periods}
-            )
+            climatology_da = climatology_da.reindex({component: periods})
         climatology_da = climatology_da.compute()
         if groupby == "time.season":
             x_values = range(1, len(periods) + 1)
@@ -4069,15 +4108,15 @@ def percentile_map(
         if var not in meta.get_geodata_varnames(ds):
             raise KeyError(f"Variable '{var}' missing from dataset.")
 
-    if cmap is None and var == 'pr':
-        cmap = colormaps.get_cmap('precip_abs')
+    if cmap is None and var == "pr":
+        cmap = colormaps.get_cmap("precip_abs")
 
     das_percentile = []
 
     for ds in datasets:
-
         ds_percentile = (
-            ds.isel(time=0).copy(deep=True)
+            ds.isel(time=0)
+            .copy(deep=True)
             .drop_vars(ds.pyku.get_geodata_varnames())
         )
 
@@ -4087,27 +4126,28 @@ def percentile_map(
             da = da.chunk({"time": -1})
 
         da_percentile = da.quantile(
-            percentile, 'time', keep_attrs=True, skipna=False
+            percentile, "time", keep_attrs=True, skipna=False
         ).compute()
 
-        da_percentile.attrs['long_name'] = \
-            f'{int(percentile*100)}th percentile {var}'
-        da_percentile.attrs['units'] = ds[var].attrs.get('units', None)
+        da_percentile.attrs["long_name"] = (
+            f"{int(percentile * 100)}th percentile {var}"
+        )
+        da_percentile.attrs["units"] = ds[var].attrs.get("units", None)
 
         ds_percentile = xr.merge(
             [
                 ds_percentile,
-                da_percentile.to_dataset(name=f"p{int(percentile*100)}")
+                da_percentile.to_dataset(name=f"p{int(percentile * 100)}"),
             ],
             combine_attrs="override",
-            compat='no_conflicts'
+            compat="no_conflicts",
         )
 
         das_percentile.append(ds_percentile)
 
     n_maps(
         *das_percentile,
-        var=f"p{int(percentile*100)}",
+        var=f"p{int(percentile * 100)}",
         colorbar=colorbar,
         cmap=cmap,
         norm=norm,
