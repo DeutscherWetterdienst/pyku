@@ -141,7 +141,26 @@ Prepare a release
 #. Push the branch to GitLab, open an MR targeting ``main``, wait for
    checks, and merge it.
 
-#. After the merge, run the release script. It
+#. Include copy-paste post-merge commands in the MR description to fetch
+   and update local ``main``, print ``git status --short``, and run the
+   version-specific release-helper commands. State that the worktree
+   must be clean and the tag pipeline must pass before running
+   ``sync-tag``.
+
+#. After the merge and a successful GitLab ``main`` pipeline, update
+   local ``main`` and check the worktree before running the release
+   script:
+
+   .. code:: bash
+
+      git fetch gitlab main
+      git switch main
+      git pull --ff-only gitlab main
+      git status --short
+
+   Proceed only if ``git status --short`` prints nothing. Preserve any
+   local or untracked files; use a separate clean checkout or worktree
+   instead of removing files to satisfy the release helper. The helper
    synchronizes ``main`` to GitHub when safe, verifies the refs and
    changelog, asks you to confirm the GitLab ``main`` pipeline passed,
    then creates and pushes the annotated tag to GitLab.

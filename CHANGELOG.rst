@@ -1,3 +1,39 @@
+v1.3.0
+------
+
+New Features
+~~~~~~~~~~~~
+
+* Add xvec-indexed geometry datasets and polygon-value maps. Add
+  ``aggregate_by_region`` for regional statistics with centroid or
+  area-overlap cell selection while keeping ``regionalize`` grid-preserving.
+* Expose Dataset LOESS through ``pyku.compute.calc_loess`` and
+  ``ds.pyku.calc_loess``, with configurable frequency and time reduction.
+
+Deprecations
+~~~~~~~~~~~~
+
+* Deprecate ``pyku.loess.calc_loess`` in favor of
+  ``pyku.compute.calc_loess`` while retaining the old API as a forwarding
+  wrapper.
+
+Bug fixes
+~~~~~~~~~
+
+* Preserve non-spatial CF metadata, including scalar CRS and time-bounds
+  metadata, when clipping datasets to polygons.
+
+Documentation
+~~~~~~~~~~~~~
+
+* Update polygon and LOESS tutorials and API documentation for geometry
+  regionalization and Dataset-level LOESS workflows.
+
+Internal changes
+~~~~~~~~~~~~~~~~
+
+* Add ``xvec`` as a direct dependency.
+
 v1.2.2
 ------
 

@@ -24,8 +24,13 @@ with this skill whenever the process changes. For synchronization checks, see
    changes.
 3. Create and push a release branch to GitLab, then open an MR targeting
    `main`. Review the staged diff, wait for required checks, and merge the MR.
-4. After the changelog MR merges, run the repository release helper as
-   described below. It safely synchronizes `main` to GitHub before tagging.
+4. Include copy-paste post-merge commands in the MR description: fetch and
+   update local `main`, print `git status --short`, then show the versioned
+   release-helper commands below. State that the worktree must be clean and
+   that the tag pipeline must pass before running `sync-tag`.
+5. After the changelog MR merges and its GitLab `main` pipeline passes, run
+   the repository release helper as described below. It safely synchronizes
+   `main` to GitHub before tagging.
 
 Example release branch commands (replace `X.Y.Z`):
 
@@ -57,6 +62,21 @@ bash scripts/release.sh --help
 ```
 
 After the changelog MR merges and its GitLab `main` pipeline passes, run:
+
+First update local `main` and check the worktree:
+
+```bash
+git fetch gitlab main
+git switch main
+git pull --ff-only gitlab main
+git status --short
+```
+
+Proceed only if `git status --short` prints nothing. If it reports local or
+untracked files, preserve them and use a separate clean checkout or worktree.
+Do not remove files just to satisfy the release helper.
+
+Then run:
 
 ```bash
 bash scripts/release.sh tag --release-version vX.Y.Z
