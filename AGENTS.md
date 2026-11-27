@@ -136,6 +136,12 @@ If you need to make changes to `analyse.py`, **inform the user first** and wait
 for explicit approval. Do not modify this file unless the user explicitly
 agrees to the changes.
 
+**DO NOT modify `pyku/colormaps.py`** - this module is a deprecated
+compatibility layer for the DWD colormap API. Keep existing imports working
+and use `pyku.core.colourscales` for new functionality. If a change to
+`colormaps.py` is necessary, **inform the user first** and wait for explicit
+approval.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes,

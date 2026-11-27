@@ -159,3 +159,148 @@ def test_percentile_map_accepts_other_spatial_dims_and_forwards_norm(
     assert isinstance(plotted_datasets, tuple)
     assert plotted_datasets[0]["p50"].dims == ("northing", "easting")
     assert captured["norm"] is norm
+
+
+@pytest.mark.parametrize("plotter_name", ["mean_map", "percentile_map"])
+def test_precipitation_plotters_use_configured_cmap_with_data_norm(
+    monkeypatch: pytest.MonkeyPatch,
+    plotter_name: str,
+) -> None:
+    from pyku.core import colourscales
+
+    dataset = xr.Dataset(
+        {
+            "pr": (
+                ("time", "northing", "easting"),
+                np.arange(8.0).reshape(2, 2, 2),
+            ),
+        },
+        coords={
+            "time": [0, 1],
+            "northing": [10, 20],
+            "easting": [30, 40],
+        },
+    )
+    dataset["pr"].attrs.update(
+        units="kg m-2 s-1",
+        cell_methods="time: mean",
+    )
+    cmap = mcolors.ListedColormap(["red", "blue"])
+    norm = mcolors.BoundaryNorm([0, 1, 2], cmap.N)
+    captured: dict[str, object] = {}
+
+    def fake_get_colormap(
+        name: str,
+    ) -> tuple[mcolors.Colormap, mcolors.Normalize]:
+        assert name == "precip_abs"
+        return cmap, norm
+
+    def capture_maps(
+        *datasets: xr.Dataset,
+        **kwargs: object,
+    ) -> None:
+        captured.update(kwargs)
+
+    monkeypatch.setattr(colourscales, "get_colormap", fake_get_colormap)
+    monkeypatch.setattr(meta, "get_geodata_varnames", lambda _ds: ["pr"])
+    monkeypatch.setattr(visualisation, "n_maps", capture_maps)
+
+    plotter = getattr(visualisation, plotter_name)
+    plotter(dataset, var="pr")
+
+    assert captured["cmap"] is cmap
+    assert captured["norm"] is None
+
+
+def test_precipitation_plotter_respects_pcolormesh_cmap_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from pyku.core import colourscales
+
+    dataset = xr.Dataset(
+        {
+            "pr": (
+                ("time", "northing", "easting"),
+                np.arange(8.0).reshape(2, 2, 2),
+            ),
+        },
+        coords={
+            "time": [0, 1],
+            "northing": [10, 20],
+            "easting": [30, 40],
+        },
+    )
+    cmap = mcolors.ListedColormap(["red", "blue"])
+    norm = mcolors.BoundaryNorm([0, 1, 2], cmap.N)
+    captured: dict[str, object] = {}
+
+    def fake_get_colormap(
+        name: str,
+    ) -> tuple[mcolors.Colormap, mcolors.Normalize]:
+        assert name == "precip_abs"
+        return cmap, norm
+
+    def capture_maps(
+        *datasets: xr.Dataset,
+        **kwargs: object,
+    ) -> None:
+        captured.update(kwargs)
+
+    monkeypatch.setattr(colourscales, "get_colormap", fake_get_colormap)
+    monkeypatch.setattr(meta, "get_geodata_varnames", lambda _ds: ["pr"])
+    monkeypatch.setattr(visualisation, "n_maps", capture_maps)
+
+    visualisation.mean_map(
+        dataset,
+        var="pr",
+        pcolormesh_kwargs={"cmap": "viridis"},
+    )
+
+    assert captured["norm"] is None
+    assert captured["pcolormesh_kwargs"] == {"cmap": "viridis"}
+
+
+def test_precipitation_plotter_preserves_explicit_limits(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from pyku.core import colourscales
+
+    dataset = xr.Dataset(
+        {
+            "pr": (
+                ("time", "northing", "easting"),
+                np.arange(8.0).reshape(2, 2, 2),
+            ),
+        },
+        coords={
+            "time": [0, 1],
+            "northing": [10, 20],
+            "easting": [30, 40],
+        },
+    )
+    cmap = mcolors.ListedColormap(["red", "blue"])
+    norm = mcolors.BoundaryNorm([0, 1, 2], cmap.N)
+    captured: dict[str, object] = {}
+
+    def fake_get_colormap(
+        name: str,
+    ) -> tuple[mcolors.Colormap, mcolors.Normalize]:
+        assert name == "precip_abs"
+        return cmap, norm
+
+    def capture_maps(
+        *datasets: xr.Dataset,
+        **kwargs: object,
+    ) -> None:
+        captured.update(kwargs)
+
+    monkeypatch.setattr(colourscales, "get_colormap", fake_get_colormap)
+    monkeypatch.setattr(meta, "get_geodata_varnames", lambda _ds: ["pr"])
+    monkeypatch.setattr(visualisation, "n_maps", capture_maps)
+
+    visualisation.mean_map(dataset, var="pr", vmin=1.0, vmax=7.0)
+
+    assert captured["cmap"] is cmap
+    assert captured["norm"] is None
+    assert captured["vmin"] == 1.0
+    assert captured["vmax"] == 7.0

@@ -8,18 +8,17 @@ temp_abs:
   colours_hex:
     - "#30123b"
     - "#4145ab"
-    - "#4675ed"
-    - "#39a2fc"
-    - "#1bcfd4"
-    - "#24eca6"
-    - "#a4fc3b"
-    - "#d1e834"
+    - "#486de9"
+    - "#6688fa"
+    - "#92aafb" 
+    - "#cfdafe"
+    - "#fff9cf"
+    - "#fee189"
     - "#eeca39"
     - "#faa730"
     - "#f77b1f"
     - "#e7500e"
     - "#cd2f04"
-    - "#a91501"
     - "#7a0402"
 
 temp_ano:
@@ -151,8 +150,8 @@ sun_ano:
   comments: null
   warnings: null
   colours_hex:
-    - "#453c4c"
-    - "#74657f"
+    - "#463652"
+    - "#765b89"
     - "#EBEBEB"
     - "#d7c42d"
     - "#be6200"
@@ -170,14 +169,22 @@ sun_anp_ano:
     - "#C0C0C0"
     - "#FFC41D"
 
+sun_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#BAA9C6"
+    - "#B8B8B8"
+    - "#E8DD87"
+
 sun_nnp_cat:
   comments: null
   warnings: null
   colours_hex:
-    - "#E6E3E8"
-    - "#B9B0BF"
-    - "#8E7E9A"
-    - "#65586F"
+    - "#E6E0EB"
+    - "#BAA9C6"
+    - "#8F75A3"
+    - "#665077"
     - "#E6E6E6"
     - "#B8B8B8"
     - "#8c8c8c"
@@ -191,6 +198,7 @@ radg_abs:
   comments: null
   warnings: null
   colours_hex:
+    - "#FFFAEC"
     - "#FEF0CC"
     - "#EFC88D"
     - "#E39D4E"
@@ -198,16 +206,42 @@ radg_abs:
     - "#B04320"
     - "#7F1F2D"
     - "#47001A"
+    - "#1F000C"      
 
 radg_ano:
   comments: null
   warnings: null
   colours_hex:
-    - "#3F3F3F"
-    - "#727272"
+    - "#2e3956"
+    - "#4f5294"
     - "#EBEBEB"
-    - "#CFCF00"
-    - "#9A8401"
+    - "#FEC506"
+    - "#A98304"
+
+radg_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#A2AECD"
+    - "#B8B8B8"
+    - "#FCDC73"
+
+radg_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#DEE2ED"
+    - "#A2AECD"
+    - "#6A7DAF"
+    - "#465781"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#FEF3CD"
+    - "#FCDC73"
+    - "#FAC71F"
+    - "#C29605"
 
 dayscold_abs:
   comments: null
@@ -253,6 +287,7 @@ dayscold_nnp_cat:
     - "#90C6DF"
     - "#5989C0"
     - "#313695"
+
 
 dayscold_ice_anp_abs:
   comments: null
@@ -497,6 +532,16 @@ snow_ano:
     - "#785C9C"
     - "#350B6B"
 
+wind_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#F7FCFF"
+    - "#ACBEE6"
+    - "#8B7FCF"
+    - "#6A3F99"
+    - "#4A0059"
+
 wind_ano:
   comments: null
   warnings: null
@@ -507,12 +552,93 @@ wind_ano:
     - "#8789B9"
     - "#29356f"
 
-wind_abs:
+wind_nnp:
   comments: null
   warnings: null
   colours_hex:
-    - "#F7FCFF"
-    - "#ACBEE6"
-    - "#8B7FCF"
-    - "#6A3F99"
-    - "#4A0059"
+    - "#efac80"
+    - "#B8B8B8"
+    - "#a8a9c9"
+
+wind_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#f7e2d4"
+    - "#efac80"
+    - "#c88451"
+    - "#a35f24"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#dcdeef"
+    - "#a8a9c9"
+    - "#7277a7"
+    - "#414b86"
+
+windb_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FFFDE0"
+    - "#FFF6b5"
+    - "#FEE970"
+    - "#FCCD29"
+    - "#F89D3D"
+    - "#E97D62"
+    - "#C95A88"
+    - "#A12D9D"
+    - "#7B02A8"
+    - "#5500A1"
+    - "#32007B"
+    - "#0D004C"
+
+dry_abs:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#FFFAEC"
+    - "#FEF0CC"
+    - "#EFC88D"
+    - "#E39D4E"
+    - "#D46E00"
+    - "#B04320"
+    - "#7F1F2D"
+    - "#47001A"
+    - "#1F000C"      
+
+dry_ano:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#003C30"
+    - "#55A7A0"
+    - "#EBEBEB"
+    - "#C8944E"
+    - "#543005"
+
+dry_nnp:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#92C2DD"
+    - "#B8B8B8"
+    - "#DAB98B"
+
+dry_nnp_cat:
+  comments: null
+  warnings: null
+  colours_hex:
+    - "#D9E9F3"
+    - "#92C2DD"
+    - "#5296C7"
+    - "#1f62a7"
+    - "#E6E6E6"
+    - "#B8B8B8"
+    - "#8c8c8c"
+    - "#636363"
+    - "#E5D9C8"
+    - "#DAB98B"
+    - "#B57726"
+    - "#815318"

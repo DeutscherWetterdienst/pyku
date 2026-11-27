@@ -1905,12 +1905,24 @@ def _pdf_grouped_mode(
         plt.setp(plt.gcf(), **gcf_kwargs)
 
 
+def _get_precip_colormap(
+    norm: mcolors.Normalize | None,
+) -> tuple[mcolors.Colormap, mcolors.Normalize | None]:
+    """Resolve the precipitation colormap without assuming data units."""
+    from pyku.core.colourscales import get_colormap
+
+    cmap, _ = get_colormap("precip_abs")
+    # The configured bins do not declare units or accumulation period, so
+    # their BoundaryNorm cannot safely normalize every variable named "pr".
+    return cmap, norm
+
+
 def mean_map(
     *datasets: xr.Dataset,
     var: str,
     ref: Union[xr.Dataset, None] = None,
     colorbar: bool = True,
-    cmap: Union[str, matplotlib.colors.Colormap, None] = "viridis",
+    cmap: Union[str, matplotlib.colors.Colormap, None] = None,
     norm: Union[matplotlib.colors.Normalize, None] = None,
     vmin: Union[float, None] = None,
     vmax: Union[float, None] = None,
@@ -1941,7 +1953,10 @@ def mean_map(
         Defaults to ``True``. If ``False``, the colorbar is omitted and
         colormaps for each plot are set independently.
     cmap : str, optional
-        Colormap name or object. Defaults to ``"viridis"``.
+        Colormap name or object. Defaults to ``"viridis"`` for most
+        variables and to the configured precipitation colormap for ``"pr"``.
+        Precipitation normalization is data-driven by default because input
+        units and accumulation periods can vary.
     norm : matplotlib.colors.Normalize, optional
         Normalization for the colormap. If specified, it overrides vmin and
         vmax.
@@ -1995,7 +2010,7 @@ def mean_map(
           ...: ds.vis.mean_map(var='tas')
     """
 
-    from pyku import colormaps, meta
+    from pyku import meta
 
     for idx, ds in enumerate(datasets):
         if not isinstance(ds, xr.Dataset):
@@ -2016,8 +2031,13 @@ def mean_map(
         if var not in meta.get_geodata_varnames(ds):
             raise KeyError(f"Variable '{var}' missing from dataset.")
 
-    if cmap is None and var == "pr":
-        cmap = colormaps.get_cmap("precip_abs")
+    if cmap is None:
+        if var == "pr":
+            cmap, norm = _get_precip_colormap(
+                norm,
+            )
+        else:
+            cmap = "viridis"
 
     das_mean = []
 
@@ -3998,7 +4018,7 @@ def percentile_map(
     var: str | None = None,
     percentile: float = 0.5,
     colorbar: bool = True,
-    cmap: Union[str, mcolors.Colormap, None] = "viridis",
+    cmap: Union[str, mcolors.Colormap, None] = None,
     norm: Union[mcolors.Normalize, None] = None,
     vmin: float | None = None,
     vmax: float | None = None,
@@ -4032,7 +4052,10 @@ def percentile_map(
         Defaults to ``True``. If ``False``, the colorbar is omitted and
         colormaps for each plot are set independently.
     cmap : str or matplotlib.colors.Colormap, optional
-        Colormap name or object. Defaults to ``"viridis"``.
+        Colormap name or object. Defaults to ``"viridis"`` for most
+        variables and to the configured precipitation colormap for ``"pr"``.
+        Precipitation normalization is data-driven by default because input
+        units and accumulation periods can vary.
     norm : matplotlib.colors.Normalize, optional
         Normalization for the colormap. If specified, it overrides vmin and
         vmax.
@@ -4087,7 +4110,7 @@ def percentile_map(
           ...: ds.vis.percentile_map(var='tas')
     """
 
-    from pyku import colormaps, meta
+    from pyku import meta
 
     for idx, ds in enumerate(datasets):
         if "time" not in ds.dims:
@@ -4108,8 +4131,13 @@ def percentile_map(
         if var not in meta.get_geodata_varnames(ds):
             raise KeyError(f"Variable '{var}' missing from dataset.")
 
-    if cmap is None and var == "pr":
-        cmap = colormaps.get_cmap("precip_abs")
+    if cmap is None:
+        if var == "pr":
+            cmap, norm = _get_precip_colormap(
+                norm,
+            )
+        else:
+            cmap = "viridis"
 
     das_percentile = []
 

@@ -1,180 +1,141 @@
-DWD color maps
+DWD KU colormaps
+################
+
+*pyku* provides DWD KU reference colormaps for consistent use across projects.
+The supported API is in :mod:`pyku.core.colourscales`.
+
+Import the API
 ==============
 
-*pyku* is the reference implementation of the DWD colormaps:
-`DWD default color maps <https://ninjoservices.dwd.de/wiki/display/KUQ/abgestimmte+Farbskalen>`_
-
-Import library
---------------
-
-Load the DWD colormap module.
+Import the functions used in these examples, together with Matplotlib and
+NumPy:
 
 .. ipython::
    :okwarning:
 
-   In [0]: import pyku.colormaps as colormaps
-
-Also import matplotlib, numpy and xarray for the examples
-
-.. ipython::
-   :okwarning:
-
-   In [0]: import numpy as np
-      ...: import xarray as xr
-      ...: import matplotlib.pyplot as plt
-      ...: import pyku
-
-Get names of all colormaps
---------------------------
-
-To get the names of all available colormaps:
-
-.. ipython::
-   :okwarning:
-
-   In [0]: colormaps.get_colormaps_names()
-
-Get a colormap
---------------
-
-We can then get a colormap like so
-
-.. ipython::
-   :okwarning:
-
-   In [0]: colormaps.get_cmap(
-      ...:     'temp_ano',
-      ...:     kind='segmented',
-      ...:     nbins=10,
-      ...:  )
-
-Get colormap colors
--------------------
-
-The colors can be obtained in RGB or HEX format like so:
-
-.. ipython::
-   :okwarning:
-
-   In [0]: colormaps.get_cmap_colors(
-      ...:     'temp_ano',
-      ...:     kind='segmented',
-      ...:     nbins=10,
-      ...:     encoding='hex'
+   In [1]: import matplotlib.pyplot as plt
+      ...: import numpy as np
+      ...: from pyku.core.colourscales import (
+      ...:     get_cmap,
+      ...:     get_cmap_colors,
+      ...:     get_cmap_names,
+      ...:     get_cmap_scale_names,
+      ...:     get_colormap,
       ...: )
 
+Discover palettes and scales
+============================
+
+List available palettes and the explicitly configured named scales. The
+implicit ``default`` scale is available for every palette but is not included
+in the named-scale list.
+
 .. ipython::
    :okwarning:
 
-   In [0]: colormaps.get_cmap_colors(
-      ...:     'temp_ano',
-      ...:     kind='original',
-      ...:     encoding='rgb'
+   In [2]: get_cmap_names()[:5]
+   In [3]: get_cmap_scale_names("temp_ano")
+
+All DWD KU colormaps
+====================
+
+See every configured palette at a glance. This plot uses each palette's
+default scale; named scales are not shown.
+
+.. plot::
+
+   import matplotlib.pyplot as plt
+   import numpy as np
+   from pyku.core.colourscales import get_cmap, get_cmap_names
+
+   names = get_cmap_names()
+   samples = np.linspace(0.0, 1.0, 256)
+   strips = np.array(
+       [get_cmap(name)(samples) for name in names]
+   )
+   fig, ax = plt.subplots(figsize=(9, 12), dpi=180)
+   ax.imshow(strips, aspect="auto", interpolation="nearest")
+   ax.set_yticks(np.arange(len(names)), labels=names)
+   ax.set_xticks([])
+   ax.tick_params(axis="y", length=0, labelsize=8)
+   fig.subplots_adjust(left=0.32, right=0.99, top=0.99, bottom=0.01)
+
+Preview a palette
+=================
+
+Use :func:`get_cmap` to preview a palette with Matplotlib:
+
+.. ipython::
+   :okwarning:
+
+   @savefig pyku_colormap_preview.png scale=70
+   In [4]: fig, ax = plt.subplots(figsize=(6, 1))
+      ...: gradient = np.linspace(0.0, 1.0, 256)[None, :]
+      ...: ax.imshow(gradient, aspect="auto", cmap=get_cmap("temp_ano"))
+      ...: ax.set_axis_off()
+   In [5]: plt.close(fig)
+
+Get sampled colors
+==================
+
+Use :func:`get_cmap_colors` to inspect or export colors. Continuous maps are
+sampled evenly at the requested resolution.
+
+.. ipython::
+   :okwarning:
+
+   In [6]: get_cmap_colors(
+      ...:     "temp_abs", kind="linear_segmented", resolution=5
       ...: )
 
-.. note::
+Build a matched colormap and normalization
+==========================================
 
-   It is not possible to get a list of colors for the continuous colormaps,
-   well, because it is continuous.
+For plotting a configured scale, prefer :func:`get_colormap`. It returns a
+colormap and normalization built from the same kind, scale, domain, and bin
+configuration. The ``kind="auto"`` default follows the selected configuration;
+``scale="default"`` selects its default scale. Named scales such as
+``"yearly"`` and ``"monthly"`` can be discovered with
+:func:`get_cmap_scale_names`.
 
-All colormaps
--------------
-
-Linear colormaps
-''''''''''''''''
-
-.. ipython::
-   :okwarning:
-
-   @savefig all_linear_colormaps.png width=6in
-   In [0]: colormaps.plot_colormaps(kind='linear')
-
-Original colormaps
-''''''''''''''''''
+Explicit ``domain``, ``boundaries``, ``nbins``, and ``step`` options can
+override configured values. Explicit boundaries take precedence over other
+bin options. A supplied step takes precedence over ``nbins`` if both are
+given. Supply a domain when the selected scale does not define one; explicit
+boundaries provide their own domain endpoints.
 
 .. ipython::
    :okwarning:
 
-   @savefig all_original_colormaps.png width=6in
-   In [0]: colormaps.plot_colormaps(kind='original')
-
-Segmented colormaps
-'''''''''''''''''''
-
-.. ipython::
-   :okwarning:
-
-   @savefig all_segmented_colormaps.png width=6in
-   In [0]: colormaps.plot_colormaps(kind='segmented', nbins=7)
-
-Example usage
--------------
-
-matplotlib
-''''''''''
-
-.. ipython::
-   :okwarning:
-
-   @savefig matplotlib_colormap_usage.png width=4in
-   In [0]: # Clear previous plot
-      ...: # -------------------
-      ...:
-      ...: plt.clf() # Clear previous plot
-      ...:
-      ...: # Create a mesh grid
-      ...: # ------------------
-      ...:
-      ...: X, Y = np.meshgrid(
-      ...:     np.linspace(0,10,100),
-      ...:     np.linspace(0,10,100),
+   @savefig pyku_colormap_pair.png scale=70
+   In [7]: cmap, norm = get_colormap("temp_ano", scale="yearly")
+      ...: fig, ax = plt.subplots()
+      ...: mesh = ax.pcolormesh(
+      ...:     [[-2, 0], [1, 3]], cmap=cmap, norm=norm
       ...: )
-      ...:
-      ...: # Calculate sinusoid and plot
-      ...: # ---------------------------
-      ...:
-      ...: plt.imshow(
-      ...:     np.sin(X) + np.cos(Y),
-      ...:     cmap=colormaps.get_cmap('temp_ano'),
-      ...:     extent=[0, 10, 0, 10],
-      ...:     origin='lower'
-      ...: )
+      ...: fig.colorbar(mesh, label="Temperature anomaly (°C)")
+   In [8]: plt.close(fig)
 
-xarray
-''''''
+Map test data with one_map
+==========================
+
+The visualization API can use a configured colormap and normalization with
+pyku's small test dataset. The data are daily mean air temperatures, so use
+the default absolute-temperature scale:
 
 .. ipython::
    :okwarning:
 
-   @savefig xarray_colormap_usage2.png width=4in
-   In [0]: # Load xarray test dataset
-      ...: # ------------------------
-      ...:
-      ...: airtemps = xr.tutorial.open_dataset("air_temperature")
-      ...:
-      ...: # Plot
-      ...: # ----
-      ...:
-      ...: airtemps.isel(time=0)['air'].plot(
-      ...:     cmap=colormaps.get_cmap('temp_ano', kind='original')
+   @savefig pyku_colormap_one_map.png scale=70
+   In [9]: import pyku
+      ...: from pyku.visualisation import one_map
+      ...: temperature = pyku.resources.get_test_data("small_tas_dataset")
+      ...: temperature = temperature.isel(time=0).compute()
+      ...: cmap, norm = get_colormap("temp_abs")
+      ...: one_map(
+      ...:     temperature,
+      ...:     var="tas",
+      ...:     cmap=cmap,
+      ...:     norm=norm,
       ...: )
-
-pyku.visualisation
-------------------
-
-.. ipython::
-   :okwarning:
-
-   @savefig pyku_colormap_usage.png width=4in
-   In [0]: # Load xarray test dataset
-      ...: # ------------------------
-      ...:
-      ...: airtemps = xr.tutorial.open_dataset("air_temperature")
-      ...:
-      ...: # Plot
-      ...: # ----
-      ...:
-      ...: airtemps.isel(time=0).vis.one_map(
-      ...:     var='air',
-      ...:     cmap=colormaps.get_cmap('temp_ano', kind='segmented', nbins=11)
-      ...: )
+   In [10]: plt.close("all")

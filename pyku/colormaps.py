@@ -1,315 +1,225 @@
 #!/usr/bin/env python3
+"""Deprecated compatibility wrappers for :mod:`pyku.core.colourscales`."""
 
-"""
-Reference implementation of DWD color maps
-"""
+import warnings
+from typing import Any
 
-# Load metadata at module initialization
-# --------------------------------------
+from matplotlib import colors as mcolors
+from matplotlib.colors import Colormap
 
-from pyku import logger, PYKU_RESOURCES
+from pyku.core import colourscales as _colourscales
 
-
-# Load metadata at module initialization
-# --------------------------------------
-def get_colormaps_names():
-
-    """
-    Get the name of all available colormaps
-
-    Returns:
-        List[str]: List of the names of all available colormaps
-
-    Example:
-
-        .. ipython::
-           :okwarning:
-
-           In [0]: import pyku.colormaps as colormaps
-              ...: colormaps.get_colormaps_names()
-    """
-
-    return list(PYKU_RESOURCES.get_keys('base_colours'))
+_LEGACY_KINDS = {
+    "original": "listed",
+    "linear": "linear_segmented",
+    "segmented": "from_levels",
+}
 
 
-def get_cmap_colors(name, kind='original', nbins=None, encoding='hex'):
-
-    """
-    Get cmap colors
-
-    Arguments:
-        name (str): name of the colormap
-        kind (str): Defaults to linear. One of {`original`, `segmented`}
-        nbins (int): Number of bins for segmented color maps
-        encoding (str): Encoding. Default to 'hex'. One of {'hex', 'rgb'}
-
-    Returns:
-        List: If encoding is 'rgb', return a list of red, green and blue
-            tuples. If encoding is 'rgb', return a list of hex.
-
-    Example:
-
-        .. ipython::
-           :okwarning:
-
-           In [0]: import pyku.colormaps as colormaps
-              ...: colormaps.get_cmap_colors(
-              ...:     'temp_ano',
-              ...:     kind='segmented',
-              ...:     nbins=10,
-              ...:     encoding='hex'
-              ...:  )
-    """
-
-    import matplotlib.colors as mcolors
-
-    if encoding in ['rgb']:
-        return get_cmap(name, kind=kind, nbins=nbins).colors
-
-    elif encoding in ['hex']:
-        rgb_tuples = get_cmap(name, kind=kind, nbins=nbins).colors
-        hex_colors = [mcolors.to_hex(rgb) for rgb in rgb_tuples]
-        return hex_colors
-
-    else:
-        message = f"encoding should be 'rgb' or 'hex', not {encoding}"
-        raise Exception(message)
+def _warn_deprecated(api_name: str, replacement: str) -> None:
+    warnings.warn(
+        f"pyku.colormaps.{api_name} is deprecated and will be removed in a "
+        f"future version. Use {replacement} instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
 
 
-def get_cmap(name, kind='original', nbins=None):
+def _legacy_kind_options(
+    kind: str,
+    nbins: int | None,
+) -> tuple[str, dict[str, Any]]:
+    canonical_kind = _LEGACY_KINDS.get(kind, kind)
+    options: dict[str, Any] = {}
 
-    """
-    Get cmap
+    if kind == "segmented":
+        if nbins is None:
+            raise ValueError("nbins must be specified when kind='segmented'.")
+        options.update(
+            domain=(0.0, 1.0),
+            nbins=nbins,
+            extend="neither",
+        )
+    elif nbins is not None:
+        options["nbins"] = nbins
 
-    Arguments:
-        name (str): name of the colormap
-        kind (str): Defaults to linear. One of {`original`, `linear`,
-            `segmented`}
-        nbins (int): Number of bins for segmented color maps
+    return canonical_kind, options
 
-    Returns:
-        :class:`matplotlib.colors.Colormap`: The colormap.
 
-    Example:
-
-        .. ipython::
-           :okwarning:
-
-           In [0]: import pyku.colormaps as colormaps
-              ...: cmap = colormaps.get_cmap('temp_ano')
-    """
+def _legacy_segmented_cmap(
+    name: str,
+    nbins: int | None,
+) -> Colormap:
+    if nbins is None:
+        raise ValueError("nbins must be specified when kind='segmented'.")
 
     import numpy as np
-    import matplotlib.pyplot as plt
-    import matplotlib.colors as mcolors
 
-    # Check inputs, send warnings and raise Exceptions
-    # ------------------------------------------------
-
-    if kind not in ['original', 'linear', 'segmented']:
-        message = (
-            f"kind {kind} not implemented. kind should be one of 'original'",
-            "'linear', or 'segmented'"
-        )
-        raise Exception(message)
-
-    if nbins is not None and kind in ['linear', 'original']:
-        message = f"Option nbins is ignored when used with kind='{kind}'"
-        logger.warning(message)
-
-    if nbins is None and kind in ['segmented']:
-        message = f"Option nbins shall passed when using kin='{kind}'"
-        raise Exception(message)
-
-    if name not in get_colormaps_names():
-        message = (
-            f"color map {name} not defined. "
-            f"Available colormaps are {get_colormaps_names()}"
-        )
-        raise Exception(message)
-
-    # Special cases
-    # -------------
-
-    if '_anp_abs' in name and kind not in ['original']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    if '_anp_ano' in name and kind not in ['original']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    if '_nnp' in name and '_nnp_cat' not in name and kind not in ['original']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    if '_nnp_cat' in name and kind not in ['original']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    if name in ['HZ_abs', 'HZ_ano', 'WHZ_abs', 'WHZ_ano']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    if '_ano' in name and kind in ['segmented'] and (nbins % 2 == 0):
-        logger.info(
-            f"Using an even number of bins with colormap {name}. "
-            "Please check if this is correct before supressing this warning."
-        )
-
-    if name in ['pressure_abs'] and kind in ['segmented'] and (nbins % 2 == 0):
-        logger.info(
-            f"Using an even number of bins with colormap {name}. "
-            "Please check if this is correct before supressing this warning."
-        )
-
-    if name in ['KV_skill'] and kind not in ['original']:
-        logger.info(f"{name} always has kind='original', forcing.")
-        kind = 'original'
-
-    # Get colors defined in configuration both as hex and convert to RGB
-    # ------------------------------------------------------------------
-
-    hex_colors = PYKU_RESOURCES.get_value('base_colours', name, 'colours_hex')
-    rgb_colors = [mcolors.hex2color(color) for color in hex_colors]
-
-    # Get linear colormap
-    # -------------------
-
-    if kind in ['linear']:
-
-        # Edge case
-        # ---------
-
-        # Some color maps contain only one color (e.g., bar chart with absolute
-        # values). When trying to create a linear color map, this single color
-        # needs to be duplicated.
-
-        if len(rgb_colors) == 1:
-            rgb_colors = [rgb_colors[0], rgb_colors[0]]
-
-        cmap = mcolors.LinearSegmentedColormap.from_list(name, rgb_colors)
-
-    # Get segmented colormap directly from configuration
-    # --------------------------------------------------
-
-    elif kind in ['original']:
-        cmap = mcolors.ListedColormap(rgb_colors)
-
-    # Get re-segmented colormap
-    # -------------------------
-
-    elif kind in ['segmented']:
-
-        # Edge case
-        # ---------
-
-        # Some color maps contain only one color (e.g., bar chart with absolute
-        # values). When trying to create a segmented color map, this single
-        # color needs to be duplicated.
-
-        if len(rgb_colors) == 1:
-            rgb_colors = [rgb_colors[0], rgb_colors[0]]
-
-        # Create a linear colormap from the original colors
-        # -------------------------------------------------
-
-        # A linear colormap is created in order to be able to split it
-        # with the right number of bins
-
-        cmap = mcolors.LinearSegmentedColormap.from_list(name, rgb_colors)
-
-        # Create bins for the colormap
-        # ----------------------------
-
-        bounds = np.linspace(0, 1, nbins)
-
-        # Create a colormap with specified bins
-        # -------------------------------------
-
-        norm = plt.Normalize(vmin=0, vmax=1)
-
-        segmented_colors = [cmap(norm(value)) for value in bounds]
-
-        cmap = plt.cm.colors.ListedColormap(segmented_colors)
-
-    return cmap
+    cmap = _colourscales.get_cmap(name, kind="linear_segmented")
+    if isinstance(cmap, mcolors.ListedColormap):
+        return cmap
+    colors = cmap(np.linspace(0.0, 1.0, nbins))
+    return mcolors.ListedColormap(colors, name=name)
 
 
-def plot_colormaps(kind='linear', nbins=None):
+def get_colormaps_names() -> list[str]:
+    """Return colormap names.
 
+    Deprecated
+    ----------
+    Use :func:`pyku.core.colourscales.get_cmap_names` instead.
     """
-    Plot all available colormaps
+    _warn_deprecated(
+        "get_colormaps_names",
+        "pyku.core.colourscales.get_cmap_names",
+    )
+    return _colourscales.get_cmap_names()
 
-    Arguments:
-        kind (str): Defaults to linear. One of {`original`, `linear`,
-            `segmented`}
-        nbins (int): Number of bins for segmented color maps
 
-    Example:
+def get_cmap_colors(
+    name: str,
+    kind: str = "original",
+    nbins: int | None = None,
+    encoding: str = "hex",
+) -> list[Any]:
+    """Return colors for a colormap.
 
-        .. ipython::
-           :okwarning:
+    Deprecated
+    ----------
+    Use :func:`pyku.core.colourscales.get_cmap_colors` instead.
 
-           @savefig plot_colormaps.png width=5in
-           In [0]: import pyku.colormaps as colormaps
-              ...:
-              ...: colormaps.plot_colormaps(kind='original')
+    Parameters
+    ----------
+    name : str
+        Colormap name.
+    kind : str, default "original"
+        Legacy colormap kind.
+    nbins : int, optional
+        Number of bins for ``kind="segmented"``.
+    encoding : str, default "hex"
+        Color encoding, either ``"hex"`` or ``"rgb"``.
+
+    Returns
+    -------
+    list
+        Colors in the requested encoding.
     """
+    _warn_deprecated(
+        "get_cmap_colors",
+        "pyku.core.colourscales.get_cmap_colors",
+    )
+    if kind == "segmented":
+        cmap = _legacy_segmented_cmap(name, nbins)
+        if encoding == "rgb":
+            return list(cmap.colors)
+        if encoding == "hex":
+            return [mcolors.to_hex(color) for color in cmap.colors]
+        raise ValueError(f"encoding should be 'hex' or 'rgb', not {encoding}")
 
+    canonical_kind, options = _legacy_kind_options(kind, nbins)
+    return _colourscales.get_cmap_colors(
+        name,
+        kind=canonical_kind,
+        encoding=encoding,
+        **options,
+    )
+
+
+def get_cmap(
+    name: str,
+    kind: str = "original",
+    nbins: int | None = None,
+) -> Colormap:
+    """Return a colormap.
+
+    Deprecated
+    ----------
+    Use :func:`pyku.core.colourscales.get_cmap` instead.
+
+    Parameters
+    ----------
+    name : str
+        Colormap name.
+    kind : str, default "original"
+        Legacy colormap kind.
+    nbins : int, optional
+        Number of bins for ``kind="segmented"``.
+
+    Returns
+    -------
+    matplotlib.colors.Colormap
+        The constructed colormap.
+    """
+    _warn_deprecated("get_cmap", "pyku.core.colourscales.get_cmap")
+    if kind == "segmented":
+        return _legacy_segmented_cmap(name, nbins)
+
+    canonical_kind, options = _legacy_kind_options(kind, nbins)
+    return _colourscales.get_cmap(name, kind=canonical_kind, **options)
+
+
+def plot_colormaps(
+    kind: str = "linear",
+    nbins: int | None = None,
+) -> None:
+    """Plot all configured colormaps.
+
+    Deprecated
+    ----------
+    Use :func:`pyku.core.colourscales.get_cmap` to build colormaps directly.
+
+    Parameters
+    ----------
+    kind : str, default "linear"
+        Legacy colormap kind.
+    nbins : int, optional
+        Number of bins for ``kind="segmented"``.
+    """
     import matplotlib.pyplot as plt
     import numpy as np
 
-    # Set tight parameter when saving figures
-    # ---------------------------------------
-
-    plt.rcParams['savefig.bbox'] = 'tight'
-
-    # Check inputs, send warnings and raise Exceptions
-    # ------------------------------------------------
-
-    if kind not in ['original', 'linear', 'segmented']:
-        message = f"\
-kind {kind} not implemented. kind should be one of 'original', 'linear', or \
-'segmented'"
-
-    if nbins is not None and kind in ['linear', 'original']:
-        message = f"Option nbins is ignored when used with type={type}"
-        logger.warning(message)
-
-    if nbins is None and kind in ['segmented']:
-        message = f"Option nbins shall passed when using type={type}"
-        raise Exception(message)
-
+    _warn_deprecated("plot_colormaps", "pyku.core.colourscales")
     gradient = np.linspace(0, 1, 256)
     gradient = np.vstack((gradient, gradient))
+    canonical_kind, options = _legacy_kind_options(kind, nbins)
+    if kind == "segmented":
+        cmaps = {
+            name: _legacy_segmented_cmap(name, nbins)
+            for name in _colourscales.get_cmap_names()
+        }
+    else:
+        cmaps = {
+            name: _colourscales.get_cmap(
+                name,
+                kind=canonical_kind,
+                **options,
+            )
+            for name in _colourscales.get_cmap_names()
+        }
 
-    def plot_color_gradients(cmaps_dict):
+    plt.rcParams["savefig.bbox"] = "tight"
+    nrows = len(cmaps)
+    figure_height = 0.35 + 0.15 + (nrows + (nrows - 1) * 0.1) * 0.22
+    _, axes = plt.subplots(nrows=nrows + 1, figsize=(6.4, figure_height))
+    plt.subplots_adjust(
+        top=1 - 0.35 / figure_height,
+        bottom=0.15 / figure_height,
+        left=0.2,
+        right=0.99,
+    )
+    axes[0].set_title("DWD colormaps", fontsize=14)
 
-        # Create figure and adjust figure height to number of colormaps
-        # -------------------------------------------------------------
+    for axis, (name, cmap) in zip(axes, cmaps.items(), strict=False):
+        axis.imshow(gradient, aspect="auto", cmap=cmap)
+        axis.text(
+            -0.01,
+            0.5,
+            name,
+            va="center",
+            ha="right",
+            fontsize=10,
+            transform=axis.transAxes,
+        )
 
-        nrows = len(cmaps_dict.keys())
-        figh = 0.35 + 0.15 + (nrows + (nrows - 1) * 0.1) * 0.22
-        fig, axs = plt.subplots(nrows=nrows + 1, figsize=(6.4, figh))
-        fig.subplots_adjust(top=1 - 0.35 / figh, bottom=0.15 / figh,
-                            left=0.2, right=0.99)
-        axs[0].set_title('DWD colormaps', fontsize=14)
-
-        for ax, (name, cmap) in zip(axs, cmaps_dict.items()):
-            ax.imshow(gradient, aspect='auto', cmap=cmap)
-            ax.text(-0.01, 0.5, name, va='center', ha='right', fontsize=10,
-                    transform=ax.transAxes)
-
-        # Turn off *all* ticks & spines, not just the ones with colormaps
-        # ---------------------------------------------------------------
-
-        for ax in axs:
-            ax.set_axis_off()
-
-    cmaps_dict = {
-        name: get_cmap(name, kind=kind, nbins=nbins)
-        for name in get_colormaps_names()
-    }
-
-    plot_color_gradients(cmaps_dict)
+    for axis in axes:
+        axis.set_axis_off()

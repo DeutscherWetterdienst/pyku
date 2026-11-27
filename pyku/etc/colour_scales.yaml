@@ -1,0 +1,139 @@
+## Temperature Scales
+
+temp_abs:
+  default:
+    domain: [-22, 32]
+    kind: 'from_levels'
+    extend: 'both'
+    step: 2
+    skew: 0 
+    split_index: 6  # The color index at which the colormap should pivot or change behavior
+
+temp_ano:
+  default:
+    domain: [-4.5, 4.5]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-4.5, -4.0, -3.5, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+  yearly: 
+    domain: [-7, 7]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-7, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0, -0.5, -0.2,
+                  0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7]
+  monthly: 
+    domain: [-12, 12]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, -0.5, 
+                  0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+temp_anp_ano:
+  default: 
+    domain: [-1, 1]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-1, 0, 1]
+
+## Precipitation Scales
+
+precip_abs:
+  default: 
+    domain: [0, 700]
+    kind: 'from_levels'
+    extend: 'max'
+    boundaries: [0, 2, 25 , 50 , 75, 100, 125, 150, 175 ,200, 225, 250, 275, 300, 350, 400, 450, 550, 700]
+  yearly: 
+    domain: [425, 3000]
+    kind: 'from_levels'
+    extend: 'max'
+    boundaries: [425, 450, 475,500, 550, 600, 700, 800, 900, 1000, 1200, 1400, 1800, 2200, 2600, 3000]
+
+precip_anp_ano:
+  default: 
+    domain: [-1, 1]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-1, 0, 1]
+
+precip_ano:
+  default:
+    domain: [-75, 75]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-75, -65, -55, -45, -35, -25, -15, -5, 5, 15, 25, 35, 45, 55, 65, 75]
+
+## DayCount Scales:
+
+dayscold_abs:
+  default:
+    domain: [0, 100]
+    kind: 'from_levels'
+    extend: 'max'
+    boundaries: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+dayscold_ano:
+  default:
+    domain: [-50, 50]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-50, -40, -30, -20, -10, -5, -2, 0, 2, 5, 10, 20, 30, 40, 50]
+
+dayscold_frost_anp_ano:
+  default:
+    domain: [-1, 1]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-1, 0, 1]
+
+dayscold_frost_anp_abs:
+  default:
+    domain: [0, 1]
+    kind: 'from_levels'
+    extend: 'both'
+    boundaries: [0, 1]
+
+dayscold_ice_anp_ano:
+  default:
+    domain: [-1, 1]
+    kind: 'from_levels'
+    extend: 'both'
+    center: 0
+    boundaries: [-1, 0, 1]
+
+dayscold_ice_anp_abs:
+  default:
+    domain: [0, 1]
+    step: 1
+    kind: 'from_levels'
+    extend: 'both'
+
+dayscold_nnp:
+  default:
+    domain: [0, 3]
+    step: 1
+    kind: 'listed'
+    extend: 'neither'
+
+dayscold_nnp_cat:
+  default:
+    domain: [-0.5, 11.5]
+    step: 1
+    kind: 'listed'
+    extend: 'neither'
+
+KV_skill:
+  default: 
+    domain: [-1, 1]
+    center: 0
+    kind: 'from_levels'
+    extend: 'neither'
+    boundaries: [-1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
