@@ -1,3 +1,30 @@
+v1.4.0
+------
+
+New Features
+~~~~~~~~~~~~
+
+* Add a reusable DWD colour-scale API in ``pyku.core.colourscales`` with
+  configurable colormap creation.
+
+Deprecations
+~~~~~~~~~~~~
+
+* Deprecate the legacy ``pyku.colormaps`` functions in favor of
+  ``pyku.core.colourscales``, while retaining compatibility wrappers.
+
+Bug fixes
+~~~~~~~~~
+
+* Use data-driven normalization by default for precipitation maps while
+  preserving explicit plot options.
+
+Documentation
+~~~~~~~~~~~~~
+
+* Update the colormap reference, migration guidance, and tutorials for the
+  new colour-scale API.
+
 v1.3.0
 ------
 
